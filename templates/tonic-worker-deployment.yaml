@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tonic-worker
+  name: tonic-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tonic-worker
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: tonic-worker
+    spec:
+      containers:
+      - env:
+        - name: TONIC_AMPQP_URL
+          value: amqp://user:password@tonic_queue:5672/
+        - name: TONIC_DB_DATABASE
+          value: tonic
+        - name: TONIC_DB_PASSWORD
+          value: <db_pass>
+        - name: TONIC_DB_PORT
+          value: "5432"
+        - name: TONIC_DB_SSLMODE
+          value: require
+        - name: TONIC_DB_USERNAME
+          value: <db_user>
+        - name: TONIC_PROCESS_PARALLELISM
+          value: "2"
+        - name: TONIC_TABLE_PARALLELISM
+          value: "4"
+        - name: TONIC_WRITE_PARALLELISM
+          value: "2"
+        - name: TTONIC_DB_HOST
+          value: <host>
+        image: quay.io/tonicai/tonic_worker_staging:latest
+        imagePullPolicy: ""
+        name: tonic-worker
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

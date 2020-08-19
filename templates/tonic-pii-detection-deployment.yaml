@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tonic-pii-detection    
+  labels:
+    app: tonic-pii-detection  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tonic-pii-detection
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: tonic-pii-detection
+    spec:
+      containers:
+      - image: quay.io/tonicai/tonic_pii_detection_staging:latest
+        imagePullPolicy: ""
+        name: tonic-pii-detection
+        ports:
+        - containerPort: 7687
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""

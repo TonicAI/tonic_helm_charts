@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tonic-queue
+  labels:
+    app: tonic-queue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tonic-queue
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: tonic-queue
+    spec:
+      containers:
+      - env:
+        - name: RABBITMQ_DEFAULT_PASS
+          value: password
+        - name: RABBITMQ_DEFAULT_USER
+          value: user
+        image: rabbitmq:3.6.6-management
+        imagePullPolicy: ""
+        name: tonic-queue
+        ports:
+        - containerPort: 15672
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

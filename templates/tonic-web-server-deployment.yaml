@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tonic-web-server
+  name: tonic-web-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tonic-web-server
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: tonic-web-server
+    spec:
+      containers:
+      - env:
+        - name: TONIC_AMPQP_URL
+          value: amqp://user:password@tonic_queue:5672/
+        - name: TONIC_DB_DATABASE
+          value: tonic
+        - name: TONIC_DB_HOST
+          value: <host>
+        - name: TONIC_DB_PASSWORD
+          value: <db_pass>
+        - name: TONIC_DB_PORT
+          value: "5432"
+        - name: TONIC_DB_SSLMODE
+          value: require
+        - name: TONIC_DB_USERNAME
+          value: <db_user>
+        image: quay.io/tonicai/tonic_web_server_staging:latest
+        imagePullPolicy: ""
+        name: tonic-web-server
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}
