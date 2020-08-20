@@ -6,7 +6,7 @@ metadata:
   name: tonic-worker
   namespace: tonic
 spec:
-  replicas: 1
+  replicas: {{ .Values.numberOfWorkers }}
   selector:
     matchLabels:
       app: tonic-worker

@@ -28,13 +28,15 @@ tonicdb: {
   sslMode: Require
 }
 
+numberOfWorkers: 1
+
 environmentName: <company-name>
 
-enableLogCollection: true
+enableLogCollection: false
 
 tonicStatisticsSeed: <any-integer>
 
-dockerRepoBaseUrl: <docker-repo>
+dockerRepoBaseUrl: quay.io/tonicai
 
 nodeSelector: {}
 
