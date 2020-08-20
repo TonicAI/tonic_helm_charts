@@ -19,7 +19,7 @@ spec:
       containers:
       - env:
         - name: TONIC_AMPQP_URL
-          value: amqp://user:password@tonic-queue:5672/
+          value: amqp://{{ .Values.rabbitMq.user }}:{{ .Values.rabbitMq.password }}@tonic-queue:5672/
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbname }}
         - name: TONIC_DB_USERNAME

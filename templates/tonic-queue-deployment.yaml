@@ -19,9 +19,9 @@ spec:
       containers:
       - env:
         - name: RABBITMQ_DEFAULT_PASS
-          value: password
+          value: {{ .Values.rabbitMq.password }}
         - name: RABBITMQ_DEFAULT_USER
-          value: user
+          value: {{ .Values.rabbitMq.user }}
         image: rabbitmq:3.6.6-management
         imagePullPolicy: ""
         name: tonic-queue

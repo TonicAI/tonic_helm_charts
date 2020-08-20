@@ -1,24 +1,4 @@
 # Declare variables to be passed into your templates.
-
-replicaCount: 1
-
-imagePullSecrets: []
-
-podAnnotations: {}
-
-podSecurityContext: {}
-
-securityContext: {}
-
-service:
-  type: ClusterIP
-  port: 443
-
-resources: {}
-
-autoscaling:
-  enabled: false
-
 tonicdb: {
   host: <db-host>,
   port: 5432,
@@ -26,6 +6,11 @@ tonicdb: {
   user: <user>,
   password: <password>,
   sslMode: Require
+}
+
+rabbitMq: {
+  user: <rabbit-user>,
+  password: <rabbit-password>
 }
 
 numberOfWorkers: 1
@@ -37,9 +22,3 @@ enableLogCollection: false
 tonicStatisticsSeed: <any-integer>
 
 dockerRepoBaseUrl: quay.io/tonicai
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}

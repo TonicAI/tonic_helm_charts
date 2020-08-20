@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "tonic.fullname" . }}:{{ .Values.service.port }}']
+      args: ['tonic-web-server:443']
   restartPolicy: Never
