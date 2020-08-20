@@ -44,6 +44,8 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
+        - name: TONIC_PII_DETECTION_URL
+          value: https://tonic-pii-detection:7687
         image: {{ .Values.dockerRepoBaseUrl }}/tonic_worker:latest
         imagePullPolicy: ""
         name: tonic-worker
