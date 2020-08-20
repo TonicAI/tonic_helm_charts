@@ -27,13 +27,17 @@ spec:
         - name: TONIC_DB_PASSWORD
           value: {{ .Values.tonicdb.password }}
         - name: TONIC_DB_PORT
-          value: "5432"
+          value: {{quote .Values.tonicdb.port }}
         - name: TONIC_DB_SSLMODE
-          value: require
+          value: {{ .Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
         - name: TONIC_STATISTICS_SEED
-          value: "12345"
+          value: {{quote .Values.tonicStatisticsSeed }}
+        - name: ENABLE_LOG_COLLECTION
+          value: {{quote .Values.enableLogCollection }}
+        - name: ENVIRONMENT_NAME
+          value: {{ .Values.environmentName }}
         image: {{ .Values.dockerRepoBaseUrl }}/tonic_web_server:latest
         imagePullPolicy: ""
         name: tonic-web-server

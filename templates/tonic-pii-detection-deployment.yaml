@@ -17,7 +17,12 @@ spec:
         app: tonic-pii-detection
     spec:
       containers:
-      - image: {{ .Values.dockerRepoBaseUrl }}/tonic_pii_detection:latest
+      - env:
+        - name: ENABLE_LOG_COLLECTION
+          value: {{quote .Values.enableLogCollection }}
+        - name: ENVIRONMENT_NAME
+          value: {{ .Values.environmentName }}
+        image: {{ .Values.dockerRepoBaseUrl }}/tonic_pii_detection:latest
         imagePullPolicy: ""
         name: tonic-pii-detection
         ports:

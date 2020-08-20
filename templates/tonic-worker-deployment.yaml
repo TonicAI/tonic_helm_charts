@@ -29,7 +29,7 @@ spec:
         - name: TONIC_DB_PORT
           value: {{quote .Values.tonicdb.port }}
         - name: TONIC_DB_SSLMODE
-          value: require
+          value: {{ .Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
         - name: TONIC_PROCESS_PARALLELISM
@@ -40,6 +40,10 @@ spec:
           value: "1"
         - name: TONIC_STATISTICS_SEED
           value: {{quote .Values.tonicStatisticsSeed }}
+        - name: ENABLE_LOG_COLLECTION
+          value: {{quote .Values.enableLogCollection }}
+        - name: ENVIRONMENT_NAME
+          value: {{ .Values.environmentName }}
         image: {{ .Values.dockerRepoBaseUrl }}/tonic_worker:latest
         imagePullPolicy: ""
         name: tonic-worker
