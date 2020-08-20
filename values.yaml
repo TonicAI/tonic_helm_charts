@@ -1,0 +1,43 @@
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+imagePullSecrets: []
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 443
+
+resources: {}
+
+autoscaling:
+  enabled: false
+
+tonicdb: {
+  host: <db-host>,
+  port: 5432,
+  dbName: tonic,
+  user: <user>,
+  password: <password>,
+  sslMode: Require
+}
+
+environmentName: <company-name>
+
+enableLogCollection: true
+
+tonicStatisticsSeed: <any-integer>
+
+dockerRepoBaseUrl: <docker-repo>
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
