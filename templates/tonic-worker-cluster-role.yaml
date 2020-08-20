@@ -2,10 +2,11 @@
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ template "rabbitmq.fullname" . }}-endpoint-reader
+  name: {{ template "tonicworker.fullname" . }}-endpoint-reader
+  namespace: tonic
   labels:
-    app: {{ template "rabbitmq.name" . }}
-    chart: {{ template "rabbitmq.chart" .  }}
+    app: {{ template "tonicworker.name" . }}
+    chart: {{ template "tonicworker.chart" .  }}
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 rules:

@@ -4,6 +4,7 @@ metadata:
   labels:
     app: tonic-web-server
   name: tonic-web-server
+  namespace: tonic
 spec:
   replicas: 1
   selector:
@@ -18,26 +19,34 @@ spec:
       containers:
       - env:
         - name: TONIC_AMPQP_URL
-          value: amqp://user:password@tonic_queue:5672/
+          value: amqp://user:password@tonic-queue:5672/
         - name: TONIC_DB_DATABASE
-          value: tonic
-        - name: TONIC_DB_HOST
-          value: <host>
+          value: {{ .Values.tonicdb.dbname }}
+        - name: TONIC_DB_USERNAME
+          value: {{ .Values.tonicdb.user }}
         - name: TONIC_DB_PASSWORD
-          value: <db_pass>
+          value: {{ .Values.tonicdb.password }}
         - name: TONIC_DB_PORT
           value: "5432"
         - name: TONIC_DB_SSLMODE
           value: require
-        - name: TONIC_DB_USERNAME
-          value: <db_user>
-        image: quay.io/tonicai/tonic_web_server_staging:latest
+        - name: TONIC_DB_HOST
+          value: {{ .Values.tonicdb.host }}
+        - name: TONIC_STATISTICS_SEED
+          value: "12345"
+        image: {{ .Values.dockerRepoBaseUrl }}/tonic_web_server:latest
         imagePullPolicy: ""
         name: tonic-web-server
         ports:
         - containerPort: 80
         - containerPort: 443
         resources: {}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 5
       restartPolicy: Always
       serviceAccountName: ""
       volumes: null

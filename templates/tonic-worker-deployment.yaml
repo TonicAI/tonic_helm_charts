@@ -4,6 +4,7 @@ metadata:
   labels:
     app: tonic-worker
   name: tonic-worker
+  namespace: tonic
 spec:
   replicas: 1
   selector:
@@ -18,32 +19,40 @@ spec:
       containers:
       - env:
         - name: TONIC_AMPQP_URL
-          value: amqp://user:password@tonic_queue:5672/
+          value: amqp://user:password@tonic-queue:5672/
         - name: TONIC_DB_DATABASE
-          value: tonic
+          value: {{ .Values.tonicdb.dbname }}
+        - name: TONIC_DB_USERNAME
+          value: {{ .Values.tonicdb.user }}
         - name: TONIC_DB_PASSWORD
-          value: <db_pass>
+          value: {{ .Values.tonicdb.password }}
         - name: TONIC_DB_PORT
-          value: "5432"
+          value: {{quote .Values.tonicdb.port }}
         - name: TONIC_DB_SSLMODE
           value: require
-        - name: TONIC_DB_USERNAME
-          value: <db_user>
+        - name: TONIC_DB_HOST
+          value: {{ .Values.tonicdb.host }}
         - name: TONIC_PROCESS_PARALLELISM
-          value: "2"
+          value: "1"
         - name: TONIC_TABLE_PARALLELISM
-          value: "4"
+          value: "1"
         - name: TONIC_WRITE_PARALLELISM
-          value: "2"
-        - name: TTONIC_DB_HOST
-          value: <host>
-        image: quay.io/tonicai/tonic_worker_staging:latest
+          value: "1"
+        - name: TONIC_STATISTICS_SEED
+          value: {{quote .Values.tonicStatisticsSeed }}
+        image: {{ .Values.dockerRepoBaseUrl }}/tonic_worker:latest
         imagePullPolicy: ""
         name: tonic-worker
         ports:
         - containerPort: 80
         - containerPort: 443
         resources: {}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 10
       restartPolicy: Always
       serviceAccountName: ""
       volumes: null

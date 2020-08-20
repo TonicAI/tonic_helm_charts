@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tonic-pii-detection    
+  name: tonic-pii-detection
+  namespace: tonic
   labels:
     app: tonic-pii-detection  
 spec:
@@ -16,7 +17,7 @@ spec:
         app: tonic-pii-detection
     spec:
       containers:
-      - image: quay.io/tonicai/tonic_pii_detection_staging:latest
+      - image: {{ .Values.dockerRepoBaseUrl }}/tonic_pii_detection:latest
         imagePullPolicy: ""
         name: tonic-pii-detection
         ports:

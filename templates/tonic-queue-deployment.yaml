@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tonic-queue
+  namespace: tonic
   labels:
     app: tonic-queue
 spec:
@@ -25,7 +26,7 @@ spec:
         imagePullPolicy: ""
         name: tonic-queue
         ports:
-        - containerPort: 15672
+        - containerPort: 5672
         resources: {}
       restartPolicy: Always
       serviceAccountName: ""
