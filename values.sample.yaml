@@ -1,24 +1,6 @@
-# Declare variables to be passed into your templates.
 
-replicaCount: 1
 
-imagePullSecrets: []
-
-podAnnotations: {}
-
-podSecurityContext: {}
-
-securityContext: {}
-
-service:
-  type: ClusterIP
-  port: 443
-
-resources: {}
-
-autoscaling:
-  enabled: false
-
+# tonicdb is the postgres database that will hold information about your workspace.
 tonicdb: {
   host: <db-host>,
   port: 5432,
@@ -28,18 +10,47 @@ tonicdb: {
   sslMode: Require
 }
 
-numberOfWorkers: 1
-
 environmentName: <company-name>
 
+
+# tonicStatisticsSeed if set will cause generations to be consisent with each other for anything where consistency is set to true.
+# otherwise each generation will be internally consistent, but not consistent with other generations.
+tonicStatisticsSeed: <any-integer>
+
+# numberOfWorkers will determine the parralelism of each job that is run. It will not cause jobs to run in parralel.
+numberOfWorkers: 1
+
+# enableLogCollection will send errors and general information about generations to Tonic if true. It will not send user data.
 enableLogCollection: false
 
-tonicStatisticsSeed: <any-integer>
+
+
+service:
+  type: ClusterIP #not used
+  port: 443 #only used in the test?
 
 dockerRepoBaseUrl: quay.io/tonicai
 
-nodeSelector: {}
 
-tolerations: []
 
-affinity: {}
+
+resources: {} #not used
+
+autoscaling:
+  enabled: false #not used
+
+nodeSelector: {} #not used
+
+tolerations: [] #not used
+
+affinity: {} #not used
+
+replicaCount: 1 #not used
+
+imagePullSecrets: [] #not used
+
+podAnnotations: {} #not used
+
+podSecurityContext: {} #not used
+
+securityContext: {} #not used
