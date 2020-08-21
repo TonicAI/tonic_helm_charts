@@ -8,11 +8,6 @@ tonicdb: {
   sslMode: Require
 }
 
-rabbitMq: {
-  user: <rabbit-user>,
-  password: <rabbit-password>
-}
-
 numberOfWorkers: 1
 
 environmentName: <company-name>
