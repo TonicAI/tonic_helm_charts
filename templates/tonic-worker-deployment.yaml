@@ -4,7 +4,7 @@ metadata:
   labels:
     app: tonic-worker
   name: tonic-worker
-  namespace: tonic
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.numberOfWorkers }}
   selector:
@@ -19,7 +19,7 @@ spec:
       containers:
       - env:
         - name: TONIC_AMPQP_URL
-          value: amqp://user:password@tonic-queue:5672/
+          value: amqp://{{ .Values.rabbitMq.user }}:{{ .Values.rabbitMq.password }}@tonic-queue:5672/
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbname }}
         - name: TONIC_DB_USERNAME
@@ -38,13 +38,17 @@ spec:
           value: "1"
         - name: TONIC_WRITE_PARALLELISM
           value: "1"
+          {{- if .Values.tonicStatisticsSeed }}
         - name: TONIC_STATISTICS_SEED
           value: {{quote .Values.tonicStatisticsSeed }}
+          {{- end }}
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        image: {{ .Values.dockerRepoBaseUrl }}/tonic_worker:latest
+        - name: TONIC_PII_DETECTION_URL
+          value: https://tonic-pii-detection:7687
+        image: {{ .Values.dockerRepoBaseUrl }}/tonic_worker:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-worker
         ports:

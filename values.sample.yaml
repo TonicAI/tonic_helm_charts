@@ -1,5 +1,3 @@
-
-
 # tonicdb is the postgres database that will hold information about your workspace.
 tonicdb: {
   host: <db-host>,
@@ -10,8 +8,12 @@ tonicdb: {
   sslMode: Require
 }
 
-environmentName: <company-name>
+rabbitMq: {
+  user: <rabbit-user>,
+  password: <rabbit-password>
+}
 
+environmentName: <company-name>
 
 # tonicStatisticsSeed if set will cause generations to be consisent with each other for anything where consistency is set to true.
 # otherwise each generation will be internally consistent, but not consistent with other generations.
@@ -23,34 +25,6 @@ numberOfWorkers: 1
 # enableLogCollection will send errors and general information about generations to Tonic if true. It will not send user data.
 enableLogCollection: false
 
-
-
-service:
-  type: ClusterIP #not used
-  port: 443 #only used in the test?
-
 dockerRepoBaseUrl: quay.io/tonicai
 
-
-
-
-resources: {} #not used
-
-autoscaling:
-  enabled: false #not used
-
-nodeSelector: {} #not used
-
-tolerations: [] #not used
-
-affinity: {} #not used
-
-replicaCount: 1 #not used
-
-imagePullSecrets: [] #not used
-
-podAnnotations: {} #not used
-
-podSecurityContext: {} #not used
-
-securityContext: {} #not used
+tonicVersion: latest

@@ -4,7 +4,7 @@ metadata:
   labels:
     app: tonic-web-server
   name: tonic-web-server
-  namespace: tonic
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
@@ -19,7 +19,7 @@ spec:
       containers:
       - env:
         - name: TONIC_AMPQP_URL
-          value: amqp://user:password@tonic-queue:5672/
+          value: amqp://{{ .Values.rabbitMq.user }}:{{ .Values.rabbitMq.password }}@tonic-queue:5672/
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbname }}
         - name: TONIC_DB_USERNAME
@@ -32,13 +32,15 @@ spec:
           value: {{ .Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
+          {{- if .Values.tonicStatisticsSeed }}
         - name: TONIC_STATISTICS_SEED
           value: {{quote .Values.tonicStatisticsSeed }}
+          {{- end }}
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        image: {{ .Values.dockerRepoBaseUrl }}/tonic_web_server:latest
+        image: {{ .Values.dockerRepoBaseUrl }}/tonic_web_server:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-web-server
         ports:
