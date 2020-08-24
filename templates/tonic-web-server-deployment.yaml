@@ -4,7 +4,7 @@ metadata:
   labels:
     app: tonic-web-server
   name: tonic-web-server
-  namespace: tonic
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:

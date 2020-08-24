@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tonic-pii-detection
-  namespace: tonic
+  namespace: {{ .Release.Namespace }}
   labels:
     app: tonic-pii-detection  
 spec:

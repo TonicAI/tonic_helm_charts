@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: tonic-queue
-  namespace: tonic
+  namespace: {{ .Release.Namespace }}
   labels:
     app: tonic-queue
 spec:
