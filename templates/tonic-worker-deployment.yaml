@@ -38,8 +38,10 @@ spec:
           value: "1"
         - name: TONIC_WRITE_PARALLELISM
           value: "1"
+          {{- if .Values.tonicStatisticsSeed }}
         - name: TONIC_STATISTICS_SEED
           value: {{quote .Values.tonicStatisticsSeed }}
+          {{- end }}
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME

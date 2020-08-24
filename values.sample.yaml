@@ -1,4 +1,4 @@
-# Declare variables to be passed into your templates.
+# tonicdb is the postgres database that will hold information about your workspace.
 tonicdb: {
   host: <db-host>,
   port: 5432,
@@ -13,13 +13,17 @@ rabbitMq: {
   password: <rabbit-password>
 }
 
-numberOfWorkers: 1
-
 environmentName: <company-name>
 
-enableLogCollection: false
-
+# tonicStatisticsSeed if set will cause generations to be consisent with each other for anything where consistency is set to true.
+# otherwise each generation will be internally consistent, but not consistent with other generations.
 tonicStatisticsSeed: <any-integer>
+
+# numberOfWorkers will determine the parralelism of each job that is run. It will not cause jobs to run in parralel.
+numberOfWorkers: 1
+
+# enableLogCollection will send errors and general information about generations to Tonic if true. It will not send user data.
+enableLogCollection: false
 
 dockerRepoBaseUrl: quay.io/tonicai
 
