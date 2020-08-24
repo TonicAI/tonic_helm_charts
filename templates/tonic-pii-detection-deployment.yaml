@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tonic-pii-detection
-  namespace: tonic
+  namespace: {{ .Release.Namespace }}
   labels:
     app: tonic-pii-detection  
 spec:
@@ -22,7 +22,7 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        image: {{ .Values.dockerRepoBaseUrl }}/tonic_pii_detection:latest
+        image: {{ .Values.dockerRepoBaseUrl }}/tonic_pii_detection:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-pii-detection
         ports:
