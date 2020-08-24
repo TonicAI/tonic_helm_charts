@@ -22,3 +22,5 @@ enableLogCollection: false
 tonicStatisticsSeed: <any-integer>
 
 dockerRepoBaseUrl: quay.io/tonicai
+
+tonicVersion: latest

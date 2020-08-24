@@ -46,7 +46,7 @@ spec:
           value: {{ .Values.environmentName }}
         - name: TONIC_PII_DETECTION_URL
           value: https://tonic-pii-detection:7687
-        image: {{ .Values.dockerRepoBaseUrl }}/tonic_worker:latest
+        image: {{ .Values.dockerRepoBaseUrl }}/tonic_worker:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-worker
         ports:

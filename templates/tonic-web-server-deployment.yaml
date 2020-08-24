@@ -38,7 +38,7 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        image: {{ .Values.dockerRepoBaseUrl }}/tonic_web_server:latest
+        image: {{ .Values.dockerRepoBaseUrl }}/tonic_web_server:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-web-server
         ports:
