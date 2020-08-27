@@ -25,6 +25,8 @@ numberOfWorkers: 1
 # enableLogCollection will send errors and general information about generations to Tonic if true. It will not send user data.
 enableLogCollection: false
 
-dockerRepoBaseUrl: quay.io/tonicai
+# This value will be provided to you by Tonic and will allow you to authenticate against our private docker repository.
+dockerConfigAuth: <docker-config-auth>
 
+# You can set this to a specific Tonic version number if you wish to ensure you always get the same version. Otherwise you will always deploy the latest version of Tonic.
 tonicVersion: latest

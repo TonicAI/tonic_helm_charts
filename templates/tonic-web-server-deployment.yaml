@@ -40,7 +40,7 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        image: {{ .Values.dockerRepoBaseUrl }}/tonic_web_server:{{ .Values.tonicVersion }}
+        image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-web-server
         ports:
@@ -55,5 +55,7 @@ spec:
           periodSeconds: 5
       restartPolicy: Always
       serviceAccountName: ""
+      imagePullSecrets:
+      - name: tonicai-build-writer-pull-secret
       volumes: null
 status: {}
