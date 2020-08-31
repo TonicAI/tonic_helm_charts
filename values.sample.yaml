@@ -15,9 +15,9 @@ rabbitMq: {
 
 environmentName: <company-name>
 
-# tonicStatisticsSeed if set will cause generations to be consisent with each other for anything where consistency is set to true.
-# otherwise each generation will be internally consistent, but not consistent with other generations.
-tonicStatisticsSeed: <any-integer>
+# tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
+# otherwise each generation will be internally consistent, but not consistent with other generations. Uncomment and set to any integer to enable.
+#tonicStatisticsSeed: <any-integer>
 
 # numberOfWorkers will determine the parralelism of each job that is run. It will not cause jobs to run in parralel.
 numberOfWorkers: 1
@@ -30,3 +30,6 @@ dockerConfigAuth: <docker-config-auth>
 
 # You can set this to a specific Tonic version number if you wish to ensure you always get the same version. Otherwise you will always deploy the latest version of Tonic.
 tonicVersion: latest
+
+# Use a Tonic license to enable different enterprise features. License keys can be obtained from Tonic.
+#tonicLicense: <license-key>

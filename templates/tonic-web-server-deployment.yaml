@@ -40,6 +40,10 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
+          {{- if .Values.tonicLicense }}
+        - name: TONIC_LICENSE
+          value: {{quote .Values.tonicLicense }}
+          {{- end }}
         image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-web-server
