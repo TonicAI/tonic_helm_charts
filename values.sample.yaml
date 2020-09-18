@@ -8,11 +8,6 @@ tonicdb: {
   sslMode: Require
 }
 
-rabbitMq: {
-  user: <rabbit-user>,
-  password: <rabbit-password>
-}
-
 environmentName: <company-name>
 
 # tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
