@@ -11,7 +11,7 @@ environmentName: <company-name>
 
 # tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
 # otherwise each generation will be internally consistent, but not consistent with other generations. Uncomment and set to any integer to enable.
-#tonicStatisticsSeed: <any-integer>
+# tonicStatisticsSeed: <any-integer>
 
 # numberOfWorkers will determine the parralelism of each job that is run. It will not cause jobs to run in parralel.
 numberOfWorkers: 1
@@ -20,7 +20,7 @@ numberOfWorkers: 1
 enableLogCollection: false
 
 # enableSparkSupport will install the necessary additional components to allow Tonic to connect to your Spark instance
-#enableSparkSupport: true
+# enableSparkSupport: true
 
 # This value will be provided to you by Tonic and will allow you to authenticate against our private docker repository.
 dockerConfigAuth: <docker-config-auth>
@@ -29,4 +29,15 @@ dockerConfigAuth: <docker-config-auth>
 tonicVersion: latest
 
 # Use a Tonic license to enable different enterprise features. License keys can be obtained from Tonic.
-#tonicLicense: <license-key>
+# tonicLicense: <license-key>
+
+# Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
+# tonicSsoConfig:
+#   provider: <provider-name>
+#   domain: <sso-domain>
+#   clientId: <client-id>
+#   clientSecret: <client-secret>
+#   identityProviderId: <identity-provider-id>
+#   authServerId: <auth-server-id>
+#   groupFilter: .*Tonic.*
+  

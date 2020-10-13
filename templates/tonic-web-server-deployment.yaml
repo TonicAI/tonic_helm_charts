@@ -45,6 +45,37 @@ spec:
         - name: TONIC_LICENSE
           value: {{quote .Values.tonicLicense }}
           {{- end }}
+          {{- if .Values.tonicSsoConfig.provider }}
+        - name: TONIC_SSO_PROVIDER
+          value: {{quote .Values.tonicSsoConfig.provider }}
+          {{- end }}
+          {{- if .Values.tonicSsoConfig.domain }}
+        - name: TONIC_SSO_DOMAIN
+          value: {{quote .Values.tonicSsoConfig.domain }}
+          {{- end }}
+          {{- if .Values.tonicSsoConfig.clientId }}
+        - name: TONIC_SSO_CLIENT_ID
+          value: {{quote .Values.tonicSsoConfig.clientId }}
+          {{- end }}
+          {{- if .Values.tonicSsoConfig.clientSecret }}
+        - name: TONIC_SSO_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: tonic-sso-client-secret
+              key: secret
+          {{- end }}
+          {{- if .Values.tonicSsoConfig.identityProviderId }}
+        - name: TONIC_SSO_IDENTITY_PROVIDER_ID
+          value: {{quote .Values.tonicSsoConfig.identityProviderId }}
+          {{- end }}
+          {{- if .Values.tonicSsoConfig.authServerId }}
+        - name: TONIC_SSO_AUTHORIZATION_SERVER_ID
+          value: {{quote .Values.tonicSsoConfig.authServerId }}
+          {{- end }}
+          {{- if .Values.tonicSsoConfig.groupFilter }}
+        - name: TONIC_SSO_GROUP_FILTER_REGEX
+          value: {{quote .Values.tonicSsoConfig.groupFilter }}
+          {{- end }}
         image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-web-server
