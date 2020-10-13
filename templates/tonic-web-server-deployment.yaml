@@ -23,7 +23,10 @@ spec:
         - name: TONIC_DB_USERNAME
           value: {{ .Values.tonicdb.user }}
         - name: TONIC_DB_PASSWORD
-          value: {{ .Values.tonicdb.password }}
+          valueFrom:
+            secretKeyRef:
+              name: tonic-db-password
+              key: password
         - name: TONIC_DB_PORT
           value: {{quote .Values.tonicdb.port }}
         - name: TONIC_DB_SSLMODE
