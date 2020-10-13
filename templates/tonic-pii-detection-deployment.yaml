@@ -28,6 +28,20 @@ spec:
         ports:
         - containerPort: 7687
         resources: {}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 7687
+            scheme: HTTPS
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 7687
+            scheme: HTTPS
+          initialDelaySeconds: 10
+          periodSeconds: 10
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret

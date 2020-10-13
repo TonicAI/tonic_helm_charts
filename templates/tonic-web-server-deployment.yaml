@@ -58,6 +58,12 @@ spec:
             port: 80
           initialDelaySeconds: 60
           periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
       restartPolicy: Always
       serviceAccountName: ""
       imagePullSecrets:
