@@ -4,7 +4,7 @@ tonicdb:
   port: 5432
   dbName: tonic
   user: <user>
-  password: <password>,
+  password: <password>
   sslMode: Require
 
 environmentName: <company-name>
