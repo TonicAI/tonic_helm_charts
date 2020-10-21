@@ -45,6 +45,7 @@ spec:
         - name: TONIC_LICENSE
           value: {{quote .Values.tonicLicense }}
           {{- end }}
+          {{- if .Values.tonicSsoConfig }}
           {{- if .Values.tonicSsoConfig.provider }}
         - name: TONIC_SSO_PROVIDER
           value: {{quote .Values.tonicSsoConfig.provider }}
@@ -75,6 +76,7 @@ spec:
           {{- if .Values.tonicSsoConfig.groupFilter }}
         - name: TONIC_SSO_GROUP_FILTER_REGEX
           value: {{quote .Values.tonicSsoConfig.groupFilter }}
+          {{- end }}
           {{- end }}
         image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
