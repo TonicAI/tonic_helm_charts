@@ -78,6 +78,8 @@ spec:
           value: {{quote .Values.tonicSsoConfig.groupFilter }}
           {{- end }}
           {{- end }}
+        - name: TONIC_SPARK_URL
+          value: https://tonic-spark-helper:5501
         image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-web-server
