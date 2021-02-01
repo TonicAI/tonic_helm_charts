@@ -6,7 +6,7 @@ metadata:
   name: tonic-worker
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: {{ .Values.numberOfWorkers }}
+  replicas: {{ .Values.workers.replicas }}
   selector:
     matchLabels:
       app: tonic-worker
@@ -57,7 +57,13 @@ spec:
         ports:
         - containerPort: 80
         - containerPort: 443
-        resources: {}
+        resources:
+          limits:
+            cpu: {{ .Values.workers.cpuLimit | default "1" | quote }}
+            memory: {{ .Values.workers.memoryLimit | default "4096Mi" | quote }}
+          requests:
+            cpu: {{ .Values.workers.cpuRequest | default "250m" | quote }}
+            memory: {{ .Values.workers.memoryRequest |default "2048Mi" | quote }}
         livenessProbe:
           httpGet:
             path: /health

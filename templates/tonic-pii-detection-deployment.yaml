@@ -27,7 +27,13 @@ spec:
         name: tonic-pii-detection
         ports:
         - containerPort: 7687
-        resources: {}
+        resources:
+          limits:
+            cpu: {{ .Values.piidetection.cpuLimit | default "1" | quote }}
+            memory: {{ .Values.piidetection.memoryLimit | default "2048Mi" | quote }}
+          requests:
+            cpu: {{ .Values.piidetection.cpuRequest | default "250m" | quote }}
+            memory: {{ .Values.piidetection.memoryRequest |default "2048Mi" | quote }}
         livenessProbe:
           httpGet:
             path: /health

@@ -86,7 +86,13 @@ spec:
         ports:
         - containerPort: 80
         - containerPort: 443
-        resources: {}
+        resources:
+          limits:
+            cpu: {{ .Values.webserver.cpuLimit | default "1" | quote }}
+            memory: {{ .Values.webserver.memoryLimit | default "2048Mi" | quote }}
+          requests:
+            cpu: {{ .Values.webserver.cpuRequest | default "250m" | quote }}
+            memory: {{ .Values.webserver.memoryRequest |default "2048Mi" | quote }}
         livenessProbe:
           httpGet:
             path: /health
