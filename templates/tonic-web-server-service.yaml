@@ -3,9 +3,6 @@ kind: Service
 metadata:
   name: tonic-web-server
   namespace: {{ .Release.Namespace }}
-  annotations:
-    # This annotation is only required if you are creating an internal facing ELB. Remove this annotation to create public facing ELB.
-    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
   labels:
     app: tonic-web-server
 spec:
@@ -13,12 +10,9 @@ spec:
   - name: "http"
     port: 80
     targetPort: 80
-    nodePort: 30080
   - name: "https"
     port: 443
     targetPort: 443
-    nodePort: 30443
-  type: LoadBalancer
   selector:
     app: tonic-web-server
 status:
