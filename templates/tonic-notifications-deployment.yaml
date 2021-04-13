@@ -1,0 +1,82 @@
+{{- if .Values.tonicSmtpConfig }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tonic-notifications
+  name: tonic-notifications
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tonic-notifications
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: tonic-notifications
+    spec:
+      containers:
+      - env:
+        - name: TONIC_DB_DATABASE
+          value: {{ .Values.tonicdb.dbname }}
+        - name: TONIC_DB_USERNAME
+          value: {{ .Values.tonicdb.user }}
+        - name: TONIC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tonic-db-password
+              key: password
+        - name: TONIC_DB_PORT
+          value: {{quote .Values.tonicdb.port }}
+        - name: TONIC_DB_SSLMODE
+          value: {{ .Values.tonicdb.sslMode }}
+        - name: TONIC_DB_HOST
+          value: {{ .Values.tonicdb.host }}
+        - name: TONIC_URL
+          value: {{ .Values.tonicSmtpConfig.tonicUrl }}
+        - name: TONIC_NOTIFICATION_SENDING_ADDRESS
+          value: {{ .Values.tonicSmptpConfig.sendingAddress }}
+        - name: TONIC_NOTIFICATION_SMTP_SERVER_ADDRESS
+          value: {{ .Values.tonicSmptpConfig.smtpServerAddress }}
+        - name: TONIC_NOTIFICATION_SMTP_SERVER_PORT
+          value: {{quote .Values.tonicSmptpConfig.smtpServerPort }}
+        - name: TONIC_NOTIFICATION_SMTP_USERNAME
+          value: {{ .Values.tonicSmptpConfig.smtpUsername }}
+        - name: TONIC_NOTIFICATION_SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tonic-smtp-password
+              key: password
+          value: {{ .Values.tonicSmptpConfig.smtpPassword }}
+        - name: ENABLE_LOG_COLLECTION
+          value: {{quote .Values.enableLogCollection }}
+        - name: ENVIRONMENT_NAME
+          value: {{ .Values.environmentName }}
+        image: quay.io/tonicai/tonic_notifications:{{ .Values.tonicVersion }}
+        imagePullPolicy: ""
+        name: tonic-notifications
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        resources: {}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: tonicai-build-writer-pull-secret
+      serviceAccountName: ""
+      volumes: null
+status: {}
+{{- end }}

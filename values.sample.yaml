@@ -7,13 +7,13 @@ tonicdb:
   password: <password>
   sslMode: Require
 
-environmentName: <company-name>
+environmentName: tonic_k8
 
 # tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
 # otherwise each generation will be internally consistent, but not consistent with other generations. Uncomment and set to any integer to enable.
-# tonicStatisticsSeed: <any-integer>
+tonicStatisticsSeed: 1234
 
-# numberOfWorkers will determine the parralelism of each job that is run. It will not cause jobs to run in parralel.
+# numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
 numberOfWorkers: 1
 
 # enableLogCollection will send errors and general information about generations to Tonic if true. It will not send user data.
@@ -40,4 +40,14 @@ tonicVersion: latest
 #   identityProviderId: <identity-provider-id>
 #   authServerId: <auth-server-id>
 #   groupFilter: .*Tonic.*
+
+# Configuration options for tonic-notifications
+# tonicSmtpConfig:
+#   tonicUrl: <tonic URL, for links>
+#   sendingAddress: <notifications@yourdomain.com>
+#   smtpServerAddress: <smtp host>
+#   smtpServerPort: <smtp port>
+#   smtpUsername: <smtp username>
+#   smtpPassword: <smtp password>
+
   
