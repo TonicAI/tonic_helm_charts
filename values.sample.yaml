@@ -7,11 +7,11 @@ tonicdb:
   password: <password>
   sslMode: Require
 
-environmentName: tonic_k8
+environmentName: <company-name>
 
 # tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
 # otherwise each generation will be internally consistent, but not consistent with other generations. Uncomment and set to any integer to enable.
-tonicStatisticsSeed: 1234
+tonicStatisticsSeed: <any-integer>
 
 # numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
 numberOfWorkers: 1
