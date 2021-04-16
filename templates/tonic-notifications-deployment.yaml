@@ -37,19 +37,18 @@ spec:
         - name: TONIC_URL
           value: {{ .Values.tonicSmtpConfig.tonicUrl }}
         - name: TONIC_NOTIFICATION_SENDING_ADDRESS
-          value: {{ .Values.tonicSmptpConfig.sendingAddress }}
+          value: {{ .Values.tonicSmtpConfig.sendingAddress }}
         - name: TONIC_NOTIFICATION_SMTP_SERVER_ADDRESS
-          value: {{ .Values.tonicSmptpConfig.smtpServerAddress }}
+          value: {{ .Values.tonicSmtpConfig.smtpServerAddress }}
         - name: TONIC_NOTIFICATION_SMTP_SERVER_PORT
-          value: {{quote .Values.tonicSmptpConfig.smtpServerPort }}
+          value: {{quote .Values.tonicSmtpConfig.smtpServerPort }}
         - name: TONIC_NOTIFICATION_SMTP_USERNAME
-          value: {{ .Values.tonicSmptpConfig.smtpUsername }}
+          value: {{ .Values.tonicSmtpConfig.smtpUsername }}
         - name: TONIC_NOTIFICATION_SMTP_PASSWORD
           valueFrom:
             secretKeyRef:
               name: tonic-smtp-password
               key: password
-          value: {{ .Values.tonicSmptpConfig.smtpPassword }}
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
