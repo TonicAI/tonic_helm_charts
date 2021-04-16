@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: tonic-notifications
+  name: tonic-notifications
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - name: "7000"
+    port: 7000
+    targetPort: 80
+  - name: "7001"
+    port: 7001
+    targetPort: 443
+  selector:
+    io.kompose.service: tonic-notifications
+status:
+  loadBalancer: {}
