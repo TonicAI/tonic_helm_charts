@@ -5,4 +5,4 @@ type: application
 
 version: 1.0.2
 
-appVersion: 130
+appVersion: "130"
