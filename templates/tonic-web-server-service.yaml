@@ -6,6 +6,7 @@ metadata:
   annotations:
     # This annotation is only required if you are creating an internal facing ELB. Remove this annotation to create public facing ELB.
     service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
   labels:
     app: tonic-web-server
 spec:
