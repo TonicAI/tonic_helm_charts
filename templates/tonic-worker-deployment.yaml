@@ -34,11 +34,11 @@ spec:
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
         - name: TONIC_PROCESS_PARALLELISM
-          value: "1"
+          value: "5"
         - name: TONIC_TABLE_PARALLELISM
-          value: "1"
+          value: "5"
         - name: TONIC_WRITE_PARALLELISM
-          value: "1"
+          value: "5"
           {{- if .Values.tonicStatisticsSeed }}
         - name: TONIC_STATISTICS_SEED
           value: {{quote .Values.tonicStatisticsSeed }}
