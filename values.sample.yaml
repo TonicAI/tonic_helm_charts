@@ -13,30 +13,8 @@ environmentName: <company-name>
 # otherwise each generation will be internally consistent, but not consistent with other generations. Uncomment and set to any integer to enable.
 # tonicStatisticsSeed: <any-integer>
 
-# workers.replicas will determine the parralelism of each job that is run. It will not cause jobs to run in parralel.
-workers:
-  # replaces numberOfWorkers
-  replicas: 1
-
-  # Adjust limits/requests for the worker containers beyond defaults
-  cpuLimit: "2"
-  cpuRequest: "250m"
-  memoryLimit: "8192Mi"
-  memoryRequest: "4096Mi"
-
-# Adjust limits/requests for pii-detection container beyond defaults
-piidetection: {}
-#  cpuLimit: "1"
-#  cpuRequest: "250m"
-#  memoryLimit: "2048Mi"
-#  memoryRequest: "2048Mi"
-
-# Adjust limits/requests for webserver beyond defaults
-webserver: {}
-#  cpuLimit: "1"
-#  cpuRequest: "250m"
-#  memoryLimit: "2048Mi"
-#  memoryRequest: "2048Mi"
+# numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
+numberOfWorkers: 1
 
 # enableLogCollection will send errors and general information about generations to Tonic if true. It will not send user data.
 enableLogCollection: false
@@ -62,4 +40,13 @@ tonicVersion: latest
 #   identityProviderId: <identity-provider-id>
 #   authServerId: <auth-server-id>
 #   groupFilter: .*Tonic.*
-  
+
+# Configuration options for tonic-notifications
+# tonicSmtpConfig:
+#   tonicUrl: <tonic URL, for links>
+#   sendingAddress: <notifications@yourdomain.com>
+#   smtpServerAddress: <smtp host>
+#   smtpServerPort: <smtp port>
+#   smtpUsername: <smtp username>
+#   smtpPassword: <smtp password>
+
