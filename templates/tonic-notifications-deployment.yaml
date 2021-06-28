@@ -1,4 +1,3 @@
-{{- if .Values.tonicSmtpConfig }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,6 +33,11 @@ spec:
           value: {{ .Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
+        {{- if .Values.tonicNotificationsUrl }}
+        - name: TONIC_NOTIFICATIONS_URL
+          value: {{ .Values.tonicNotificationsUrl}}
+        {{- end}}
+        {{- if .Values.tonicSmtpConfig }}
         - name: TONIC_URL
           value: {{ .Values.tonicSmtpConfig.tonicUrl }}
         - name: TONIC_NOTIFICATION_SENDING_ADDRESS
@@ -49,6 +53,7 @@ spec:
             secretKeyRef:
               name: tonic-smtp-password
               key: password
+        {{- end}}
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
@@ -78,4 +83,3 @@ spec:
       serviceAccountName: ""
       volumes: null
 status: {}
-{{- end }}
