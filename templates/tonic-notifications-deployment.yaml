@@ -33,10 +33,6 @@ spec:
           value: {{ .Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
-        {{- if .Values.tonicNotificationsUrl }}
-        - name: TONIC_NOTIFICATIONS_URL
-          value: {{ .Values.tonicNotificationsUrl}}
-        {{- end}}
         {{- if .Values.tonicSmtpConfig }}
         - name: TONIC_URL
           value: {{ .Values.tonicSmtpConfig.tonicUrl }}
