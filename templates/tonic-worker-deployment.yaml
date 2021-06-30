@@ -52,7 +52,7 @@ spec:
         - name: TONIC_SPARK_URL
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
-          value: https://tonic-notifications:443
+          value: http://tonic-notifications:7000
         image: quay.io/tonicai/tonic_worker:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-worker

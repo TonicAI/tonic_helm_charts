@@ -64,23 +64,27 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
+        - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTP
+          value: "7000"
+        - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
+          value: "7001"
         image: quay.io/tonicai/tonic_notifications:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-notifications
         ports:
-        - containerPort: 80
-        - containerPort: 443
+        - containerPort: 7000
+        - containerPort: 7001
         resources: {}
         livenessProbe:
           httpGet:
             path: /health
-            port: 80
+            port: 7000
           initialDelaySeconds: 60
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /health
-            port: 80
+            port: 7000
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always
