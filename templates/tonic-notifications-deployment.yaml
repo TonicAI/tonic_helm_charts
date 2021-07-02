@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 {{- if .Values.tonicSmtpConfig }}
+=======
+>>>>>>> 3fcc1b5c09f483d144bbe7297e6b07dafb005058
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,6 +37,7 @@ spec:
           value: {{ .Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
+<<<<<<< HEAD
         - name: TONIC_URL
           value: {{ .Values.tonicSmtpConfig.tonicUrl }}
         - name: TONIC_NOTIFICATION_SENDING_ADDRESS
@@ -44,32 +48,79 @@ spec:
           value: {{quote .Values.tonicSmtpConfig.smtpServerPort }}
         - name: TONIC_NOTIFICATION_SMTP_USERNAME
           value: {{ .Values.tonicSmtpConfig.smtpUsername }}
+=======
+        {{- if .Values.tonicSmtpConfig.tonicUrl }}
+        - name: TONIC_URL
+          value: {{ .Values.tonicSmtpConfig.tonicUrl }}
+        {{- end}}
+        {{- if .Values.tonicSmtpConfig.sendingAddress }}
+        - name: TONIC_NOTIFICATION_SENDING_ADDRESS
+          value: {{ .Values.tonicSmtpConfig.sendingAddress }}
+        {{- end}}
+        {{- if .Values.tonicSmtpConfig.smtpServerAddress }}
+        - name: TONIC_NOTIFICATION_SMTP_SERVER_ADDRESS
+          value: {{ .Values.tonicSmtpConfig.smtpServerAddress }}
+        {{- end}}
+        {{- if .Values.tonicSmtpConfig.smtpServerPort }}
+        - name: TONIC_NOTIFICATION_SMTP_SERVER_PORT
+          value: {{quote .Values.tonicSmtpConfig.smtpServerPort }}
+        {{- end}}
+        {{- if .Values.tonicSmtpConfig.smtpUsername }}
+        - name: TONIC_NOTIFICATION_SMTP_USERNAME
+          value: {{ .Values.tonicSmtpConfig.smtpUsername }}
+        {{- end}}
+        {{- if .Values.tonicSmtpConfig.smtpPassword }}
+>>>>>>> 3fcc1b5c09f483d144bbe7297e6b07dafb005058
         - name: TONIC_NOTIFICATION_SMTP_PASSWORD
           valueFrom:
             secretKeyRef:
               name: tonic-smtp-password
               key: password
+<<<<<<< HEAD
+=======
+        {{- end}}
+>>>>>>> 3fcc1b5c09f483d144bbe7297e6b07dafb005058
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
+<<<<<<< HEAD
+=======
+        - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTP
+          value: "7000"
+        - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
+          value: "7001"
+>>>>>>> 3fcc1b5c09f483d144bbe7297e6b07dafb005058
         image: quay.io/tonicai/tonic_notifications:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-notifications
         ports:
+<<<<<<< HEAD
         - containerPort: 80
         - containerPort: 443
+=======
+        - containerPort: 7000
+        - containerPort: 7001
+>>>>>>> 3fcc1b5c09f483d144bbe7297e6b07dafb005058
         resources: {}
         livenessProbe:
           httpGet:
             path: /health
+<<<<<<< HEAD
             port: 80
+=======
+            port: 7000
+>>>>>>> 3fcc1b5c09f483d144bbe7297e6b07dafb005058
           initialDelaySeconds: 60
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /health
+<<<<<<< HEAD
             port: 80
+=======
+            port: 7000
+>>>>>>> 3fcc1b5c09f483d144bbe7297e6b07dafb005058
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always
@@ -78,4 +129,7 @@ spec:
       serviceAccountName: ""
       volumes: null
 status: {}
+<<<<<<< HEAD
 {{- end }}
+=======
+>>>>>>> 3fcc1b5c09f483d144bbe7297e6b07dafb005058

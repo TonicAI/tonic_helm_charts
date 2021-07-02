@@ -28,6 +28,9 @@ dockerConfigAuth: <docker-config-auth>
 # You can set this to a specific Tonic version number if you wish to ensure you always get the same version. Otherwise you will always deploy the latest version of Tonic.
 tonicVersion: latest
 
+# Use this to override the default url for the tonic notifications service, which is used for notifications, webhooks, and more
+# tonicNotificationsUrl: <Tonic notificans url>
+
 # Use a Tonic license to enable different enterprise features. License keys can be obtained from Tonic.
 # tonicLicense: <license-key>
 

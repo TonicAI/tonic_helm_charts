@@ -27,7 +27,7 @@ spec:
         imagePullPolicy: ""
         name: tonic-spark-helper
         ports:
-        - containerPort: 7687
+        - containerPort: 5501
         resources: {}
         livenessProbe:
           httpGet:
