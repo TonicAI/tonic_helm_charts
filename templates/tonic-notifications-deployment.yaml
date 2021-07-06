@@ -33,6 +33,7 @@ spec:
           value: {{ .Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
+        {{- if .Values.tonicSmtpConfig }}
         {{- if .Values.tonicSmtpConfig.tonicUrl }}
         - name: TONIC_URL
           value: {{ .Values.tonicSmtpConfig.tonicUrl }}
@@ -59,6 +60,7 @@ spec:
             secretKeyRef:
               name: tonic-smtp-password
               key: password
+        {{- end}}
         {{- end}}
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
