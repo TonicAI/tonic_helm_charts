@@ -82,6 +82,8 @@ spec:
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
           value: http://tonic-notifications:7000
+        - name: TONIC_PYML_URL
+          value: https://tonic-pyml-service:7700
         image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
         imagePullPolicy: ""
         name: tonic-web-server
