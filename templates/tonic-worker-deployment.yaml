@@ -54,7 +54,7 @@ spec:
         - name: TONIC_NOTIFICATIONS_URL
           value: http://tonic-notifications:7000
         image: quay.io/tonicai/tonic_worker:{{ .Values.tonicVersion }}
-        imagePullPolicy: "Always"
+        imagePullPolicy: Always
         name: tonic-worker
         ports:
         - containerPort: 80

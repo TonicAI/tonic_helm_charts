@@ -71,7 +71,7 @@ spec:
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
           value: "7001"
         image: quay.io/tonicai/tonic_notifications:{{ .Values.tonicVersion }}
-        imagePullPolicy: "Always"
+        imagePullPolicy: Always
         name: tonic-notifications
         ports:
         - containerPort: 7000

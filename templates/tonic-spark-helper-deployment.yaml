@@ -24,7 +24,7 @@ spec:
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
         image: quay.io/tonicai/tonic_spark_helper:{{ .Values.tonicVersion }}
-        imagePullPolicy: "Always"
+        imagePullPolicy: Always
         name: tonic-spark-helper
         ports:
         - containerPort: 5501
