@@ -23,7 +23,7 @@ spec:
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
         image: quay.io/tonicai/tonic_pyml_service:{{ .Values.tonicVersion }}
-        imagePullPolicy: ""
+        imagePullPolicy: Always
         name: tonic-pyml-service
         ports:
         - containerPort: 7700
