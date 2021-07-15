@@ -23,7 +23,7 @@ spec:
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
         image: quay.io/tonicai/tonic_pii_detection:{{ .Values.tonicVersion }}
-        imagePullPolicy: ""
+        imagePullPolicy: Always
         name: tonic-pii-detection
         ports:
         - containerPort: 7687
