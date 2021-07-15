@@ -53,4 +53,6 @@ tonicVersion: latest
 #   smtpUsername: <smtp username>
 #   smtpPassword: <smtp password>
 
-  
+
+# Role used by Tonic to connect to AWS Lambda. This is needed for Snowflake and Redshift integrations.
+# AwsLambdaRoleArn: arn:aws:iam::<accountId>:role/<role-name>
