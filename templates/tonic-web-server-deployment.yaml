@@ -85,7 +85,7 @@ spec:
         - name: TONIC_PYML_URL
           value: https://tonic-pyml-service:7700
         image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
-        imagePullPolicy: ""
+        imagePullPolicy: Always
         name: tonic-web-server
         ports:
         - containerPort: 80
