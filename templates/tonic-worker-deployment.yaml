@@ -53,9 +53,9 @@ spec:
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
           value: http://tonic-notifications:7000
-          {{- if .Values.AwsLambdaRoleArn }}
+          {{- if .Values.awsLambdaRoleArn }}
         - name: TONIC_LAMBDA_ROLE
-          value: {{ .Values.AwsLambdaRoleArn }}
+          value: {{ .Values.awsLambdaRoleArn }}
           {{- end }}
         image: quay.io/tonicai/tonic_worker:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
