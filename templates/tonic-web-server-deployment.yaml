@@ -82,7 +82,7 @@ spec:
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
           value: http://tonic-notifications:7000
-        image: {{ .Values.tonic.web_server.image }}:{{ .Values.tonicVersion }}
+        image: {{ .Values.tonicai.web_server.image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-web-server
         ports:

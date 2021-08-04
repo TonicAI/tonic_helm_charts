@@ -23,7 +23,7 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        image: {{ .Values.tonic.spark_helper.image }}:{{ .Values.tonicVersion }}
+        image: {{ .Values.tonicai.spark_helper.image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-spark-helper
         ports:

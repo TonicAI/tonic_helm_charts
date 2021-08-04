@@ -57,7 +57,7 @@ spec:
         - name: TONIC_LAMBDA_ROLE
           value: {{ .Values.awsLambdaRoleArn }}
           {{- end }}
-        image: {{ .Values.tonic.worker.image }}:{{ .Values.tonicVersion }}
+        image: {{ .Values.tonicai.worker.image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-worker
         ports:
