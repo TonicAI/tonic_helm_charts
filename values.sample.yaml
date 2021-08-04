@@ -25,6 +25,11 @@ enableLogCollection: false
 # This value will be provided to you by Tonic and will allow you to authenticate against our private docker repository.
 dockerConfigAuth: <docker-config-auth>
 
+# service account for tonic
+serviceAccount:
+  create: true
+  annotations: {}
+
 # You can set this to a specific Tonic version number if you wish to ensure you always get the same version. Otherwise you will always deploy the latest version of Tonic.
 tonicVersion: latest
 
@@ -44,7 +49,8 @@ tonicai:
     image: quay.io/tonicai/tonic_worker
 
 # Use a Tonic license to enable different enterprise features. License keys can be obtained from Tonic.
-# tonicLicense: <license-key>
+# tonicLicenseRaw: <license-key>
+# tonicLicenseSecret: <kubernetes-secret-with-key-tonic-license>
 
 # Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
