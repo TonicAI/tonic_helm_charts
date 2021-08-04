@@ -46,5 +46,5 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
-      serviceAccountName: ""
+      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
 {{- end }}
