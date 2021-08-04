@@ -45,6 +45,10 @@ tonicai:
     image: quay.io/tonicai/tonic_spark_helper
   web_server:
     image: quay.io/tonicai/tonic_web_server
+    annotations:
+      # This annotation is only required if you are creating an internal facing ELB. Remove this annotation to create public facing ELB.
+      service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
   worker:
     image: quay.io/tonicai/tonic_worker
 
