@@ -30,6 +30,8 @@ tonicVersion: latest
 
 # container repository with tonic images. If you don't use the default one you will have to copy images over before deployment
 tonicai:
+  env: {}
+  envRaw: {}
   notifications:
     image: quay.io/tonicai/tonic_notifications
   pii_detection:

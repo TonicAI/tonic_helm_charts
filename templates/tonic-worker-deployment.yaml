@@ -57,6 +57,15 @@ spec:
         - name: TONIC_LAMBDA_ROLE
           value: {{ .Values.awsLambdaRoleArn }}
           {{- end }}
+        {{- range $key, $value := .Values.tonicai.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.tonicai.envRaw }}
+        {{- with .Values.tonicai.envRaw }}
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
         image: {{ .Values.tonicai.worker.image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-worker
