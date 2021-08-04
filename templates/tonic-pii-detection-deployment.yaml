@@ -22,7 +22,7 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        image: quay.io/tonicai/tonic_pii_detection:{{ .Values.tonicVersion }}
+        image: {{ .Values.tonic.pii_detection.image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-pii-detection
         ports:

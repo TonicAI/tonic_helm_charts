@@ -28,6 +28,19 @@ dockerConfigAuth: <docker-config-auth>
 # You can set this to a specific Tonic version number if you wish to ensure you always get the same version. Otherwise you will always deploy the latest version of Tonic.
 tonicVersion: latest
 
+# container repository with tonic images. If you don't use the default one you will have to copy images over before deployment
+tonic:
+  notifications:
+    image: quay.io/tonicai/tonic_notifications
+  pii_detection:
+    image: quay.io/tonicai/tonic_pii_detection
+  spark_helper:
+    image: quay.io/tonicai/tonic_spark_helper
+  web_server:
+    image: quay.io/tonicai/tonic_web_server
+  worker:
+    image: quay.io/tonicai/tonic_worker
+
 # Use a Tonic license to enable different enterprise features. License keys can be obtained from Tonic.
 # tonicLicense: <license-key>
 
