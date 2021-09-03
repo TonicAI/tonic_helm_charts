@@ -19,7 +19,7 @@ spec:
       containers:
       - env:
         - name: TONIC_DB_DATABASE
-          value: {{ .Values.tonicdb.dbname }}
+          value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
           value: {{ .Values.tonicdb.user }}
         - name: TONIC_DB_PASSWORD
@@ -59,7 +59,16 @@ spec:
         - name: TONIC_LAMBDA_ROLE
           value: {{ .Values.awsLambdaRoleArn }}
           {{- end }}
-        image: quay.io/tonicai/tonic_worker:{{ .Values.tonicVersion }}
+        {{- range $key, $value := .Values.tonicai.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.tonicai.envRaw }}
+        {{- with .Values.tonicai.envRaw }}
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
+        image: {{ .Values.tonicai.worker.image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-worker
         ports:
@@ -81,6 +90,6 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
-      serviceAccountName: ""
+      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       volumes: null
 status: {}

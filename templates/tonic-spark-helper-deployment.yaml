@@ -23,7 +23,7 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        image: quay.io/tonicai/tonic_spark_helper:{{ .Values.tonicVersion }}
+        image: {{ .Values.tonicai.spark_helper.image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-spark-helper
         ports:
@@ -46,5 +46,5 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
-      serviceAccountName: ""
+      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
 {{- end }}

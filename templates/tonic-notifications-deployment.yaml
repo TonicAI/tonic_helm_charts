@@ -70,7 +70,7 @@ spec:
           value: "7000"
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
           value: "7001"
-        image: quay.io/tonicai/tonic_notifications:{{ .Values.tonicVersion }}
+        image: {{ .Values.tonicai.notifications.image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-notifications
         ports:
@@ -92,6 +92,6 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
-      serviceAccountName: ""
+      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       volumes: null
 status: {}
