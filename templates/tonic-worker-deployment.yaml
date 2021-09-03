@@ -59,16 +59,26 @@ spec:
         - name: TONIC_LAMBDA_ROLE
           value: {{ .Values.awsLambdaRoleArn }}
           {{- end }}
+        {{- if .Values.tonicai }}
+        {{- if .Values.tonicai.worker }}
+        {{- if .Values.tonicai.worker.env}}
         {{- range $key, $value := .Values.tonicai.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
         {{- end }}
-        {{- if .Values.tonicai.envRaw }}
-        {{- with .Values.tonicai.envRaw }}
+        {{- if .Values.tonicai.worker.envRaw }}
+        {{- with .Values.tonicai.worker.envRaw }}
             {{- toYaml . | nindent 12 }}
         {{- end }}
         {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- if  ((.Values.tonicai).worker).image }}
         image: {{ .Values.tonicai.worker.image }}:{{ .Values.tonicVersion }}
+        {{ else }}
+        image: quay.io/tonicai/tonic_worker:{{ .Values.tonicVersion }}
+        {{- end }}
         imagePullPolicy: Always
         name: tonic-worker
         ports:

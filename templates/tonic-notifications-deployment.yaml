@@ -70,7 +70,11 @@ spec:
           value: "7000"
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
           value: "7001"
+        {{- if  ((.Values.tonicai).notifications).image }}
         image: {{ .Values.tonicai.notifications.image }}:{{ .Values.tonicVersion }}
+        {{ else }}
+        image: quay.io/tonicai/tonic_notifications:{{ .Values.tonicVersion }}
+        {{- end }}
         imagePullPolicy: Always
         name: tonic-notifications
         ports:

@@ -19,9 +19,6 @@ numberOfWorkers: 1
 # enableLogCollection will send errors and general information about generations to Tonic if true. It will not send user data.
 enableLogCollection: false
 
-# enableSparkSupport will install the necessary additional components to allow Tonic to connect to your Spark instance
-# enableSparkSupport: true
-
 # This value will be provided to you by Tonic and will allow you to authenticate against our private docker repository.
 dockerConfigAuth: <docker-config-auth>
 
@@ -35,14 +32,6 @@ tonicVersion: latest
 
 # container repository with tonic images. If you don't use the default one you will have to copy images over before deployment
 tonicai:
-  env: {}
-  envRaw: {}
-  notifications:
-    image: quay.io/tonicai/tonic_notifications
-  pii_detection:
-    image: quay.io/tonicai/tonic_pii_detection
-  spark_helper:
-    image: quay.io/tonicai/tonic_spark_helper
   web_server:
     image: quay.io/tonicai/tonic_web_server
     annotations:
@@ -51,10 +40,17 @@ tonicai:
       service.beta.kubernetes.io/azure-load-balancer-internal: "true"
   worker:
     image: quay.io/tonicai/tonic_worker
+    env: {}
+    envRaw: {}
+  notifications:
+    image: quay.io/tonicai/tonic_notifications
+  pii_detection:
+    image: quay.io/tonicai/tonic_pii_detection
+  pyml_service:
+    image: quay.io/tonicai/tonic_pyml_service
 
 # Use a Tonic license to enable different enterprise features. License keys can be obtained from Tonic.
-# tonicLicenseRaw: <license-key>
-# tonicLicenseSecret: <kubernetes-secret-with-key-tonic-license>
+# tonicLicense: <license-key>
 
 # Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:

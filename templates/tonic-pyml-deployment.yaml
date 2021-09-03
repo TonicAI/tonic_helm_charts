@@ -22,7 +22,11 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
+        {{- if  ((.Values.tonicai).pyml_service).image }}
+        image: {{ .Values.tonicai.pyml_service.image }}:{{ .Values.tonicVersion }}
+        {{ else }}
         image: quay.io/tonicai/tonic_pyml_service:{{ .Values.tonicVersion }}
+        {{- end }}
         imagePullPolicy: Always
         name: tonic-pyml-service
         ports:

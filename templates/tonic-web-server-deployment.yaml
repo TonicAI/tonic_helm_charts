@@ -45,10 +45,10 @@ spec:
         - name: TONIC_LICENSE
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.tonicLicenseSecret }}
-              key: tonic-license
+              name: tonic-license-secret
+              key: license
           {{- end }}
-          {{- if .Values.tonicLicenseRaw }}
+          {{- if .Values.tonicLicense }}
         - name: TONIC_LICENSE
           value: {{quote .Values.tonicLicenseRaw }}
           {{- end }}
@@ -91,7 +91,11 @@ spec:
           value: http://tonic-notifications:7000
         - name: TONIC_PYML_URL
           value: https://tonic-pyml-service:7700
+        {{- if  ((.Values.tonicai).web_server).image }}
         image: {{ .Values.tonicai.web_server.image }}:{{ .Values.tonicVersion }}
+        {{ else }}
+        image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
+        {{- end }}
         imagePullPolicy: Always
         name: tonic-web-server
         ports:
