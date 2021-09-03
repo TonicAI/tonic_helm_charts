@@ -22,7 +22,7 @@ enableLogCollection: false
 # This value will be provided to you by Tonic and will allow you to authenticate against our private docker repository.
 dockerConfigAuth: <docker-config-auth>
 
-# service account for tonic
+# Service account for tonic
 serviceAccount:
   create: true
   annotations: {}
@@ -30,7 +30,7 @@ serviceAccount:
 # You can set this to a specific Tonic version number if you wish to ensure you always get the same version. Otherwise you will always deploy the latest version of Tonic.
 tonicVersion: latest
 
-# container repository with tonic images. If you don't use the default one you will have to copy images over before deployment
+# Container repository with tonic images. If you don't use the default one you will have to copy images over before deployment
 tonicai:
   web_server:
     image: quay.io/tonicai/tonic_web_server
@@ -48,6 +48,10 @@ tonicai:
     image: quay.io/tonicai/tonic_pii_detection
   pyml_service:
     image: quay.io/tonicai/tonic_pyml_service
+# Uncomment for Oracle Support. Valid versions are 19 and 11_2.
+# oracle_helper:
+#   image: quay.io/tonicai/tonic_oracle_helper
+#   version: 19
 
 # Use a Tonic license to enable different enterprise features. License keys can be obtained from Tonic.
 # tonicLicense: <license-key>
