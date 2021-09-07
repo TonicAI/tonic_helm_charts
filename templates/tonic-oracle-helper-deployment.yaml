@@ -27,7 +27,7 @@ spec:
         {{- if  ((.Values.tonicai).oracle_helper).image }}
         image: {{ .Values.tonicai.oracle_helper.image }}_{{ .Values.tonicai.oracle_helper.version }}:{{ .Values.tonicVersion }}
         {{ else }}
-        image: quay.io/tonicai/tonic_worker_{{ .Values.tonicai.oracle_helper.version }}:{{ .Values.tonicVersion }}
+        image: quay.io/tonicai/tonic_oracle_helper_{{ .Values.tonicai.oracle_helper.version }}:{{ .Values.tonicVersion }}
         {{- end }}
         imagePullPolicy: Always
         name: tonic-oracle-helper
