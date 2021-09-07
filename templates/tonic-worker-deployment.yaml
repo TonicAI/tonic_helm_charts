@@ -52,9 +52,15 @@ spec:
         - name: TONIC_SPARK_URL
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
-          value: http://tonic-notifications:7000
+          value: https://tonic-notifications:7001
         - name: TONIC_PYML_URL
           value: https://tonic-pyml-service:7700
+          {{- if .Values.tonicai }}
+          {{- if .Values.tonicai.oracle_helper }}
+        - name: TONIC_ORACLE_HELPER_URL
+          value: https://tonic-oracle-helper:5001
+          {{- end }}
+          {{- end }}
           {{- if .Values.awsLambdaRoleArn }}
         - name: TONIC_LAMBDA_ROLE
           value: {{ .Values.awsLambdaRoleArn }}
