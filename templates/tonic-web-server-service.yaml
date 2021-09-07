@@ -3,14 +3,15 @@ kind: Service
 metadata:
   name: tonic-web-server
   namespace: {{ .Release.Namespace }}
-{{- if .Values.tonicai }}
-{{- if .Values.tonicai.web_server }}
-{{- if .Values.tonicai.web_server.annotations }}
+{{- if  ((.Values.tonicai).web_server).annotations }}
   annotations:
     {{- toYaml .Values.tonicai.web_server.annotations | nindent 4 }}
+{{- else }}
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 {{- end }}
-{{- end }}
-{{- end }}
+
   labels:
     app: tonic-web-server
 spec:

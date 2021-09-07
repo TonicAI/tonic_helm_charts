@@ -4,12 +4,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.21.0 (992df58d8)
-  creationTimestamp: null
   labels:
-    io.kompose.service: tonic-oracle-helper
+    app: tonic-oracle-helper
   name: tonic-oracle-helper
   namespace: {{ .Release.Namespace }}
 spec:
@@ -21,7 +17,7 @@ spec:
     port: 5001
     targetPort: 5001
   selector:
-    io.kompose.service: tonic-oracle-helper
+    app: tonic-oracle-helper
 status:
   loadBalancer: {}
 {{- end }}
