@@ -44,7 +44,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /health
-            port: 5001
+            port: 5000
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always
