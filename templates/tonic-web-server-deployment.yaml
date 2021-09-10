@@ -18,12 +18,12 @@ spec:
     spec:
       containers:
       - env:
-        {{- range $key, $value := .Values.tonicai.env }}
+        {{- range $key, $value := .Values.tonicai.web_server.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
         {{- end }}
-        {{- if .Values.tonicai.envRaw }}
-        {{- with .Values.tonicai.envRaw }}
+        {{- if .Values.tonicai.web_server.envRaw }}
+        {{- with .Values.tonicai.web_server.envRaw }}
             {{- toYaml . | nindent 12 }}
         {{- end }}
         {{- end }}
