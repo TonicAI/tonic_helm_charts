@@ -18,6 +18,15 @@ spec:
     spec:
       containers:
       - env:
+        {{- range $key, $value := .Values.tonicai.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.tonicai.envRaw }}
+        {{- with .Values.tonicai.envRaw }}
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbname }}
         - name: TONIC_DB_USERNAME
