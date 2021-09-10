@@ -68,7 +68,7 @@ spec:
         {{- if .Values.tonicai }}
         {{- if .Values.tonicai.worker }}
         {{- if .Values.tonicai.worker.env}}
-        {{- range $key, $value := .Values.tonicai.env }}
+        {{- range $key, $value := .Values.tonicai.worker.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
         {{- end }}
