@@ -41,16 +41,12 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-          {{- if .Values.tonicLicenseSecret }}
+          {{- if .Values.tonicLicense }}
         - name: TONIC_LICENSE
           valueFrom:
             secretKeyRef:
               name: tonic-license-secret
               key: license
-          {{- end }}
-          {{- if .Values.tonicLicense }}
-        - name: TONIC_LICENSE
-          value: {{quote .Values.tonicLicenseRaw }}
           {{- end }}
           {{- if .Values.tonicSsoConfig }}
           {{- if .Values.tonicSsoConfig.provider }}
