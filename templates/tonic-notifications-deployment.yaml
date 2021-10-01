@@ -38,7 +38,6 @@ spec:
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
 <<<<<<< HEAD
-<<<<<<< HEAD
         - name: TONIC_URL
           value: {{ .Values.tonicSmtpConfig.tonicUrl }}
         - name: TONIC_NOTIFICATION_SENDING_ADDRESS
@@ -50,9 +49,6 @@ spec:
         - name: TONIC_NOTIFICATION_SMTP_USERNAME
           value: {{ .Values.tonicSmtpConfig.smtpUsername }}
 =======
-=======
-        {{- if .Values.tonicSmtpConfig }}
->>>>>>> 4638251065d405db8df0cff3e92b82431258ba13
         {{- if .Values.tonicSmtpConfig.tonicUrl }}
         - name: TONIC_URL
           value: {{ .Values.tonicSmtpConfig.tonicUrl }}
@@ -83,11 +79,7 @@ spec:
 <<<<<<< HEAD
 =======
         {{- end}}
-<<<<<<< HEAD
 >>>>>>> 3fcc1b5c09f483d144bbe7297e6b07dafb005058
-=======
-        {{- end}}
->>>>>>> 4638251065d405db8df0cff3e92b82431258ba13
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
@@ -98,16 +90,9 @@ spec:
           value: "7000"
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
           value: "7001"
-<<<<<<< HEAD
 >>>>>>> 3fcc1b5c09f483d144bbe7297e6b07dafb005058
-=======
-        {{- if  ((.Values.tonicai).notifications).image }}
-        image: {{ .Values.tonicai.notifications.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
->>>>>>> 4638251065d405db8df0cff3e92b82431258ba13
         image: quay.io/tonicai/tonic_notifications:{{ .Values.tonicVersion }}
-        {{- end }}
-        imagePullPolicy: Always
+        imagePullPolicy: ""
         name: tonic-notifications
         ports:
 <<<<<<< HEAD
@@ -141,7 +126,7 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
-      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
+      serviceAccountName: ""
       volumes: null
 status: {}
 <<<<<<< HEAD
