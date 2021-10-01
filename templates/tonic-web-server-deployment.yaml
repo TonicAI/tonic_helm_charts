@@ -43,7 +43,10 @@ spec:
           value: {{ .Values.environmentName }}
           {{- if .Values.tonicLicense }}
         - name: TONIC_LICENSE
-          value: {{quote .Values.tonicLicense }}
+          valueFrom:
+            secretKeyRef:
+              name: tonic-license-secret
+              key: license
           {{- end }}
           {{- if .Values.tonicSsoConfig }}
           {{- if .Values.tonicSsoConfig.provider }}
@@ -82,8 +85,14 @@ spec:
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
           value: http://tonic-notifications:7000
+        - name: TONIC_PYML_URL
+          value: https://tonic-pyml-service:7700
+        {{- if  ((.Values.tonicai).web_server).image }}
+        image: {{ .Values.tonicai.web_server.image }}:{{ .Values.tonicVersion }}
+        {{ else }}
         image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
-        imagePullPolicy: ""
+        {{- end }}
+        imagePullPolicy: Always
         name: tonic-web-server
         ports:
         - containerPort: 80
@@ -108,7 +117,7 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always
-      serviceAccountName: ""
+      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       volumes: null

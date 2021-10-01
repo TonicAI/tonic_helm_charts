@@ -1,0 +1,58 @@
+{{- if .Values.tonicai }}
+{{- if .Values.tonicai.oracle_helper }}
+{{- if .Values.tonicai.oracle_helper.version }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tonic-oracle-helper
+  name: tonic-oracle-helper
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: tonic-oracle-helper
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: tonic-oracle-helper
+    spec:
+      containers:
+      - env:
+        - name: ENABLE_LOG_COLLECTION
+          value: {{quote .Values.enableLogCollection }}
+        - name: ENVIRONMENT_NAME
+          value: {{ .Values.environmentName }}
+        {{- if  ((.Values.tonicai).oracle_helper).image }}
+        image: {{ .Values.tonicai.oracle_helper.image }}_{{ .Values.tonicai.oracle_helper.version }}:{{ .Values.tonicVersion }}
+        {{ else }}
+        image: quay.io/tonicai/tonic_oracle_helper_{{ .Values.tonicai.oracle_helper.version }}:{{ .Values.tonicVersion }}
+        {{- end }}
+        imagePullPolicy: Always
+        name: tonic-oracle-helper
+        ports:
+        - containerPort: 5000
+        - containerPort: 5001
+        resources: {}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: tonicai-build-writer-pull-secret
+      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
+      volumes: null
+status: {}
+{{- end }}
+{{- end }}
+{{- end }}
