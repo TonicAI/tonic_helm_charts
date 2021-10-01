@@ -50,3 +50,18 @@ Selector labels
 app.kubernetes.io/name: {{ include "tonic.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "tonic.serviceAccountName" -}}
+{{- if .Values.serviceAccount }}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "tonic.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- else -}}
+    {{ "" }}
+{{- end -}}
+{{- end }}
