@@ -1,0 +1,17 @@
+{{- if .Values.enableSparkSupport }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: tonic-spark-helper
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: tonic-spark-helper
+spec:
+  ports:
+  - port: 5501
+    targetPort: 5501
+  selector:
+    app: tonic-spark-helper
+status:
+  loadBalancer: {}
+{{- end }}

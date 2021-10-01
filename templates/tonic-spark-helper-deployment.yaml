@@ -1,20 +1,21 @@
+{{- if .Values.enableSparkSupport }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tonic-pyml-service
+  name: tonic-spark-helper
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tonic-pyml-service
+    app: tonic-spark-helper
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tonic-pyml-service
+      app: tonic-spark-helper
   strategy: {}
   template:
     metadata:
       labels:
-        app: tonic-pyml-service
+        app: tonic-spark-helper
     spec:
       containers:
       - env:
@@ -22,27 +23,23 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        {{- if  ((.Values.tonicai).pyml_service).image }}
-        image: {{ .Values.tonicai.pyml_service.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
-        image: quay.io/tonicai/tonic_pyml_service:{{ .Values.tonicVersion }}
-        {{- end }}
-        imagePullPolicy: Always
-        name: tonic-pyml-service
+        image: quay.io/tonicai/tonic_spark_helper:{{ .Values.tonicVersion }}
+        imagePullPolicy: ""
+        name: tonic-spark-helper
         ports:
-        - containerPort: 7700
+        - containerPort: 5501
         resources: {}
         livenessProbe:
           httpGet:
             path: /health
-            port: 7700
+            port: 5501
             scheme: HTTPS
           initialDelaySeconds: 60
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /health
-            port: 7700
+            port: 5501
             scheme: HTTPS
           initialDelaySeconds: 10
           periodSeconds: 10
@@ -50,3 +47,4 @@ spec:
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: ""
+{{- end }}

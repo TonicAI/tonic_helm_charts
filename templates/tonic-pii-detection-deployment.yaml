@@ -22,12 +22,8 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        {{- if  ((.Values.tonicai).pii_detection).image }}
-        image: {{ .Values.tonicai.pii_detection.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
         image: quay.io/tonicai/tonic_pii_detection:{{ .Values.tonicVersion }}
-        {{- end }}
-        imagePullPolicy: Always
+        imagePullPolicy: ""
         name: tonic-pii-detection
         ports:
         - containerPort: 7687
@@ -55,4 +51,4 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
-      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
+      serviceAccountName: ""
