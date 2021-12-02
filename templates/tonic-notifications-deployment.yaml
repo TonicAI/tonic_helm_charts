@@ -87,7 +87,7 @@ spec:
         livenessProbe:
           exec:
             command:
-            - /bin/bash
+            - /bin/ash
             - -c
             - ps -ef | grep Allos.Notifications.dll | grep -v grep
           initialDelaySeconds: 10
@@ -95,7 +95,7 @@ spec:
         readinessProbe:
           exec:
             command:
-            - /bin/bash
+            - /bin/ash
             - -c
             - ps -ef | grep Allos.Notifications.dll | grep -v grep
           initialDelaySeconds: 10
