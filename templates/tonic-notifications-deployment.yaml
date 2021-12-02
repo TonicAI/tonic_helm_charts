@@ -85,15 +85,19 @@ spec:
         - containerPort: 7001
         resources: {}
         livenessProbe:
-          httpGet:
-            path: /health
-            port: 7000
-          initialDelaySeconds: 60
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep Allos.Notifications.dll | grep -v grep
+          initialDelaySeconds: 10
           periodSeconds: 10
         readinessProbe:
-          httpGet:
-            path: /health
-            port: 7000
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep Allos.Notifications.dll | grep -v grep
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always
