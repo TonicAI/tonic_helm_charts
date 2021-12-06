@@ -80,6 +80,10 @@ spec:
         - name: TONIC_SSO_GROUP_FILTER_REGEX
           value: {{quote .Values.tonicSsoConfig.groupFilter }}
           {{- end }}
+          {{- if .Values.tonicSsoConfig.samlIdpMetadata }}
+        - name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
+          value: {{quote .Values.tonicSsoConfig.samlIdpMetadata }}
+          {{- end }}
           {{- end }}
         - name: TONIC_SPARK_URL
           value: https://tonic-spark-helper:5501
