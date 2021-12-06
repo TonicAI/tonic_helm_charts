@@ -31,7 +31,9 @@ spec:
         name: tonic-pyml-service
         ports:
         - containerPort: 7700
-        resources: {}
+        resources:
+          limits:
+            memory: "1Gi"
         livenessProbe:
           httpGet:
             path: /health
@@ -50,6 +52,3 @@ spec:
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: ""
-      resources:
-        limits:
-          memory: "1Gi"

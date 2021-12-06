@@ -97,7 +97,9 @@ spec:
         ports:
         - containerPort: 80
         - containerPort: 443
-        resources: {}
+        resources:
+          limits:
+            memory: "1Gi"
         livenessProbe:
           httpGet:
             path: /health
@@ -115,7 +117,4 @@ spec:
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       volumes: null
-      resources:
-        limits:
-          memory: "1Gi"
 status: {}

@@ -83,7 +83,6 @@ spec:
         ports:
         - containerPort: 7000
         - containerPort: 7001
-        resources: {}
         livenessProbe:
           exec:
             command:
