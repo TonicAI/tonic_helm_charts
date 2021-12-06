@@ -31,7 +31,9 @@ spec:
         name: tonic-pii-detection
         ports:
         - containerPort: 7687
-        resources: {}
+        resources:
+          limits:
+            memory: "512Mi"
         livenessProbe:
           httpGet:
             path: /health
@@ -50,6 +52,3 @@ spec:
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
-      resources:
-        limits:
-          memory: "512Mi"

@@ -90,7 +90,9 @@ spec:
         ports:
         - containerPort: 80
         - containerPort: 443
-        resources: {}
+        resources:
+          limits:
+            memory: "12Gi"
         livenessProbe:
           exec:
             command:
@@ -111,7 +113,4 @@ spec:
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
-      resources:
-        limits:
-          memory: "12Gi"
 status: {}
