@@ -24,6 +24,10 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
+        {{- if  ((.Values.tonicai).oracle_helper).lang }}
+        - name: NLS_LANG
+          value: {{ .Values.tonicai.oracle_helper.lang }}
+        {{- end }}
         {{- if  ((.Values.tonicai).oracle_helper).image }}
         image: {{ .Values.tonicai.oracle_helper.image }}_{{ .Values.tonicai.oracle_helper.version }}:{{ .Values.tonicVersion }}
         {{ else }}
