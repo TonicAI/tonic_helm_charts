@@ -52,6 +52,7 @@ tonicai:
 # oracle_helper:
 #   image: quay.io/tonicai/tonic_oracle_helper
 #   version: "19"
+#   lang: "AMERICAN_AMERICA.AL32UTF8"
 
 # Use a Tonic license to enable different features. License keys can be obtained from Tonic.
 tonicLicense: <license-key>
