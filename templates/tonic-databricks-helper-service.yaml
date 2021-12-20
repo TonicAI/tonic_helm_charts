@@ -1,0 +1,20 @@
+{{- if .Values.tonicai }}
+{{- if .Values.tonicai.databricks_helper }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: tonic-databricks-helper
+  name: tonic-databricks-helper
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - name: "5001"
+    port: 5501
+    targetPort: 5501
+  selector:
+    app: tonic-databricks-helper
+status:
+  loadBalancer: {}
+{{- end }}
+{{- end }}

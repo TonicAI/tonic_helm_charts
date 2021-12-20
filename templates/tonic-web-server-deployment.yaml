@@ -91,6 +91,12 @@ spec:
           value: http://tonic-notifications:7000
         - name: TONIC_PYML_URL
           value: https://tonic-pyml-service:7700
+          {{- if .Values.tonicai }}
+          {{- if .Values.tonicai.databricks_helper }}
+        - name: TONIC_DATABRICKS_HELPER_URL
+          value: https://tonic-databricks-helper:5501
+          {{- end }}
+          {{- end }}
         {{- if  ((.Values.tonicai).web_server).image }}
         image: {{ .Values.tonicai.web_server.image }}:{{ .Values.tonicVersion }}
         {{ else }}
@@ -105,15 +111,19 @@ spec:
           limits:
             memory: "1Gi"
         livenessProbe:
-          httpGet:
-            path: /health
-            port: 80
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - ps -ef | grep Allos.Api.dll | grep -v grep
           initialDelaySeconds: 60
           periodSeconds: 5
         readinessProbe:
-          httpGet:
-            path: /health
-            port: 80
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - ps -ef | grep Allos.Api.dll | grep -v grep
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always

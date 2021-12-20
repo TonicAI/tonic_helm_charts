@@ -49,9 +49,12 @@ tonicai:
   pyml_service:
     image: quay.io/tonicai/tonic_pyml_service
 # Uncomment for Oracle Support. Valid versions are "19", "12_2", and "11_2".
-# oracle_helper:
-#   image: quay.io/tonicai/tonic_oracle_helper
-#   version: "19"
+#   oracle_helper:
+#     image: quay.io/tonicai/tonic_oracle_helper
+#     version: "19"
+# Uncomment for Databricks Support.
+#   databricks_helper:
+#     image: quay.io/tonicai/tonic_databricks_helper
 
 # Use a Tonic license to enable different features. License keys can be obtained from Tonic.
 tonicLicense: <license-key>

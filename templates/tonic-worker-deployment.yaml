@@ -60,6 +60,10 @@ spec:
         - name: TONIC_ORACLE_HELPER_URL
           value: https://tonic-oracle-helper:5001
           {{- end }}
+          {{- if .Values.tonicai.databricks_helper }}
+        - name: TONIC_DATABRICKS_HELPER_URL
+          value: https://tonic-databricks-helper:5501
+          {{- end }}
           {{- end }}
           {{- if .Values.awsLambdaRoleArn }}
         - name: TONIC_LAMBDA_ROLE
@@ -96,7 +100,7 @@ spec:
         livenessProbe:
           exec:
             command:
-            - /bin/bash
+            - /bin/sh
             - -c
             - ps -ef | grep Allos.Console.dll | grep -v grep
           initialDelaySeconds: 10
@@ -104,7 +108,7 @@ spec:
         readinessProbe:
           exec:
             command:
-            - /bin/bash
+            - /bin/sh
             - -c
             - ps -ef | grep Allos.Console.dll | grep -v grep
           initialDelaySeconds: 10

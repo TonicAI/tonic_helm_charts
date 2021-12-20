@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tonic-databricks-helper
+  name: tonic-databricks-helper
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tonic-databricks-helper
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: tonic-databricks-helper
+    spec:
+      containers:
+      - env:
+        - name: ENABLE_LOG_COLLECTION
+          value: {{quote .Values.enableLogCollection }}
+        - name: ENVIRONMENT_NAME
+          value: {{ .Values.environmentName }}
+        {{- if  ((.Values.tonicai).databricks_helper).image }}
+        image: {{ .Values.tonicai.databricks_helper.image }}:{{ .Values.tonicVersion }}
+        {{ else }}
+        image: quay.io/tonicai/tonic_databricks_helper:{{ .Values.tonicVersion }}
+        {{- end }}
+        imagePullPolicy: Always
+        name: tonic-databricks-helper
+        resources:
+          limits:
+            memory: "1Gi"
+        ports:
+        - containerPort: 5501
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - ps -ef | grep Allos.DatabricksHelper.dll | grep -v grep
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - ps -ef | grep Allos.DatabricksHelper.dll | grep -v grep
+          initialDelaySeconds: 10
+          periodSeconds: 10
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: tonicai-build-writer-pull-secret
+      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
+      volumes: null
+status: {}
