@@ -52,6 +52,7 @@ tonicai:
 #   oracle_helper:
 #     image: quay.io/tonicai/tonic_oracle_helper
 #     version: "19"
+#     lang: "AMERICAN_AMERICA.AL32UTF8"
 # Uncomment for Databricks Support.
 #   databricks_helper:
 #     image: quay.io/tonicai/tonic_databricks_helper
