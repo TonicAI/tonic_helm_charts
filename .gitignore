@@ -19,4 +19,5 @@ Session.vim
 .netrwhist
 **/charts/*.tgz
 .history
-values.yaml
+values-local.yaml
+values-staging.yaml
