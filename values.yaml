@@ -8,30 +8,18 @@
 enableLogCollection: true
 environmentName: themotleyfool
 piidetection: {}
-#tonicLicense: # set via deploy.sh (from env var)
-tonicSsoConfig:
-  #clientId: # set via deploy.sh (from env var)
-  domain: fool.okta.com
-  groupFilter: .*Tonic.*
-  provider: Okta
 tonicStatisticsSeed: 100
+#tonicLicense: # set via deploy.sh (from env var)
 # tonicVersion: # set via deploy.sh (from env var)
-tonicdb:
-  dbName: tonic_ai
-  host: db.staging.tonic-ai.fool.com
-  #password: # set via deploy.sh (from env var)
-  port: 51030
-  sslMode: None
-  #user: # set via deploy.sh (from env var)
 webserver: {}
 workers:
   cpuLimit: "2"
   cpuRequest: 250m
   memoryLimit: 4096Mi
   memoryRequest: 4096Mi
-  replicas: 3
+  replicas: 1
 tonicSmtpConfig:
-  tonicUrl : https://tonic.eq-prod.fool.com
+#   tonicUrl : https://tonic.eq-prod.fool.com
   smtpServerAddress: smtp.foolhq.com
   sendingAddress: SiteOps@fool.com
   smtpServerPort: 25

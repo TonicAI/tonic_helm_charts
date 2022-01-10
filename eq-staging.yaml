@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Config
+clusters:
+- name: "eq-staging"
+  cluster:
+    server: "https://rancher.foolhq.com/k8s/clusters/c-p762x"
+- name: "eq-staging-fqdn"
+  cluster:
+    server: "https://eq-staging-k8s.foolhq.com"
+
+users:
+- name: "eq-staging"
+  user:
+    token: "kubeconfig-u-7cljlduxmd.c-p762x:dl9kfcjtntjf4nxk7h4n6rwhv8bwp4ssrkst9bhxr5nqp7mgjhrpq6"
+
+
+contexts:
+- name: "eq-staging"
+  context:
+    user: "eq-staging"
+    cluster: "eq-staging"
+- name: "eq-staging-fqdn"
+  context:
+    user: "eq-staging"
+    cluster: "eq-staging-fqdn"
+
+current-context: "eq-staging"
+

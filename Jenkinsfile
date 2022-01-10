@@ -13,6 +13,8 @@ node(label: 'linux') {
           [string(credentialsId: 'TONIC_LICENSE', variable: 'TONIC_LICENSE'),
            string(credentialsId: 'TONIC_DB_USER', variable: 'TONIC_DB_USER'),
            string(credentialsId: 'TONIC_DB_PASSWORD', variable: 'TONIC_DB_PASSWORD'),
+           string(credentialsId: 'TONIC_DB_USER_STAGING', variable: 'TONIC_DB_USER_STAGING'),
+           string(credentialsId: 'TONIC_DB_PASSWORD_STAGING', variable: 'TONIC_DB_PASSWORD_STAGING'),
            string(credentialsId: 'TONIC_SMTP_PASSWORD', variable: 'TONIC_SMTP_PASSWORD'),
            string(credentialsId: 'TONIC_DOCKER_AUTH', variable: 'TONIC_DOCKER_AUTH'),
            string(credentialsId: 'TONIC_SSO_CLIENT_ID', variable: 'TONIC_SSO_CLIENT_ID')]) {
