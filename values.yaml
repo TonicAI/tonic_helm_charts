@@ -12,12 +12,6 @@ tonicStatisticsSeed: 100
 #tonicLicense: # set via deploy.sh (from env var)
 # tonicVersion: # set via deploy.sh (from env var)
 webserver: {}
-workers:
-  cpuLimit: "2"
-  cpuRequest: 250m
-  memoryLimit: 4096Mi
-  memoryRequest: 4096Mi
-  replicas: 1
 tonicSmtpConfig:
 #   tonicUrl : https://tonic.eq-prod.fool.com
   smtpServerAddress: smtp.foolhq.com

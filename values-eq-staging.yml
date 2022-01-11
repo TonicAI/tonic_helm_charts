@@ -4,6 +4,12 @@ tonicdb:
   port: 5432
   sslMode: None
   user: postgres
+workers:
+  cpuLimit: "2"
+  cpuRequest: 250m
+  memoryLimit: 4096Mi
+  memoryRequest: 4096Mi
+  replicas: 1
 tonicSmtpConfig:
   tonicUrl : https://tonic-staging.eq-staging.fool.com
 
