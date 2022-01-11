@@ -19,7 +19,6 @@ kubectl get ns ${NAMESPACE} || kubectl create ns ${NAMESPACE}
 helm3 upgrade tonic . \
     --install \
     --namespace ${NAMESPACE} \
-    --dry-run \
     --values "values.yaml" \
     --values "values-${deployTargetKey}.yml" \
     --set tonicVersion="$VERSION" \
