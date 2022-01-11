@@ -1,0 +1,9 @@
+tonicdb:
+  dbName: postgres
+  host: tonic-staging.chplyicmkvvp.us-east-1.rds.amazonaws.com
+  port: 5432
+  sslMode: None
+  user: postgres
+tonicSmtpConfig:
+  tonicUrl : https://tonic-staging.eq-staging.fool.com
+
