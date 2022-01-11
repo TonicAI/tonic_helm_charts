@@ -19,7 +19,7 @@ spec:
       containers:
       - env:
         - name: TONIC_DB_DATABASE
-          value: {{ .Values.tonicdb.dbname }}
+          value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
           value: {{ .Values.tonicdb.user }}
         - name: TONIC_DB_PASSWORD
@@ -77,6 +77,10 @@ spec:
         - name: TONIC_SSO_GROUP_FILTER_REGEX
           value: {{quote .Values.tonicSsoConfig.groupFilter }}
           {{- end }}
+          {{- if .Values.tonicSsoConfig.samlIdpMetadata }}
+        - name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
+          value: {{quote .Values.tonicSsoConfig.samlIdpMetadata }}
+          {{- end }}
           {{- end }}
         - name: TONIC_SPARK_URL
           value: https://tonic-spark-helper:5501
@@ -90,11 +94,7 @@ spec:
         - containerPort: 443
         resources:
           limits:
-            cpu: {{ .Values.webserver.cpuLimit | default "1" | quote }}
-            memory: {{ .Values.webserver.memoryLimit | default "2048Mi" | quote }}
-          requests:
-            cpu: {{ .Values.webserver.cpuRequest | default "250m" | quote }}
-            memory: {{ .Values.webserver.memoryRequest |default "2048Mi" | quote }}
+            memory: "1Gi"
         livenessProbe:
           httpGet:
             path: /health

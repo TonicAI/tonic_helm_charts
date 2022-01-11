@@ -6,7 +6,7 @@ metadata:
   name: tonic-worker
   namespace: {{ .Release.Namespace }}
 spec:
-  replicas: {{ .Values.workers.replicas }}
+  replicas: {{ .Values.numberOfWorkers }}
   selector:
     matchLabels:
       app: tonic-worker
@@ -19,7 +19,7 @@ spec:
       containers:
       - env:
         - name: TONIC_DB_DATABASE
-          value: {{ .Values.tonicdb.dbname }}
+          value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
           value: {{ .Values.tonicdb.user }}
         - name: TONIC_DB_PASSWORD
@@ -52,35 +52,65 @@ spec:
         - name: TONIC_SPARK_URL
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
-          value: http://tonic-notifications:7000
+          value: https://tonic-notifications:7001
+        - name: TONIC_PYML_URL
+          value: https://tonic-pyml-service:7700
+          {{- if .Values.tonicai }}
+          {{- if .Values.tonicai.oracle_helper }}
+        - name: TONIC_ORACLE_HELPER_URL
+          value: https://tonic-oracle-helper:5001
+          {{- end }}
+          {{- end }}
+          {{- if .Values.awsLambdaRoleArn }}
+        - name: TONIC_LAMBDA_ROLE
+          value: {{ .Values.awsLambdaRoleArn }}
+          {{- end }}
+        {{- if .Values.tonicai }}
+        {{- if .Values.tonicai.worker }}
+        {{- if .Values.tonicai.worker.env}}
+        {{- range $key, $value := .Values.tonicai.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.tonicai.worker.envRaw }}
+        {{- with .Values.tonicai.worker.envRaw }}
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- if  ((.Values.tonicai).worker).image }}
+        image: {{ .Values.tonicai.worker.image }}:{{ .Values.tonicVersion }}
+        {{ else }}
         image: quay.io/tonicai/tonic_worker:{{ .Values.tonicVersion }}
-        imagePullPolicy: ""
+        {{- end }}
+        imagePullPolicy: Always
         name: tonic-worker
         ports:
         - containerPort: 80
         - containerPort: 443
         resources:
           limits:
-            cpu: {{ .Values.workers.cpuLimit | default "1" | quote }}
-            memory: {{ .Values.workers.memoryLimit | default "4096Mi" | quote }}
-          requests:
-            cpu: {{ .Values.workers.cpuRequest | default "250m" | quote }}
-            memory: {{ .Values.workers.memoryRequest |default "2048Mi" | quote }}
+            memory: "12Gi"
         livenessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 60
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep Allos.Console.dll | grep -v grep
+          initialDelaySeconds: 10
           periodSeconds: 10
         readinessProbe:
-          httpGet:
-            path: /health
-            port: 80
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep Allos.Console.dll | grep -v grep
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
-      serviceAccountName: ""
-      volumes: null
+      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
 status: {}

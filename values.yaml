@@ -1,0 +1,21 @@
+## Tonic values from https://github.com/TonicAI/tonic_helm_charts
+## Full values https://github.com/TonicAI/tonic_helm_charts/blob/master/values.sample.yaml
+## You can find the secrets in TPM https://tpm.foolhq.com/index.php/pwd/view_files/2974
+
+###############################################################################################
+
+# dockerConfigAuth: # set via deploy.sh (from env var)
+enableLogCollection: true
+environmentName: themotleyfool
+piidetection: {}
+tonicStatisticsSeed: 100
+#tonicLicense: # set via deploy.sh (from env var)
+# tonicVersion: # set via deploy.sh (from env var)
+webserver: {}
+tonicSmtpConfig:
+#   tonicUrl : https://tonic.eq-prod.fool.com
+  smtpServerAddress: smtp.foolhq.com
+  sendingAddress: SiteOps@fool.com
+  smtpServerPort: 25
+  ## dummy for bug https://github.com/helm/helm/issues/7095
+  #smtpPassword: # set via deploy.sh (from env var)
