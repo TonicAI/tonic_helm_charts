@@ -28,5 +28,3 @@ helm3 upgrade tonic . \
     --set tonicSmtpConfig.smtpPassword="$TONIC_SMTP_PASSWORD"\
     --set dockerConfigAuth="$TONIC_DOCKER_AUTH" \
     --set tonicSsoConfig.clientId="$TONIC_SSO_CLIENT_ID" \
-    --wait
-

@@ -21,3 +21,4 @@ Session.vim
 .history
 values-local.yaml
 values-staging.yaml
+*eq-*
