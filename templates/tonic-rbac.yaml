@@ -1,0 +1,25 @@
+{{- if (((.Values.tonicai).web_server).features).host_integration_enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Values.tonicai.web_server.features.kubernetes_role | default "default" }}
+  namespace: {{ .Release.Namespace }}
+rules:
+- apiGroups: ["", "extensions", "apps"]
+  resources: ["pods", "pods/log", "deployments", "replicasets"]
+  verbs: ["get", "list", "patch", "delete", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: role-binding
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Values.tonicai.web_server.features.kubernetes_role | default "default" }}
+subjects:
+- kind: ServiceAccount
+  name: {{ template "tonic.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}

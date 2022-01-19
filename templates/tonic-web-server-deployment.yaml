@@ -85,6 +85,12 @@ spec:
           value: {{quote .Values.tonicSsoConfig.samlIdpMetadata }}
           {{- end }}
           {{- end }}
+        {{- if (((.Values.tonicai).web_server).features).host_integration_enabled }}
+        - name: TONIC_HOST_INTEGRATION
+          value: "kubernetes"
+        - name: TONIC_KUBERNETES_NAMESPACE
+          value: {{ .Release.Namespace }}
+        {{- end }}
         - name: TONIC_SPARK_URL
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
