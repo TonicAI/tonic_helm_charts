@@ -38,6 +38,10 @@ tonicai:
       # This annotation is only required if you are creating an internal facing ELB. Remove this annotation to create public facing ELB.
       service.beta.kubernetes.io/aws-load-balancer-internal: "true"
       service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    features:
+      # Enables/Disables the HostIntegrations endpoint
+      host_integration_enabled: "true" 
+      kubernetes_role: "default"
   worker:
     image: quay.io/tonicai/tonic_worker
     env: {}
