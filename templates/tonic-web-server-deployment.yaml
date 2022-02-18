@@ -85,7 +85,7 @@ spec:
           value: {{quote .Values.tonicSsoConfig.samlIdpMetadata }}
           {{- end }}
           {{- end }}
-        {{- if (((.Values.tonicai).web_server).features).host_integration_enabled }}
+        {{- if eq ((((.Values.tonicai).web_server).features).host_integration_enabled | default "false") "true" }}
         - name: TONIC_HOST_INTEGRATION
           value: "kubernetes"
         - name: TONIC_KUBERNETES_NAMESPACE
