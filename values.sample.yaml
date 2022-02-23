@@ -34,6 +34,8 @@ tonicVersion: latest
 tonicai:
   web_server:
     image: quay.io/tonicai/tonic_web_server
+    # Comma separated list of user emails that should be have the Admin role in Tonic.
+    administrators: example@email.com,other@email.com
     annotations:
       # This annotation is only required if you are creating an internal facing ELB. Remove this annotation to create public facing ELB.
       service.beta.kubernetes.io/aws-load-balancer-internal: "true"

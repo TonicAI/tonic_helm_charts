@@ -91,6 +91,10 @@ spec:
         - name: TONIC_KUBERNETES_NAMESPACE
           value: {{ .Release.Namespace }}
         {{- end }}
+        {{- if .Values.tonicai.web_server.administrators }}
+        - name: TONIC_ADMINISTRATORS
+          value: {{ .Values.tonicai.web_server.administrators }}
+        {{- end }}
         - name: TONIC_SPARK_URL
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
