@@ -115,15 +115,19 @@ spec:
           limits:
             memory: "1Gi"
         livenessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 60
-          periodSeconds: 5
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep Allos.Api.dll | grep -v grep
+          initialDelaySeconds: 10
+          periodSeconds: 10
         readinessProbe:
-          httpGet:
-            path: /health
-            port: 80
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep Allos.Api.dll | grep -v grep
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always
