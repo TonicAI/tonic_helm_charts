@@ -8,22 +8,19 @@ metadata:
     {{- toYaml .Values.tonicai.web_server.annotations | nindent 4 }}
 {{- else }}
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
 {{- end }}
 
   labels:
     app: tonic-web-server
 spec:
   ports:
-  - name: "http"
-    port: 80
-    targetPort: 80
-    nodePort: 30080
   - name: "https"
     port: 443
     targetPort: 443
-    nodePort: 30443
   type: LoadBalancer
   selector:
     app: tonic-web-server
