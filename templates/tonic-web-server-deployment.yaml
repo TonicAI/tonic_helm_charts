@@ -28,7 +28,7 @@ spec:
         {{- end }}
         {{- end }}
         - name: TONIC_DB_DATABASE
-          value: {{ .Values.tonicdb.dbname }}
+          value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
           value: {{ .Values.tonicdb.user }}
         - name: TONIC_DB_PASSWORD
@@ -56,10 +56,6 @@ spec:
             secretKeyRef:
               name: tonic-license
               key: license
-          {{- end }}
-          {{- if .Values.tonicLicenseRaw }}
-        - name: TONIC_LICENSE
-          value: {{quote .Values.tonicLicenseRaw }}
           {{- end }}
           {{- if .Values.tonicSsoConfig }}
           {{- if .Values.tonicSsoConfig.provider }}
@@ -93,7 +89,21 @@ spec:
         - name: TONIC_SSO_GROUP_FILTER_REGEX
           value: {{quote .Values.tonicSsoConfig.groupFilter }}
           {{- end }}
+          {{- if .Values.tonicSsoConfig.samlIdpMetadata }}
+        - name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
+          value: {{quote .Values.tonicSsoConfig.samlIdpMetadata }}
           {{- end }}
+          {{- end }}
+        {{- if eq ((((.Values.tonicai).web_server).features).host_integration_enabled | default "false") "true" }}
+        - name: TONIC_HOST_INTEGRATION
+          value: "kubernetes"
+        - name: TONIC_KUBERNETES_NAMESPACE
+          value: {{ .Release.Namespace }}
+        {{- end }}
+        {{- if .Values.tonicai.web_server.administrators }}
+        - name: TONIC_ADMINISTRATORS
+          value: {{ .Values.tonicai.web_server.administrators }}
+        {{- end }}
         - name: TONIC_SPARK_URL
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
@@ -110,17 +120,23 @@ spec:
         ports:
         - containerPort: 80
         - containerPort: 443
-        resources: {}
+        resources:
+          limits:
+            memory: "1Gi"
         livenessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 60
-          periodSeconds: 5
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep Allos.Api.dll | grep -v grep
+          initialDelaySeconds: 10
+          periodSeconds: 10
         readinessProbe:
-          httpGet:
-            path: /health
-            port: 80
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep Allos.Api.dll | grep -v grep
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always

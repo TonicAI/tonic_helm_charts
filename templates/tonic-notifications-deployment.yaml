@@ -19,7 +19,7 @@ spec:
       containers:
       - env:
         - name: TONIC_DB_DATABASE
-          value: {{ .Values.tonicdb.dbname }}
+          value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
           value: {{ .Values.tonicdb.user }}
         - name: TONIC_DB_PASSWORD
@@ -77,20 +77,26 @@ spec:
         {{- end }}
         imagePullPolicy: Always
         name: tonic-notifications
+        resources:
+          limits:
+            memory: "1Gi"
         ports:
         - containerPort: 7000
         - containerPort: 7001
-        resources: {}
         livenessProbe:
-          httpGet:
-            path: /health
-            port: 7000
-          initialDelaySeconds: 60
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - ps -ef | grep Allos.Notifications.dll | grep -v grep
+          initialDelaySeconds: 10
           periodSeconds: 10
         readinessProbe:
-          httpGet:
-            path: /health
-            port: 7000
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - ps -ef | grep Allos.Notifications.dll | grep -v grep
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always

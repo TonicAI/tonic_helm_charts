@@ -31,7 +31,9 @@ spec:
         name: tonic-pii-detection
         ports:
         - containerPort: 7687
-        resources: {}
+        resources:
+          limits:
+            memory: "512Mi"
         livenessProbe:
           httpGet:
             path: /health

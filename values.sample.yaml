@@ -10,8 +10,8 @@ tonicdb:
 environmentName: <company-name>
 
 # tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
-# otherwise each generation will be internally consistent, but not consistent with other generations. Uncomment and set to any integer to enable.
-# tonicStatisticsSeed: <any-integer>
+# otherwise each generation will be internally consistent, but not consistent with other generations.
+tonicStatisticsSeed: <any-integer>
 
 # numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
 numberOfWorkers: 1
@@ -34,10 +34,16 @@ tonicVersion: latest
 tonicai:
   web_server:
     image: quay.io/tonicai/tonic_web_server
+    # Comma separated list of user emails that should be have the Admin role in Tonic.
+    administrators: example@email.com,other@email.com
     annotations:
       # This annotation is only required if you are creating an internal facing ELB. Remove this annotation to create public facing ELB.
       service.beta.kubernetes.io/aws-load-balancer-internal: "true"
       service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    features:
+      # Enables/Disables the HostIntegrations endpoint
+      host_integration_enabled: "true" 
+      kubernetes_role: "default"
   worker:
     image: quay.io/tonicai/tonic_worker
     env: {}
@@ -48,15 +54,16 @@ tonicai:
     image: quay.io/tonicai/tonic_pii_detection
   pyml_service:
     image: quay.io/tonicai/tonic_pyml_service
-# Uncomment for Oracle Support. Valid versions are "19" and "11_2".
+# Uncomment for Oracle Support. Valid versions are "19", "12_2", and "11_2".
 # oracle_helper:
 #   image: quay.io/tonicai/tonic_oracle_helper
 #   version: "19"
+#   lang: "AMERICAN_AMERICA.AL32UTF8"
 
-# Use a Tonic license to enable different enterprise features. License keys can be obtained from Tonic.
-# tonicLicense: <license-key>
+# Use a Tonic license to enable different features. License keys can be obtained from Tonic.
+tonicLicense: <license-key>
 
-# Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
+# Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
 #   provider: <provider-name>
 #   domain: <sso-domain>
@@ -65,8 +72,9 @@ tonicai:
 #   identityProviderId: <identity-provider-id>
 #   authServerId: <auth-server-id>
 #   groupFilter: .*Tonic.*
+#   samlIdpMetadata: <AWS SSO SAML metadata XML>
 
-# Configuration options for tonic-notifications
+# Enterprise License Only: Configuration options for tonic-notifications.
 # tonicSmtpConfig:
 #   tonicUrl: <tonic URL, for links>
 #   sendingAddress: <notifications@yourdomain.com>
