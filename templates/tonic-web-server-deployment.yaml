@@ -18,6 +18,15 @@ spec:
     spec:
       containers:
       - env:
+        {{- range $key, $value := .Values.tonicai.web_server.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.tonicai.web_server.envRaw }}
+        {{- with .Values.tonicai.web_server.envRaw }}
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
@@ -45,7 +54,7 @@ spec:
         - name: TONIC_LICENSE
           valueFrom:
             secretKeyRef:
-              name: tonic-license-secret
+              name: tonic-license
               key: license
           {{- end }}
           {{- if .Values.tonicSsoConfig }}
