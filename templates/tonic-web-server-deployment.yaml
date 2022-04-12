@@ -54,7 +54,7 @@ spec:
         - name: TONIC_LICENSE
           valueFrom:
             secretKeyRef:
-              name: tonic-license
+              name: tonic-license-secret
               key: license
           {{- end }}
           {{- if .Values.tonicSsoConfig }}
