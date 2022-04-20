@@ -34,6 +34,8 @@ spec:
         resources:
           limits:
             memory: "512Mi"
+          requests:
+            memory: "512Mi"
         livenessProbe:
           httpGet:
             path: /health
