@@ -80,6 +80,8 @@ spec:
         resources:
           limits:
             memory: "1Gi"
+          requests:
+            memory: "512Mi"
         ports:
         - containerPort: 7000
         - containerPort: 7001

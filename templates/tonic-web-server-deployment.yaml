@@ -122,7 +122,9 @@ spec:
         - containerPort: 443
         resources:
           limits:
-            memory: "1Gi"
+            memory: "3Gi"
+          requests:
+            memory: "2Gi"
         livenessProbe:
           exec:
             command:

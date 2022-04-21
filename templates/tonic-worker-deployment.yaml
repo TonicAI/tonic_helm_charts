@@ -93,6 +93,8 @@ spec:
         resources:
           limits:
             memory: "12Gi"
+          requests:
+            memory: "6Gi"
         livenessProbe:
           exec:
             command:
