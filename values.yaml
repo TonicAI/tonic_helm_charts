@@ -19,3 +19,8 @@ tonicSmtpConfig:
   smtpServerPort: 25
   ## dummy for bug https://github.com/helm/helm/issues/7095
   #smtpPassword: # set via deploy.sh (from env var)
+
+# Service account for tonic
+serviceAccount:
+  create: true
+  annotations: {}
