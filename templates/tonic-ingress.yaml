@@ -1,0 +1,21 @@
+apiVersion: v1
+items:
+- apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: tonic
+    namespace: tonic
+  spec:
+    rules:
+    - host: tonic.eq-prod.fool.com
+      http:
+        paths:
+        - backend:
+            serviceName: tonic-web-server
+            servicePort: 80
+          path: /
+          pathType: ImplementationSpecific
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
