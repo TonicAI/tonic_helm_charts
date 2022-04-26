@@ -1,0 +1,35 @@
+## Tonic values from https://github.com/TonicAI/tonic_helm_charts
+## Full values https://github.com/TonicAI/tonic_helm_charts/blob/master/values.sample.yaml
+## You can find the secrets in TPM https://tpm.foolhq.com/index.php/pwd/view_files/2974
+
+###############################################################################################
+
+
+tonicSsoConfig:
+  #clientId: # set via deploy.sh (from env var)
+  domain: fool.okta.com
+  groupFilter: .*Tonic.*
+  provider: Okta
+
+tonicdb:
+  dbName: tonic_ai
+  host: db.staging.tonic-ai.fool.com
+  #password: # set via deploy.sh (from env var)
+  port: 51030
+  sslMode: Require
+  #user: # set via deploy.sh (from env var)
+webserver: {}
+numberOfWorkers: 3
+  # cpuLimit: "2"
+  # cpuRequest: 250m
+  # memoryLimit: 4096Mi
+  # memoryRequest: 4096Mi
+  # replicas: 3
+tonicSmtpConfig:
+  tonicUrl : https://tonic.eq-prod.fool.com
+  smtpServerAddress: smtp.foolhq.com
+  sendingAddress: SiteOps@fool.com
+  smtpServerPort: 25
+  ## dummy for bug https://github.com/helm/helm/issues/7095
+  #smtpPassword: # set via deploy.sh (from env var)
+
