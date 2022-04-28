@@ -18,6 +18,15 @@ spec:
     spec:
       containers:
       - env:
+        {{- range $key, $value := .Values.tonicai.web_server.env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if .Values.tonicai.web_server.envRaw }}
+        {{- with .Values.tonicai.web_server.envRaw }}
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
@@ -43,7 +52,10 @@ spec:
           value: {{ .Values.environmentName }}
           {{- if .Values.tonicLicense }}
         - name: TONIC_LICENSE
-          value: {{quote .Values.tonicLicense }}
+          valueFrom:
+            secretKeyRef:
+              name: tonic-license-secret
+              key: license
           {{- end }}
           {{- if .Values.tonicSsoConfig }}
           {{- if .Values.tonicSsoConfig.provider }}
@@ -82,33 +94,55 @@ spec:
           value: {{quote .Values.tonicSsoConfig.samlIdpMetadata }}
           {{- end }}
           {{- end }}
+        {{- if eq ((((.Values.tonicai).web_server).features).host_integration_enabled | default "false") "true" }}
+        - name: TONIC_HOST_INTEGRATION
+          value: "kubernetes"
+        - name: TONIC_KUBERNETES_NAMESPACE
+          value: {{ .Release.Namespace }}
+        {{- end }}
+        {{- if .Values.tonicai.web_server.administrators }}
+        - name: TONIC_ADMINISTRATORS
+          value: {{ .Values.tonicai.web_server.administrators }}
+        {{- end }}
         - name: TONIC_SPARK_URL
           value: https://tonic-spark-helper:5501
         - name: TONIC_NOTIFICATIONS_URL
           value: http://tonic-notifications:7000
+        - name: TONIC_PYML_URL
+          value: https://tonic-pyml-service:7700
+        {{- if  ((.Values.tonicai).web_server).image }}
+        image: {{ .Values.tonicai.web_server.image }}:{{ .Values.tonicVersion }}
+        {{ else }}
         image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
-        imagePullPolicy: ""
+        {{- end }}
+        imagePullPolicy: Always
         name: tonic-web-server
         ports:
         - containerPort: 80
         - containerPort: 443
         resources:
           limits:
-            memory: "1Gi"
+            memory: "3Gi"
+          requests:
+            memory: "2Gi"
         livenessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 60
-          periodSeconds: 5
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep Allos.Api.dll | grep -v grep
+          initialDelaySeconds: 10
+          periodSeconds: 10
         readinessProbe:
-          httpGet:
-            path: /health
-            port: 80
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - ps -ef | grep Allos.Api.dll | grep -v grep
           initialDelaySeconds: 10
           periodSeconds: 10
       restartPolicy: Always
-      serviceAccountName: ""
+      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       volumes: null

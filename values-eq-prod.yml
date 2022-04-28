@@ -16,15 +16,14 @@ tonicdb:
   host: db.staging.tonic-ai.fool.com
   #password: # set via deploy.sh (from env var)
   port: 51030
-  sslMode: None
+  sslMode: Require
   #user: # set via deploy.sh (from env var)
-webserver: {}
-workers:
-  cpuLimit: "2"
-  cpuRequest: 250m
-  memoryLimit: 4096Mi
-  memoryRequest: 4096Mi
-  replicas: 3
+numberOfWorkers: 3
+  # cpuLimit: "2"
+  # cpuRequest: 250m
+  # memoryLimit: 4096Mi
+  # memoryRequest: 4096Mi
+  # replicas: 3
 tonicSmtpConfig:
   tonicUrl : https://tonic.eq-prod.fool.com
   smtpServerAddress: smtp.foolhq.com
@@ -32,3 +31,4 @@ tonicSmtpConfig:
   smtpServerPort: 25
   ## dummy for bug https://github.com/helm/helm/issues/7095
   #smtpPassword: # set via deploy.sh (from env var)
+
