@@ -18,7 +18,6 @@ tonicdb:
   port: 51030
   sslMode: Require
   #user: # set via deploy.sh (from env var)
-webserver: {}
 numberOfWorkers: 3
   # cpuLimit: "2"
   # cpuRequest: 250m
