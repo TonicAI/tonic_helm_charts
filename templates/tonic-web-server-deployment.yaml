@@ -110,21 +110,6 @@ spec:
           value: http://tonic-notifications:7000
         - name: TONIC_PYML_URL
           value: https://tonic-pyml-service:7700
-        {{- if .Values.tonicai }}
-        {{- if .Values.tonicai.web_server }}
-        {{- if .Values.tonicai.web_server.env}}
-        {{- range $key, $value := .Values.tonicai.web_server.env }}
-        - name: {{ $key }}
-          value: {{ $value | quote }}
-        {{- end }}
-        {{- if .Values.tonicai.web_server.envRaw }}
-        {{- with .Values.tonicai.web_server.envRaw }}
-            {{- toYaml . | nindent 12 }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
         {{- if  ((.Values.tonicai).web_server).image }}
         image: {{ .Values.tonicai.web_server.image }}:{{ .Values.tonicVersion }}
         {{ else }}
