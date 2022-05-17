@@ -29,7 +29,7 @@ tonicai:
   web_server:
     image: quay.io/tonicai/tonic_web_server
     # Comma separated list of user emails that should be have the Admin role in Tonic.
-    administrators: siteops@fool.com,chitzia.lyfoung@fool.com
+    administrators: siteops@fool.com,chitzia.lyfoung@fool.com,mshade@fool.com,treber@fool.com,ntravis@fool.com,kcottrell@fool.com,patricia.munji@fool.com,joelelle.coley@fool.com
     # annotations:
     #   # This annotation is only required if you are creating an internal facing ELB. Remove this annotation to create public facing ELB.
     #   service.beta.kubernetes.io/aws-load-balancer-internal: "true"
