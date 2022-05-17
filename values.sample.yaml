@@ -33,6 +33,8 @@ tonicVersion: latest
 # Container repository with tonic images. If you don't use the default one you will have to copy images over before deployment
 tonicai:
   web_server:
+    env: {}
+    envRaw: {}
     image: quay.io/tonicai/tonic_web_server
     annotations:
       # This annotation is only required if you are creating an internal facing ELB. Remove this annotation to create public facing ELB.
