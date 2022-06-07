@@ -93,6 +93,17 @@ spec:
         - name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
           value: {{quote .Values.tonicSsoConfig.samlIdpMetadata }}
           {{- end }}
+          {{- if .Values.tonicSsoConfig.tenantId }}
+        - name: TONIC_SSO_TENANT_ID
+          value: {{quote .Values.tonicSsoConfig.tenantId }}
+          {{- end }}
+          {{- if .Values.tonicSsoConfig.googleAccountServiceJson }}
+        - name: TONIC_SSO_SERVICE_ACCOUNT_JSON_BASE64
+          valueFrom:
+            secretKeyRef:
+              name: tonic-sso-google-account-service-json-secret
+              key: secret
+          {{- end }}
           {{- end }}
         {{- if eq ((((.Values.tonicai).web_server).features).host_integration_enabled | default "false") "true" }}
         - name: TONIC_HOST_INTEGRATION
