@@ -95,6 +95,7 @@ spec:
             memory: "12Gi"
           requests:
             memory: "6Gi"
+            ephemeral-storage: "1Gi"
         livenessProbe:
           exec:
             command:

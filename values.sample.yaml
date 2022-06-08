@@ -67,14 +67,44 @@ tonicLicense: <license-key>
 
 # Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
-#   provider: <provider-name>
-#   domain: <sso-domain>
+#   groupFilter: <regex that matches groups to import into Tonic, like .*Tonic.*>
+
+#   AWS SSO Config
+#   -----------------
+#   provider: AWS
+#   identityProviderId: <identity-provider-id>
+#   samlIdpMetadataXml: <base64 encoded SAML metadata IDP xml>
+
+#   Azure SSO Config
+#   -----------------
+#   provider: Azure
 #   clientId: <client-id>
 #   clientSecret: <client-secret>
+#   tenantId: <tenant-id>
+
+#   Duo SSO Config
+#   -----------------
+#   provider: Duo
+#   clientId: <client-id>
+#   clientSecret: <client-secret>
+#   domain: <sso-domain>
+
+#   Google SSO Config
+#   -----------------
+#   provider: Google
+#   clientId: <client-id>
+#   clientSecret: <client-secret>
+#   domain: <sso-domain>
+#   googleAccountServiceJson: <base64 encoded version of your service account json>
+
+#   Okta SSO Config
+#   -----------------
+#   provider: Okta
+#   authServerId: <customer auth server if you have one>
+#   clientId: <client-id>
+#   domain: <sso-domain>
 #   identityProviderId: <identity-provider-id>
-#   authServerId: <auth-server-id>
-#   groupFilter: .*Tonic.*
-#   samlIdpMetadata: <AWS SSO SAML metadata XML>
+
 
 # Enterprise License Only: Configuration options for tonic-notifications.
 # tonicSmtpConfig:

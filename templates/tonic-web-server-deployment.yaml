@@ -50,13 +50,12 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-          {{- if .Values.tonicLicense }}
         - name: TONIC_LICENSE
           valueFrom:
             secretKeyRef:
               name: tonic-license-secret
               key: license
-          {{- end }}
+              optional: true
           {{- if .Values.tonicSsoConfig }}
           {{- if .Values.tonicSsoConfig.provider }}
         - name: TONIC_SSO_PROVIDER
@@ -70,13 +69,12 @@ spec:
         - name: TONIC_SSO_CLIENT_ID
           value: {{quote .Values.tonicSsoConfig.clientId }}
           {{- end }}
-          {{- if .Values.tonicSsoConfig.clientSecret }}
         - name: TONIC_SSO_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
               name: tonic-sso-client-secret
               key: secret
-          {{- end }}
+              optional: true
           {{- if .Values.tonicSsoConfig.identityProviderId }}
         - name: TONIC_SSO_IDENTITY_PROVIDER_ID
           value: {{quote .Values.tonicSsoConfig.identityProviderId }}
@@ -93,6 +91,16 @@ spec:
         - name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
           value: {{quote .Values.tonicSsoConfig.samlIdpMetadata }}
           {{- end }}
+          {{- if .Values.tonicSsoConfig.tenantId }}
+        - name: TONIC_SSO_TENANT_ID
+          value: {{quote .Values.tonicSsoConfig.tenantId }}
+          {{- end }}
+        - name: TONIC_SSO_SERVICE_ACCOUNT_JSON_BASE64
+          valueFrom:
+            secretKeyRef:
+              name: tonic-sso-google-account-service-json-secret
+              key: secret
+              optional: true
           {{- end }}
         {{- if eq ((((.Values.tonicai).web_server).features).host_integration_enabled | default "false") "true" }}
         - name: TONIC_HOST_INTEGRATION
@@ -125,6 +133,7 @@ spec:
             memory: "3Gi"
           requests:
             memory: "2Gi"
+            ephemeral-storage: "1Gi"
         livenessProbe:
           exec:
             command:
