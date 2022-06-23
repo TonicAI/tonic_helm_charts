@@ -1,3 +1,8 @@
+# Use a Tonic license to enable different features. Your license key will be provided by Tonic.
+tonicLicense: <license-key>
+
+environmentName: <company-name>
+
 # tonicdb is the postgres database that will hold information about your workspace.
 tonicdb:
   host: <db-host>
@@ -6,8 +11,6 @@ tonicdb:
   user: <user>
   password: <password>
   sslMode: Require
-
-environmentName: <company-name>
 
 # tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
 # otherwise each generation will be internally consistent, but not consistent with other generations.
@@ -61,9 +64,6 @@ tonicai:
 #   image: quay.io/tonicai/tonic_oracle_helper
 #   version: "19"
 #   lang: "AMERICAN_AMERICA.AL32UTF8"
-
-# Use a Tonic license to enable different features. License keys can be obtained from Tonic.
-tonicLicense: <license-key>
 
 # Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
