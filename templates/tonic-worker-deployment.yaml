@@ -55,6 +55,8 @@ spec:
           value: https://tonic-notifications:7001
         - name: TONIC_PYML_URL
           value: https://tonic-pyml-service:7700
+        - name: TONIC_WEB_URL
+          value: https://tonic-web-server
           {{- if .Values.tonicai }}
           {{- if .Values.tonicai.oracle_helper }}
         - name: TONIC_ORACLE_HELPER_URL
