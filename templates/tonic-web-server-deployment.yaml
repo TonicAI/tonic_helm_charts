@@ -8,6 +8,10 @@
   {{ $image = "quay.io/tonicai/tonic_web_server" }}
   {{- end }}
 {{- end }}
+{{- $ports := .Values.tonicai.web_server.ports }}
+{{- $httpsOnly := $ports.httpsOnly | default false }}
+{{- $httpPort := $ports.http | default 80 }}
+{{- $httpsPort := $ports.https | default 443 }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -128,12 +132,24 @@ spec:
           value: http://tonic-notifications:7000
         - name: TONIC_PYML_URL
           value: https://tonic-pyml-service:7700
+        {{- if not $httpsOnly }}
+        - name: TONIC_PORT_HTTP
+          value: {{ $httpPort | quote }}
+        {{- end }}
+        - name: TONIC_PORT_HTTPS
+          value: {{ $httpsPort | quote }}
+        - name: TONIC_HTTPS_ONLY
+          value: {{ $httpsOnly | quote }}
         image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-web-server
         ports:
-        - containerPort: 80
-        - containerPort: 443
+        {{- if not $httpsOnly }}
+        - containerPort: {{ $httpPort }}
+          name: "http"
+        {{- end }}
+        - containerPort: {{ $httpsPort }}
+          name: "https"
         resources:
           limits:
             memory: "3Gi"
