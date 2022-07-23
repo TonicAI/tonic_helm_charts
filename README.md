@@ -73,13 +73,13 @@ tonicai:
 ```
 
 ### Ingress
-The Helm charts include default annotations for internal-facing load balancers for AWS and Azure. You can change to your preferred ingress method by modifying [tonic-web-server-service.yaml](tonic-web-server-service.yaml).
+The Helm charts include default annotations for internal-facing load balancers for AWS and Azure. You can change to your preferred ingress method by modifying [tonic-web-server-service.yaml](templates/tonic-web-server-service.yaml).
 
 ### Resource requests and limits
 Each of the deployment YAML template files contains resource requests and limits. In some cases these may need to be modified for your environment.
 
 ### Other miscellaneous configuration
-Other configuration items are necesary when using and to enable the following functionality. The Tonic support team will provide additional information if these apply for your use case.
+Other configuration items are necessary when using and to enable the following functionality. The Tonic support team will provide additional information if these apply for your use case.
 - Connecting to an Oracle database as a source and destination
 - Connecting to a Snowflake database as a source and destination
 - Connecting to a Redshift database as a source and destination
