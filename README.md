@@ -17,7 +17,7 @@ Before deploying this setup, rename [values.sample.yaml](values.sample.yaml) to 
 
 ### Tonic license
 
-- `tonicLicense`: This value will be provided by Tonic.
+- This value will be provided by Tonic and must be input upon first startup of Tonic. Subsequently, it can be updated [from within the Tonic Admin portal](https://docs.tonic.ai/app/admin/on-premise-deployment/license-key-enter-update). Note that this was previously maintained via `tonicLicense`, but this is no longer needed since version 519.
 
 ### Environment name
 
