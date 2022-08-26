@@ -21,7 +21,11 @@ spec:
   - name: "https"
     port: 443
     targetPort: 443
+{{- if (.Values.tonicai).is_local_k8s }}
+  type: ClusterIP
+{{- else }}
   type: LoadBalancer
+{{- end }}
   selector:
     app: tonic-web-server
 status:
