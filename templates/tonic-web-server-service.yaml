@@ -21,8 +21,9 @@ spec:
   - name: "https"
     port: 443
     targetPort: 443
-{{- if eq (.Values.tonicai).is_local_k8s "true" }}
-  type: ClusterIP
+# is_local_k8s currently only used by TIM
+{{- if eq (.Values.tonicai).is_local_k8s true }}
+  type: NodePort
 {{- else }}
   type: LoadBalancer
 {{- end }}
