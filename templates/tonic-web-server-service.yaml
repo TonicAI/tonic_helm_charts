@@ -21,7 +21,12 @@ spec:
   - name: "https"
     port: 443
     targetPort: 443
+# use_ingress currently only used by TIM
+{{- if eq (.Values.tonicai).use_ingress true }}
+  type: ClusterIP
+{{- else }}
   type: LoadBalancer
+{{- end }}
   selector:
     app: tonic-web-server
 status:
