@@ -1,3 +1,13 @@
+{{ $image := "" }}
+{{- if  ((.Values.tonicai).worker).image }}
+{{- $image = .Values.tonicai.worker.image }}
+{{- else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{ $image = "quay.io/tonicai/tonic_worker_unprivileged" }}
+  {{- else }}
+  {{- $image = "quay.io/tonicai/tonic_worker" }}
+  {{- end }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -82,11 +92,7 @@ spec:
         {{- end }}
         {{- end }}
         {{- end }}
-        {{- if  ((.Values.tonicai).worker).image }}
-        image: {{ .Values.tonicai.worker.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
-        image: quay.io/tonicai/tonic_worker:{{ .Values.tonicVersion }}
-        {{- end }}
+        image: {{ $image }}
         imagePullPolicy: Always
         name: tonic-worker
         ports:

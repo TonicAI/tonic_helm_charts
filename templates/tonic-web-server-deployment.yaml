@@ -1,3 +1,13 @@
+{{ $image := "" }}
+{{- if  ((.Values.tonicai).web_server).image }}
+{{ $image = .Values.tonicai.web_server.image }}
+{{ else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{ $image = "quay.io/tonicai/tonic_web_server_unprivileged" }}
+  {{- else }}
+  {{ $image = "quay.io/tonicai/tonic_web_server" }}
+  {{- end }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -118,11 +128,7 @@ spec:
           value: http://tonic-notifications:7000
         - name: TONIC_PYML_URL
           value: https://tonic-pyml-service:7700
-        {{- if  ((.Values.tonicai).web_server).image }}
-        image: {{ .Values.tonicai.web_server.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
-        image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
-        {{- end }}
+        image: {{ $image }}
         imagePullPolicy: Always
         name: tonic-web-server
         ports:
