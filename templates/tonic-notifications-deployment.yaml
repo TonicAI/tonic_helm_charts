@@ -1,8 +1,8 @@
 {{ $image := "" }}
 {{- if  ((.Values.tonicai).notifications).image }}
-{{- $image = .Values.tonicai.notifications.image
+{{- $image = .Values.tonicai.notifications.image }}
 {{- else }}
-  {{- if .Values.useUnprivilegedContainers
+  {{- if .Values.useUnprivilegedContainers }}
   {{- $image = "quay.io/tonicai/tonic_notifications_unprivileged" }}
   {{- else }}
   {{- $image = "quay.io/tonicai/tonic_notifications" }}
