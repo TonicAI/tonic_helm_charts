@@ -1,4 +1,7 @@
 environmentName: <company-name>
+# use unprivileged containers only interacts with tonic provided images
+# it does not interact with customer provided image repositories
+useUnprivilegedContainers: false
 
 # tonicdb is the postgres database that will hold information about your workspace.
 tonicdb:

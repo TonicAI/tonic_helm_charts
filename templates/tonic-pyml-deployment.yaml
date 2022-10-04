@@ -1,3 +1,13 @@
+{{ $image := "" }}
+{{- if ((.Values.tonicai).pyml_service).image }}
+{{- $image = .Values.tonicai.pyml_service.image }}
+{{- else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{- $image = "quay.io/tonicai/tonic_pyml_service_unprivileged" }}
+  {{- else }}
+  {{- $image = "quay.io/tonicai/tonic_pyml_service" }}
+  {{- end }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,11 +32,7 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        {{- if  ((.Values.tonicai).pyml_service).image }}
-        image: {{ .Values.tonicai.pyml_service.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
-        image: quay.io/tonicai/tonic_pyml_service:{{ .Values.tonicVersion }}
-        {{- end }}
+        image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-pyml-service
         ports:

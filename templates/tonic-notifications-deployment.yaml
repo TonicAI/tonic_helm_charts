@@ -1,3 +1,13 @@
+{{ $image := "" }}
+{{- if  ((.Values.tonicai).notifications).image }}
+{{- $image = .Values.tonicai.notifications.image }}
+{{- else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{- $image = "quay.io/tonicai/tonic_notifications_unprivileged" }}
+  {{- else }}
+  {{- $image = "quay.io/tonicai/tonic_notifications" }}
+  {{- end }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -70,11 +80,7 @@ spec:
           value: "7000"
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
           value: "7001"
-        {{- if  ((.Values.tonicai).notifications).image }}
-        image: {{ .Values.tonicai.notifications.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
-        image: quay.io/tonicai/tonic_notifications:{{ .Values.tonicVersion }}
-        {{- end }}
+        image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-notifications
         resources:

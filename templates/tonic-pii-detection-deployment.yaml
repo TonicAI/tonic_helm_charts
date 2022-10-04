@@ -1,3 +1,13 @@
+{{ $image := "" }}
+{{- if  ((.Values.tonicai).pii_detection).image }}
+{{ $image = .Values.tonicai.pii_detection.image }}
+{{ else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{ $image = "quay.io/tonicai/tonic_pii_detection_unprivileged" }}
+  {{- else }}
+  {{ $image = "quay.io/tonicai/tonic_pii_detection" }}
+  {{- end}}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,11 +32,7 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        {{- if  ((.Values.tonicai).pii_detection).image }}
-        image: {{ .Values.tonicai.pii_detection.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
-        image: quay.io/tonicai/tonic_pii_detection:{{ .Values.tonicVersion }}
-        {{- end }}
+        image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-pii-detection
         ports:

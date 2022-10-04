@@ -1,6 +1,16 @@
 {{- if .Values.tonicai }}
 {{- if .Values.tonicai.oracle_helper }}
+{{ $image := "" }}
 {{- if .Values.tonicai.oracle_helper.version }}
+{{- if ((.Values.tonicai).oracle_helper).image }}
+{{- $image = .Values.tonicai.oracle_helper.image }}
+{{- else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{ $image = "quay.io/tonicai/tonic_oracle_helper_{{ .Values.tonicai.oracle_helper.version }}_unprivileged" }}
+  {{- else }}
+    {{ $image = "quay.io/tonicai/tonic_oracle_helper_{{ .Values.tonicai.oracle_helper.version }}" }}
+  {{- end }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,11 +38,7 @@ spec:
         - name: NLS_LANG
           value: {{ .Values.tonicai.oracle_helper.lang }}
         {{- end }}
-        {{- if  ((.Values.tonicai).oracle_helper).image }}
-        image: {{ .Values.tonicai.oracle_helper.image }}_{{ .Values.tonicai.oracle_helper.version }}:{{ .Values.tonicVersion }}
-        {{ else }}
-        image: quay.io/tonicai/tonic_oracle_helper_{{ .Values.tonicai.oracle_helper.version }}:{{ .Values.tonicVersion }}
-        {{- end }}
+        image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-oracle-helper
         ports:
