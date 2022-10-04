@@ -92,7 +92,7 @@ spec:
         {{- end }}
         {{- end }}
         {{- end }}
-        image: {{ $image }}
+        image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-worker
         ports:
