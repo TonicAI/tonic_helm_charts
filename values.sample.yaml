@@ -49,10 +49,18 @@ tonicai:
       # Enables/Disables the HostIntegrations endpoint
       host_integration_enabled: "true" 
       kubernetes_role: "default"
+    ports:
+      httpsOnly: true
+      https: 443
+      http: 80
   worker:
     image: quay.io/tonicai/tonic_worker
     env: {}
     envRaw: {}
+    ports:
+      httpsOnly: true
+      https: 443
+      http: 80
   notifications:
     image: quay.io/tonicai/tonic_notifications
   pii_detection:
@@ -64,7 +72,7 @@ tonicai:
 #   image: quay.io/tonicai/tonic_oracle_helper
 #   version: "19"
 #   lang: "AMERICAN_AMERICA.AL32UTF8"
-
+#
 # Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
 #   groupFilter: <regex that matches groups to import into Tonic, like .*Tonic.*>
