@@ -1,7 +1,14 @@
 environmentName: <company-name>
-# use unprivileged containers only interacts with tonic provided images
-# it does not interact with customer provided image repositories
+# useUnprivilegedContainers will pull images that do not run as root if
+# using tonic provided images rather than rehosted customer images
+# additionally it enforces that containers cannot run as root, uses the
+# default runtime security profile, forbids privilege escalation and drops 
+# all SYS_CAP privileges. This setting allows tonic to run in restricted
+# environments such as openshift
 useUnprivilegedContainers: false
+# setting this to true will run tonic containers with a read only root
+# filesystem and provides necessary emptyDir volume mounts
+readOnlyRootFilesystem: false
 
 # tonicdb is the postgres database that will hold information about your workspace.
 tonicdb:

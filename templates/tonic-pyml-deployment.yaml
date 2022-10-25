@@ -26,8 +26,23 @@ spec:
       labels:
         app: tonic-pyml-service
     spec:
+      securityContext:
+        {{- if .Values.useUnprivilegedContainers }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        {{- end }}
       containers:
-      - env:
+      - securityContext:
+          {{- if .Values.useUnprivilegedContainers }}
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          {{- end }}
+          {{- if .Values.readOnlyRootFilesystem }}
+          readOnlyRootFilesystem: true
+          {{- end }}
+        env:
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
@@ -35,6 +50,27 @@ spec:
         image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-pyml-service
+        volumeMounts: 
+          {{- if .Values.readOnlyRootFilesystem }}
+          - name: tmp
+            mountPath: /tmp
+          - name: var-log-nginx
+            mountPath: /var/log/nginx
+          - name: var-log-superd
+            mountPath: /var/log/supervisor
+          - name: var-run-nginx
+            mountPath: /var/run/nginx
+          - name: var-run-superd
+            mountPath: /var/run/supervisor
+          - name: var-cache-nginx
+            mountPath: /var/cache/nginx
+          - name: vector
+            mountPath: /tonic/vector_data
+          - name: public-log
+            mountPath: /publish/logs_public
+          - name: log
+            mountPath: /publish/logs
+          {{- end }}
         ports:
         - containerPort: 7700
         resources:
@@ -61,3 +97,24 @@ spec:
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: ""
+      volumes:
+        {{- if .Values.readOnlyRootFilesystem }}
+        - name: public-log
+          emptyDir: {}
+        - name: var-run-nginx
+          emptyDir: {}
+        - name: var-run-superd
+          emptyDir: {}
+        - name: var-log-nginx
+          emptyDir: {}
+        - name: var-log-superd
+          emptyDir: {}
+        - name: vector
+          emptyDir: {}
+        - name: var-cache-nginx
+          emptyDir: {}
+        - name: log
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        {{- end }}
