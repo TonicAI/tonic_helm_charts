@@ -20,3 +20,4 @@ Session.vim
 **/charts/*.tgz
 .history
 values.yaml
+*.tgz
