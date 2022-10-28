@@ -13,6 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/default-backend: "tonic-web-server"
     {{- if  ((.Values.tonicai).ingress).annotations }}
     {{- toYaml .Values.tonicai.ingress.annotations | nindent 4 }}
+    {{- end }}
 spec:
   rules:    
 #   Non-default SSL cert requires an FQDN.
