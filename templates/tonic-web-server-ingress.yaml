@@ -11,20 +11,23 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/service-upstream: "true"
     nginx.ingress.kubernetes.io/default-backend: "tonic-web-server"
+    {{- if  ((.Values.tonicai).ingress).annotations }}
+    {{- toYaml .Values.tonicai.ingress.annotations | nindent 4 }}
 spec:
   rules:    
-  # Non-default SSL cert requires an FQDN.
-  # - host: localhost
-  #   http:
-  #     paths:
-  #       - path: /
-  #         pathType: Prefix
-  #         backend:
-  #           service:
-  #             name: tonic-web-server
-  #             port:
-  #               number: 443
-  - http: #default
+#   Non-default SSL cert requires an FQDN.
+#   - host: localhost
+#     http:
+#       paths:
+#         - path: /
+#           pathType: Prefix
+#           backend:
+#             service:
+#               name: tonic-web-server
+#               port:
+#                 number: 443
+  - host: {{ .Values.tonicai.ingress.domainname }}
+    http: #default
       paths:
         - path: /
           pathType: Prefix
@@ -33,4 +36,8 @@ spec:
               name: tonic-web-server
               port:
                 number: 443
+  tls:
+    - hosts:
+      - {{ .Values.tonicai.ingress.domainname }}
+      secretName: {{ .Values.tonicai.ingress.domainname }}
 {{- end }}
