@@ -1,7 +1,7 @@
 {{- if .Values.tonicai }}
 {{- if .Values.tonicai.oracle_helper }}
 {{ $image := "" }}
-{{- if .Values.tonicai.oracle_helper.version }}
+{{- if or (.Values.tonicai.oracle_helper.version) (.Values.tonicai.oracle_helper.image) }}
 {{- if ((.Values.tonicai).oracle_helper).image }}
 {{- $image = .Values.tonicai.oracle_helper.image }}
 {{- else }}
@@ -28,22 +28,47 @@ spec:
       labels:
         app: tonic-oracle-helper
     spec:
-      containers:
-      - env:
-        - name: ENABLE_LOG_COLLECTION
-          value: {{quote .Values.enableLogCollection }}
-        - name: ENVIRONMENT_NAME
-          value: {{ .Values.environmentName }}
-        {{- if  ((.Values.tonicai).oracle_helper).lang }}
-        - name: NLS_LANG
-          value: {{ .Values.tonicai.oracle_helper.lang }}
+      securityContext:
+        {{- if .Values.useUnprivilegedContainers }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
         {{- end }}
+      volumes:
+        {{- if .Values.readOnlyRootFilesystem }}
+        - name: tmp
+          emptyDir: {}
+        {{- end }}
+      containers:
+      - securityContext:
+          {{- if .Values.useUnprivilegedContainers }}
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          {{- end }}
+          {{- if .Values.readOnlyRootFilesystem }}
+          readOnlyRootFilesystem: true
+          {{- end }}
+        volumeMounts:
+          {{- if .Values.readOnlyRootFilesystem }}
+          - name: tmp
+            mountPath: /tmp
+          {{- end }}
+        env:
+          - name: ENABLE_LOG_COLLECTION
+            value: {{quote .Values.enableLogCollection }}
+          - name: ENVIRONMENT_NAME
+            value: {{ .Values.environmentName }}
+          {{- if  ((.Values.tonicai).oracle_helper).lang }}
+          - name: NLS_LANG
+            value: {{ .Values.tonicai.oracle_helper.lang }}
+          {{- end }}
         image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-oracle-helper
         ports:
-        - containerPort: 5000
-        - containerPort: 5001
+          - containerPort: 5000
+          - containerPort: 5001
         resources:
           limits:
             memory: "2Gi"
@@ -64,9 +89,8 @@ spec:
           periodSeconds: 10
       restartPolicy: Always
       imagePullSecrets:
-      - name: tonicai-build-writer-pull-secret
+        - name: tonicai-build-writer-pull-secret
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
-      volumes: null
 status: {}
 {{- end }}
 {{- end }}

@@ -26,8 +26,23 @@ spec:
       labels:
         app: tonic-notifications
     spec:
+      securityContext:
+        {{- if .Values.useUnprivilegedContainers }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        {{- end }}
       containers:
-      - env:
+      - securityContext:
+          {{- if .Values.useUnprivilegedContainers }}
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          {{- end }}
+          {{- if .Values.readOnlyRootFilesystem }}
+          readOnlyRootFilesystem: true
+          {{- end }}
+        env:
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
@@ -83,6 +98,19 @@ spec:
         image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-notifications
+        volumeMounts:
+          {{- if .Values.readOnlyRootFilesystem }}
+          - name: vector
+            mountPath: /tonic/vector_data
+          - name: var-run-superd
+            mountPath: /var/run/supervisor
+          - name: var-log-superd
+            mountPath: /var/log/supervisor
+          - name: var-log-nginx
+            mountPath: /var/log/nginx
+          - name: tmp
+            mountPath: /tmp
+          {{- end }}
         resources:
           limits:
             memory: "1Gi"
@@ -112,5 +140,17 @@ spec:
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
-      volumes: null
+      volumes:
+        {{- if .Values.readOnlyRootFilesystem }}
+        - name: tmp
+          emptyDir: {}
+        - name: var-log-superd
+          emptyDir: {}
+        - name: var-log-nginx
+          emptyDir: {}
+        - name: var-run-superd
+          emptyDir: {}
+        - name: vector
+          emptyDir: {}
+        {{- end }}
 status: {}

@@ -30,112 +30,153 @@ spec:
       labels:
         app: tonic-worker
     spec:
+      securityContext:
+        {{- if .Values.useUnprivilegedContainers }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        {{- end }}
+      volumes:
+        {{- if .Values.readOnlyRootFilesystem }}
+        - name: var-run
+          emptyDir: {}
+        - name: var-log
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: vector
+          emptyDir: {}
+        - name: db2
+          emptyDir: {}
+        {{- end }}
       containers:
-      - env:
-        - name: TONIC_DB_DATABASE
-          value: {{ .Values.tonicdb.dbName }}
-        - name: TONIC_DB_USERNAME
-          value: {{ .Values.tonicdb.user }}
-        - name: TONIC_DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: tonic-db-password
-              key: password
-        - name: TONIC_DB_PORT
-          value: {{quote .Values.tonicdb.port }}
-        - name: TONIC_DB_SSLMODE
-          value: {{ .Values.tonicdb.sslMode }}
-        - name: TONIC_DB_HOST
-          value: {{ .Values.tonicdb.host }}
-#        - name: TONIC_PROCESS_PARALLELISM
-#          value: "1"
-#        - name: TONIC_TABLE_PARALLELISM
-#          value: "1"
-#        - name: TONIC_WRITE_PARALLELISM
-#          value: "2"
-          {{- if .Values.tonicStatisticsSeed }}
-        - name: TONIC_STATISTICS_SEED
-          value: {{quote .Values.tonicStatisticsSeed }}
+        - securityContext:
+            {{- if .Values.useUnprivilegedContainers }}
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            {{- end }}
+            {{- if .Values.readOnlyRootFilesystem }}
+            readOnlyRootFilesystem: true
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.useUnprivilegedContainers }}
+            - name: var-log
+              mountPath: /var/log/supervisor
+            - name: var-run
+              mountPath: /var/run/supervisor
+            - name: tmp
+              mountPath: /tmp
+            - name: vector
+              mountPath: /tonic/vector_data
+            - name: db2
+              mountPath: /publish/clidriver
+            {{- end }}
+          env:
+            - name: TONIC_DB_DATABASE
+              value: {{ .Values.tonicdb.dbName }}
+            - name: TONIC_DB_USERNAME
+              value: {{ .Values.tonicdb.user }}
+            - name: TONIC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tonic-db-password
+                  key: password
+            - name: TONIC_DB_PORT
+              value: {{quote .Values.tonicdb.port }}
+            - name: TONIC_DB_SSLMODE
+              value: {{ .Values.tonicdb.sslMode }}
+            - name: TONIC_DB_HOST
+              value: {{ .Values.tonicdb.host }}
+    #        - name: TONIC_PROCESS_PARALLELISM
+    #          value: "1"
+    #        - name: TONIC_TABLE_PARALLELISM
+    #          value: "1"
+    #        - name: TONIC_WRITE_PARALLELISM
+    #          value: "2"
+              {{- if .Values.tonicStatisticsSeed }}
+            - name: TONIC_STATISTICS_SEED
+              value: {{quote .Values.tonicStatisticsSeed }}
+              {{- end }}
+            - name: ENABLE_LOG_COLLECTION
+              value: {{quote .Values.enableLogCollection }}
+            - name: ENVIRONMENT_NAME
+              value: {{ .Values.environmentName }}
+            - name: TONIC_PII_DETECTION_URL
+              value: https://tonic-pii-detection:7687
+            - name: TONIC_SPARK_URL
+              value: https://tonic-spark-helper:5501
+            - name: TONIC_NOTIFICATIONS_URL
+              value: https://tonic-notifications:7001
+            - name: TONIC_PYML_URL
+              value: https://tonic-pyml-service:7700
+            - name: TONIC_WEB_URL
+              value: https://tonic-web-server
+            - name: TONIC_HTTPS_ONLY
+              value: {{ $httpsOnly | quote }}
+            {{- if not $httpsOnly }}
+            - name: TONIC_WORKER_HEALTH_PORT_HTTP
+              value: {{ $httpPort | quote }}
+            {{- end }}
+            - name: TONIC_WORKER_HEALTH_PORT_HTTPS
+              value: {{ $httpsPort | quote }}
+              {{- if .Values.tonicai }}
+              {{- if .Values.tonicai.oracle_helper }}
+            - name: TONIC_ORACLE_HELPER_URL
+              value: https://tonic-oracle-helper:5001
+              {{- end }}
+              {{- end }}
+              {{- if .Values.awsLambdaRoleArn }}
+            - name: TONIC_LAMBDA_ROLE
+              value: {{ .Values.awsLambdaRoleArn }}
+              {{- end }}
+            {{- if .Values.tonicai }}
+            {{- if .Values.tonicai.worker }}
+            {{- if .Values.tonicai.worker.env}}
+            {{- range $key, $value := .Values.tonicai.worker.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- if .Values.tonicai.worker.envRaw }}
+            {{- with .Values.tonicai.worker.envRaw }}
+                {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+          image: {{ $image }}:{{ .Values.tonicVersion }}
+          imagePullPolicy: Always
+          name: tonic-worker
+          ports:
+          {{- if not $httpsOnly }}
+          - containerPort: {{ $httpPort }}
+            name: "http"
           {{- end }}
-        - name: ENABLE_LOG_COLLECTION
-          value: {{quote .Values.enableLogCollection }}
-        - name: ENVIRONMENT_NAME
-          value: {{ .Values.environmentName }}
-        - name: TONIC_PII_DETECTION_URL
-          value: https://tonic-pii-detection:7687
-        - name: TONIC_SPARK_URL
-          value: https://tonic-spark-helper:5501
-        - name: TONIC_NOTIFICATIONS_URL
-          value: https://tonic-notifications:7001
-        - name: TONIC_PYML_URL
-          value: https://tonic-pyml-service:7700
-        - name: TONIC_WEB_URL
-          value: https://tonic-web-server
-        - name: TONIC_HTTPS_ONLY
-          value: {{ $httpsOnly | quote }}
-        {{- if not $httpsOnly }}
-        - name: TONIC_WORKER_HEALTH_PORT_HTTP
-          value: {{ $httpPort | quote }}
-        {{- end }}
-        - name: TONIC_WORKER_HEALTH_PORT_HTTPS
-          value: {{ $httpsPort | quote }}
-          {{- if .Values.tonicai }}
-          {{- if .Values.tonicai.oracle_helper }}
-        - name: TONIC_ORACLE_HELPER_URL
-          value: https://tonic-oracle-helper:5001
-          {{- end }}
-          {{- end }}
-          {{- if .Values.awsLambdaRoleArn }}
-        - name: TONIC_LAMBDA_ROLE
-          value: {{ .Values.awsLambdaRoleArn }}
-          {{- end }}
-        {{- if .Values.tonicai }}
-        {{- if .Values.tonicai.worker }}
-        {{- if .Values.tonicai.worker.env}}
-        {{- range $key, $value := .Values.tonicai.worker.env }}
-        - name: {{ $key }}
-          value: {{ $value | quote }}
-        {{- end }}
-        {{- if .Values.tonicai.worker.envRaw }}
-        {{- with .Values.tonicai.worker.envRaw }}
-            {{- toYaml . | nindent 12 }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
-        image: {{ $image }}:{{ .Values.tonicVersion }}
-        imagePullPolicy: Always
-        name: tonic-worker
-        ports:
-        {{- if not $httpsOnly }}
-        - containerPort: {{ $httpPort }}
-          name: "http"
-        {{- end }}
-        - containerPort: {{ $httpsPort }}
-          name: "https"
-        resources:
-          limits:
-            memory: "12Gi"
-          requests:
-            memory: "6Gi"
-            ephemeral-storage: "1Gi"
-        livenessProbe:
-          exec:
-            command:
-            - /bin/bash
-            - -c
-            - ps -ef | grep Allos.Console.dll | grep -v grep
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        readinessProbe:
-          exec:
-            command:
-            - /bin/bash
-            - -c
-            - ps -ef | grep Allos.Console.dll | grep -v grep
-          initialDelaySeconds: 10
-          periodSeconds: 10
+          - containerPort: {{ $httpsPort }}
+            name: "https"
+          resources:
+            limits:
+              memory: "12Gi"
+            requests:
+              memory: "6Gi"
+              ephemeral-storage: "1Gi"
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - ps -ef | grep Allos.Console.dll | grep -v grep
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - ps -ef | grep Allos.Console.dll | grep -v grep
+            initialDelaySeconds: 10
+            periodSeconds: 10
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret

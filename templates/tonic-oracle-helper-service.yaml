@@ -1,6 +1,6 @@
 {{- if .Values.tonicai }}
 {{- if .Values.tonicai.oracle_helper }}
-{{- if .Values.tonicai.oracle_helper.version }}
+{{- if or (.Values.tonicai.oracle_helper.version) (.Values.tonicai.oracle_helper.image) }}
 apiVersion: v1
 kind: Service
 metadata:
