@@ -1,5 +1,5 @@
 # use_ingress currently only used by TIM
-{{- if eq (.Values.tonicai).use_ingress true  }}
+{{- if (.Values.tonicai).use_ingress }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
