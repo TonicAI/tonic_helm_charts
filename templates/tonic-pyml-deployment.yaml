@@ -76,8 +76,8 @@ spec:
         resources:
           limits:
             memory: "1Gi"
-            {{- if and ((.Values.resources).gpu).vendor  ((.Values.resources).gpu).amount }}
-            {{ .Values.resources.gpu.vendor}}: {{ .Values.resources.gpu.amount }}
+            {{- if ((.Values.resources).pyml_gpu).amount }}
+            nvidia.com/gpu: {{ .Values.resources.pyml_gpu.amount }}
             {{- end }}
           requests:
             memory: "512Mi"
