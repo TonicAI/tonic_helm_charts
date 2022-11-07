@@ -76,6 +76,9 @@ spec:
         resources:
           limits:
             memory: "1Gi"
+            {{- if and ((.Values.resources).gpu).vendor  ((.Values.resources).gpu).amount }}
+            {{ .Values.resources.gpu.vendor}}: {{ .Values.resources.gpu.amount }}
+            {{- end }}
           requests:
             memory: "512Mi"
             ephemeral-storage: "1Gi"
