@@ -121,3 +121,7 @@ spec:
         - name: tmp
           emptyDir: {}
         {{- end }}
+      tolerations:
+      {{- if (and (((.Values.resources).pyml_gpu).tolerations) (((.Values.resources).pyml_gpu).amount)) -}}
+      {{ toYaml .Values.resources.pyml_gpu.tolerations | nindent 8 }}
+      {{- end }}
