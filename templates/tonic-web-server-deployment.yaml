@@ -121,6 +121,10 @@ spec:
         - name: TONIC_SSO_IDENTITY_PROVIDER_ID
           value: {{quote .Values.tonicSsoConfig.identityProviderId }}
           {{- end }}
+          {{- if .Values.tonicSsoConfig.realmId }}
+        - name: TONIC_SSO_REALM_ID
+          value: {{quote .Values.tonicSsoConfig.realmId }}
+          {{- end }}
           {{- if .Values.tonicSsoConfig.authServerId }}
         - name: TONIC_SSO_AUTHORIZATION_SERVER_ID
           value: {{quote .Values.tonicSsoConfig.authServerId }}

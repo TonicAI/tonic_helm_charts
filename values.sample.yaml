@@ -135,6 +135,13 @@ tonicai:
 #   domain: <sso-domain>
 #   identityProviderId: <identity-provider-id>
 
+#   Keycloak SSO Config
+#   -----------------
+#   provider: Keycloak
+#   clientId: <client-id>
+#   domain: <url-of-keycloak>
+#   realmId: <realm-id>
+
 
 # Enterprise License Only: Configuration options for tonic-notifications.
 # tonicSmtpConfig:
