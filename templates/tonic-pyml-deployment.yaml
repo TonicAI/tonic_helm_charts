@@ -76,6 +76,9 @@ spec:
         resources:
           limits:
             memory: "1Gi"
+            {{- if ((.Values.resources).pyml_gpu).amount }}
+            nvidia.com/gpu: {{ .Values.resources.pyml_gpu.amount }}
+            {{- end }}
           requests:
             memory: "512Mi"
             ephemeral-storage: "1Gi"
@@ -118,3 +121,7 @@ spec:
         - name: tmp
           emptyDir: {}
         {{- end }}
+      tolerations:
+      {{- if (and (((.Values.resources).pyml_gpu).tolerations) (((.Values.resources).pyml_gpu).amount)) -}}
+      {{ toYaml .Values.resources.pyml_gpu.tolerations | nindent 8 }}
+      {{- end }}

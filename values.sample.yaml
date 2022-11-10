@@ -10,6 +10,21 @@ useUnprivilegedContainers: false
 # filesystem and provides necessary emptyDir volume mounts
 readOnlyRootFilesystem: false
 
+# To enable Nvidia acceleration for the pyml container, uncomment the following
+# lines and specify how many GPUs to allocate for the pod. If this feature is
+# enabled then your cluster must support the nvidia.com/gpu resource.
+# Additionally, if you use node taints and pod tolerances to control scheduling
+# of GPU bound workloads, then you can also provide a list of tolerations the
+# pyml pod should accept
+#resources:
+#  pyml_gpu:
+#    amount: 1
+#    tolerations:
+#      # example toleration
+#      - key: "tonic.ai/gpu"
+#        operator: "Exists"
+#        effect: "NoSchedule"
+
 # tonicdb is the postgres database that will hold information about your workspace.
 tonicdb:
   host: <db-host>
