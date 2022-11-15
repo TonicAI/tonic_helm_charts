@@ -120,16 +120,10 @@ spec:
             {{- end }}
             - name: TONIC_WORKER_HEALTH_PORT_HTTPS
               value: {{ $httpsPort | quote }}
-              {{- if .Values.tonicai }}
-              {{- if .Values.tonicai.oracle_helper }}
-            - name: TONIC_ORACLE_HELPER_URL
-              value: https://tonic-oracle-helper:5001
-              {{- end }}
-              {{- end }}
-              {{- if .Values.awsLambdaRoleArn }}
+            {{- if .Values.awsLambdaRoleArn }}
             - name: TONIC_LAMBDA_ROLE
               value: {{ .Values.awsLambdaRoleArn }}
-              {{- end }}
+            {{- end }}
             {{- if .Values.tonicai }}
             {{- if .Values.tonicai.worker }}
             {{- if .Values.tonicai.worker.env}}
