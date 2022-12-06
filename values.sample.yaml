@@ -90,11 +90,6 @@ tonicai:
     image: quay.io/tonicai/tonic_pii_detection
   pyml_service:
     image: quay.io/tonicai/tonic_pyml_service
-# Uncomment for Oracle Support. Valid versions are "19", "12_2", and "11_2".
-# oracle_helper:
-#   image: quay.io/tonicai/tonic_oracle_helper
-#   version: "19"
-#   lang: "AMERICAN_AMERICA.AL32UTF8"
 #
 # Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:

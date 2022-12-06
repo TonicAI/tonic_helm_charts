@@ -80,7 +80,6 @@ Each of the deployment YAML template files contains resource requests and limits
 
 ### Other miscellaneous configuration
 Other configuration items are necesary when using and to enable the following functionality. The Tonic support team will provide additional information if these apply for your use case.
-- Connecting to an Oracle database as a source and destination
 - Connecting to a Snowflake database as a source and destination
 - Connecting to a Redshift database as a source and destination
 - For Enterprise licensed users, configuring login/authentication via [Single Sign-On](https://docs.tonic.ai/app/admin/on-premise-deployment/single-sign-on)
