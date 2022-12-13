@@ -1,3 +1,13 @@
+{{ $image := "" }}
+{{- if  ((.Values.tonicai).pii_detection).image }}
+{{ $image = .Values.tonicai.pii_detection.image }}
+{{ else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{ $image = "quay.io/tonicai/tonic_pii_detection_unprivileged" }}
+  {{- else }}
+  {{ $image = "quay.io/tonicai/tonic_pii_detection" }}
+  {{- end}}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,19 +26,51 @@ spec:
       labels:
         app: tonic-pii-detection
     spec:
+      securityContext:
+        {{- if .Values.useUnprivilegedContainers }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        {{- end }}
       containers:
-      - env:
+      - securityContext:
+          {{- if .Values.useUnprivilegedContainers }}
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          {{- end }}
+          {{- if .Values.readOnlyRootFilesystem }}
+          readOnlyRootFilesystem: true 
+          {{- end }}
+        env:
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        {{- if  ((.Values.tonicai).pii_detection).image }}
-        image: {{ .Values.tonicai.pii_detection.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
-        image: quay.io/tonicai/tonic_pii_detection:{{ .Values.tonicVersion }}
-        {{- end }}
+        image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-pii-detection
+        volumeMounts:
+          {{- if .Values.readOnlyRootFilesystem }}
+          - name: public-log
+            mountPath: /publish/logs_public
+          - name: var-run-nginx
+            mountPath: /var/run/nginx
+          - name: var-run-superd
+            mountPath: /var/run/supervisor
+          - name: tmp
+            mountPath: /tmp
+          - name: var-log-nginx
+            mountPath: /var/log/nginx
+          - name: var-log-superd
+            mountPath: /var/log/supervisor
+          - name: vector
+            mountPath: /tonic/vector_data
+          - name: log
+            mountPath: /publish/log
+          - name: var-cache-nginx
+            mountPath: /var/cache/nginx
+          {{- end }}
         ports:
         - containerPort: 7687
         resources:
@@ -55,3 +97,24 @@ spec:
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
+      volumes:
+        {{- if .Values.readOnlyRootFilesystem }}
+        - name: public-log
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: var-log-nginx
+          emptyDir: {}
+        - name: var-log-superd
+          emptyDir: {}
+        - name: var-run-nginx
+          emptyDir: {}
+        - name: var-run-superd
+          emptyDir: {}
+        - name: vector
+          emptyDir: {}
+        - name: var-cache-nginx
+          emptyDir: {}
+        - name: log
+          emptyDir: {}
+        {{- end }}

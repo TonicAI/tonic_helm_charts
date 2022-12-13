@@ -17,7 +17,7 @@ Before deploying this setup, rename [values.sample.yaml](values.sample.yaml) to 
 
 ### Tonic license
 
-- `tonicLicense`: This value will be provided by Tonic.
+- This value will be provided by Tonic and must be input upon first startup of Tonic. Subsequently, it can be updated [from within the Tonic Admin portal](https://docs.tonic.ai/app/admin/on-premise-deployment/license-key-enter-update). Note that this was previously maintained via `tonicLicense`, but this is no longer needed since version 519.
 
 ### Environment name
 
@@ -80,7 +80,6 @@ Each of the deployment YAML template files contains resource requests and limits
 
 ### Other miscellaneous configuration
 Other configuration items are necessary when using and to enable the following functionality. The Tonic support team will provide additional information if these apply for your use case.
-- Connecting to an Oracle database as a source and destination
 - Connecting to a Snowflake database as a source and destination
 - Connecting to a Redshift database as a source and destination
 - For Enterprise licensed users, configuring login/authentication via [Single Sign-On](https://docs.tonic.ai/app/admin/on-premise-deployment/single-sign-on)

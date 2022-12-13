@@ -1,7 +1,29 @@
-# Use a Tonic license to enable different features. Your license key will be provided by Tonic.
-tonicLicense: <license-key>
-
 environmentName: <company-name>
+# useUnprivilegedContainers will pull images that do not run as root if
+# using tonic provided images rather than rehosted customer images
+# additionally it enforces that containers cannot run as root, uses the
+# default runtime security profile, forbids privilege escalation and drops 
+# all SYS_CAP privileges. This setting allows tonic to run in restricted
+# environments such as openshift
+useUnprivilegedContainers: false
+# setting this to true will run tonic containers with a read only root
+# filesystem and provides necessary emptyDir volume mounts
+readOnlyRootFilesystem: false
+
+# To enable Nvidia acceleration for the pyml container, uncomment the following
+# lines and specify how many GPUs to allocate for the pod. If this feature is
+# enabled then your cluster must support the nvidia.com/gpu resource.
+# Additionally, if you use node taints and pod tolerances to control scheduling
+# of GPU bound workloads, then you can also provide a list of tolerations the
+# pyml pod should accept
+#resources:
+#  pyml_gpu:
+#    amount: 1
+#    tolerations:
+#      # example toleration
+#      - key: "tonic.ai/gpu"
+#        operator: "Exists"
+#        effect: "NoSchedule"
 
 # tonicdb is the postgres database that will hold information about your workspace.
 tonicdb:
@@ -14,7 +36,8 @@ tonicdb:
 
 # tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
 # otherwise each generation will be internally consistent, but not consistent with other generations.
-tonicStatisticsSeed: <any-integer>
+# add quote to integer values to get rid of helm cast large number to float64, refer to this issue: https://github.com/helm/helm/issues/1707
+tonicStatisticsSeed: "<any-integer>"
 
 # numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
 numberOfWorkers: 1
@@ -49,22 +72,25 @@ tonicai:
       # Enables/Disables the HostIntegrations endpoint
       host_integration_enabled: "true" 
       kubernetes_role: "default"
+    ports:
+      httpsOnly: true
+      https: 443
+      http: 80
   worker:
     image: quay.io/tonicai/tonic_worker
     env: {}
     envRaw: {}
+    ports:
+      httpsOnly: true
+      https: 443
+      http: 80
   notifications:
     image: quay.io/tonicai/tonic_notifications
   pii_detection:
     image: quay.io/tonicai/tonic_pii_detection
   pyml_service:
     image: quay.io/tonicai/tonic_pyml_service
-# Uncomment for Oracle Support. Valid versions are "19", "12_2", and "11_2".
-# oracle_helper:
-#   image: quay.io/tonicai/tonic_oracle_helper
-#   version: "19"
-#   lang: "AMERICAN_AMERICA.AL32UTF8"
-
+#
 # Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
 #   groupFilter: <regex that matches groups to import into Tonic, like .*Tonic.*>
@@ -105,6 +131,13 @@ tonicai:
 #   domain: <sso-domain>
 #   identityProviderId: <identity-provider-id>
 
+#   Keycloak SSO Config
+#   -----------------
+#   provider: Keycloak
+#   clientId: <client-id>
+#   domain: <url-of-keycloak>
+#   realmId: <realm-id>
+
 
 # Enterprise License Only: Configuration options for tonic-notifications.
 # tonicSmtpConfig:
@@ -118,3 +151,6 @@ tonicai:
 
 # Role used by Tonic to connect to AWS Lambda. This is needed for Snowflake and Redshift integrations.
 # awsLambdaRoleArn: arn:aws:iam::<accountId>:role/<role-name>
+
+# Your license should be configured by an admin within the Tonic UI. It can optionally be set here if there is no admin.
+# tonicLicense: <license-key>

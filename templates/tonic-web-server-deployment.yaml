@@ -1,3 +1,17 @@
+{{ $image := "" }}
+{{- if  ((.Values.tonicai).web_server).image }}
+{{ $image = .Values.tonicai.web_server.image }}
+{{ else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{ $image = "quay.io/tonicai/tonic_web_server_unprivileged" }}
+  {{- else }}
+  {{ $image = "quay.io/tonicai/tonic_web_server" }}
+  {{- end }}
+{{- end }}
+{{- $ports := .Values.tonicai.web_server.ports }}
+{{- $httpsOnly := $ports.httpsOnly | default false }}
+{{- $httpPort := $ports.http | default 80 }}
+{{- $httpsPort := $ports.https | default 443 }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,8 +30,36 @@ spec:
       labels:
         app: tonic-web-server
     spec:
+      securityContext:
+        {{- if .Values.useUnprivilegedContainers }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        {{- end }}
       containers:
-      - env:
+      - securityContext:
+          {{- if .Values.useUnprivilegedContainers }}
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          {{- end }}
+          {{- if .Values.readOnlyRootFilesystem }}
+          readOnlyRootFilesystem: true
+          {{- end }}
+        volumeMounts:
+        {{- if .Values.readOnlyRootFilesystem }}
+        - name: var-log
+          mountPath: /var/log/supervisor
+        - name: var-run
+          mountPath: /var/run/supervisor
+        - name: tmp
+          mountPath: /tmp
+        - name: vector
+          mountPath: /tonic/vector_data
+        - name: db2
+          mountPath: /publish/clidriver
+        {{- end }}
+        env:
         {{- range $key, $value := .Values.tonicai.web_server.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
@@ -79,6 +121,10 @@ spec:
         - name: TONIC_SSO_IDENTITY_PROVIDER_ID
           value: {{quote .Values.tonicSsoConfig.identityProviderId }}
           {{- end }}
+          {{- if .Values.tonicSsoConfig.realmId }}
+        - name: TONIC_SSO_REALM_ID
+          value: {{quote .Values.tonicSsoConfig.realmId }}
+          {{- end }}
           {{- if .Values.tonicSsoConfig.authServerId }}
         - name: TONIC_SSO_AUTHORIZATION_SERVER_ID
           value: {{quote .Values.tonicSsoConfig.authServerId }}
@@ -118,16 +164,24 @@ spec:
           value: http://tonic-notifications:7000
         - name: TONIC_PYML_URL
           value: https://tonic-pyml-service:7700
-        {{- if  ((.Values.tonicai).web_server).image }}
-        image: {{ .Values.tonicai.web_server.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
-        image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
+        {{- if not $httpsOnly }}
+        - name: TONIC_PORT_HTTP
+          value: {{ $httpPort | quote }}
         {{- end }}
+        - name: TONIC_PORT_HTTPS
+          value: {{ $httpsPort | quote }}
+        - name: TONIC_HTTPS_ONLY
+          value: {{ $httpsOnly | quote }}
+        image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-web-server
         ports:
-        - containerPort: 80
-        - containerPort: 443
+        {{- if not $httpsOnly }}
+        - containerPort: {{ $httpPort }}
+          name: "http"
+        {{- end }}
+        - containerPort: {{ $httpsPort }}
+          name: "https"
         resources:
           limits:
             memory: "3Gi"
@@ -154,5 +208,17 @@ spec:
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
-      volumes: null
+      volumes:
+      {{- if .Values.readOnlyRootFilesystem }}
+      - name: var-run
+        emptyDir: {}
+      - name: var-log
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
+      - name: vector
+        emptyDir: {}
+      - name: db2
+        emptyDir: {}
+      {{- end }}
 status: {}
