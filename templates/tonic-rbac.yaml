@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 rules:
 - apiGroups: ["", "extensions", "apps"]
-  resources: ["pods", "pods/log", "deployments", "replicasets"]
+  resources: ["pods", "pods/log", "deployments", "replicasets", "secrets"]
   verbs: ["get", "list", "patch", "delete", "update"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
