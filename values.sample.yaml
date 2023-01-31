@@ -2,9 +2,13 @@ environmentName: <company-name>
 # useUnprivilegedContainers will pull images that do not run as root if
 # using tonic provided images rather than rehosted customer images
 # additionally it enforces that containers cannot run as root, uses the
-# default runtime security profile, forbids privilege escalation and drops 
+# default runtime security profile, forbids privilege escalation and drops
 # all SYS_CAP privileges. This setting allows tonic to run in restricted
 # environments such as openshift
+# NOTE setting explicit image tags in any of the tonicai services will
+# overwrite the default unprivileged image tags. If you rehost unprivileged
+# images then you should set useUnprivilegedContainers and tonicai service
+# image tags; otherwise you only need to set this flag to true or false
 useUnprivilegedContainers: false
 # setting this to true will run tonic containers with a read only root
 # filesystem and provides necessary emptyDir volume mounts
@@ -61,7 +65,7 @@ tonicai:
   web_server:
     env: {}
     envRaw: {}
-    image: quay.io/tonicai/tonic_web_server
+    #image: quay.io/tonicai/tonic_web_server
     # Comma separated list of user emails that should be have the Admin role in Tonic.
     administrators: example@email.com,other@email.com
     annotations:
@@ -70,14 +74,14 @@ tonicai:
       service.beta.kubernetes.io/azure-load-balancer-internal: "true"
     features:
       # Enables/Disables the HostIntegrations endpoint
-      host_integration_enabled: "true" 
+      host_integration_enabled: "true"
       kubernetes_role: "default"
     ports:
       httpsOnly: true
       https: 443
       http: 80
   worker:
-    image: quay.io/tonicai/tonic_worker
+    #image: quay.io/tonicai/tonic_worker
     env: {}
     envRaw: {}
     ports:
@@ -85,11 +89,11 @@ tonicai:
       https: 443
       http: 80
   notifications:
-    image: quay.io/tonicai/tonic_notifications
+    #image: quay.io/tonicai/tonic_notifications
   pii_detection:
-    image: quay.io/tonicai/tonic_pii_detection
+    #image: quay.io/tonicai/tonic_pii_detection
   pyml_service:
-    image: quay.io/tonicai/tonic_pyml_service
+    #image: quay.io/tonicai/tonic_pyml_service
 #
 # Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
