@@ -117,28 +117,24 @@ The deployment may take a few minutes with pods in the `ContainerCreating` statu
 ❯ kubectl get all -n my-tonic-namespace
 NAME                                       READY   STATUS              RESTARTS   AGE
 pod/tonic-notifications-578d8b8568-7tktx   0/1     ContainerCreating   0          3s
-pod/tonic-pii-detection-7b7dc7f5fb-hjhbm   0/1     Running             0          3s
 pod/tonic-pyml-service-7d99675b89-2jktq    0/1     ContainerCreating   0          3s
 pod/tonic-web-server-b4b795d8-bbr6g        0/1     Running             0          3s
 pod/tonic-worker-b8f87bc5c-srd6p           0/1     ContainerCreating   0          3s
 
 NAME                          TYPE           CLUSTER-IP       EXTERNAL-IP                                                                       PORT(S)             AGE
 service/tonic-notifications   ClusterIP      10.100.211.114   <none>                                                                            7000/TCP,7001/TCP   3s
-service/tonic-pii-detection   ClusterIP      10.100.45.33     <none>                                                                            7687/TCP            3s
 service/tonic-pyml-service    ClusterIP      10.100.202.103   <none>                                                                            7700/TCP            3s
 service/tonic-web-server      LoadBalancer   10.100.105.239   <load-balancer-assigned-url>                                                      443:32479/TCP       3s
 service/tonic-worker          ClusterIP      10.100.26.158    <none>                                                                            8080/TCP,4433/TCP   3s
 
 NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
 deployment.apps/tonic-notifications   0/1     1            0           3s
-deployment.apps/tonic-pii-detection   0/1     1            0           3s
 deployment.apps/tonic-pyml-service    0/1     1            0           3s
 deployment.apps/tonic-web-server      0/1     1            0           3s
 deployment.apps/tonic-worker          0/1     1            0           3s
 
 NAME                                             DESIRED   CURRENT   READY   AGE
 replicaset.apps/tonic-notifications-578d8b8568   1         1         0       3s
-replicaset.apps/tonic-pii-detection-7b7dc7f5fb   1         1         0       3s
 replicaset.apps/tonic-pyml-service-7d99675b89    1         1         0       3s
 replicaset.apps/tonic-web-server-b4b795d8        1         1         0       3s
 replicaset.apps/tonic-worker-b8f87bc5c           1         1         0       3s

@@ -86,8 +86,6 @@ tonicai:
       http: 80
   notifications:
     image: quay.io/tonicai/tonic_notifications
-  pii_detection:
-    image: quay.io/tonicai/tonic_pii_detection
   pyml_service:
     image: quay.io/tonicai/tonic_pyml_service
 #
