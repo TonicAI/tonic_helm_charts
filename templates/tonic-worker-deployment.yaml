@@ -60,7 +60,7 @@ spec:
             readOnlyRootFilesystem: true
             {{- end }}
           volumeMounts:
-            {{- if .Values.useUnprivilegedContainers }}
+            {{- if .Values.readOnlyRootFilesystem }}
             - name: var-log
               mountPath: /var/log/supervisor
             - name: var-run
