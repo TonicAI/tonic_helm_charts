@@ -102,8 +102,6 @@ spec:
               value: {{quote .Values.enableLogCollection }}
             - name: ENVIRONMENT_NAME
               value: {{ .Values.environmentName }}
-            - name: TONIC_PII_DETECTION_URL
-              value: https://tonic-pii-detection:7687
             - name: TONIC_SPARK_URL
               value: https://tonic-spark-helper:5501
             - name: TONIC_NOTIFICATIONS_URL
