@@ -154,6 +154,10 @@ spec:
         - name: TONIC_KUBERNETES_NAMESPACE
           value: {{ .Release.Namespace }}
         {{- end }}
+        {{- if eq ((((.Values.tonicai).web_server).features).host_integration_enabled | default "false") "tim" }}
+        - name: TONIC_HOST_INTEGRATION
+          value: "TonicInstallationManager"
+        {{- end }}
         {{- if .Values.tonicai.web_server.administrators }}
         - name: TONIC_ADMINISTRATORS
           value: {{ .Values.tonicai.web_server.administrators }}
