@@ -65,3 +65,11 @@ Create the name of the service account to use
     {{ "" }}
 {{- end -}}
 {{- end }}
+
+{{- define "tonic.hostIntegration" -}}
+{{- if ((.Values.tonicai).web_server).features -}}
+{{- .Values.tonicai.web_server.features.host_integration_enabled -}}
+{{- else -}}
+{{ "false" }}
+{{- end -}}
+{{- end }}
