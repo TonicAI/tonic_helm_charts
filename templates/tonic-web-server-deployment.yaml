@@ -148,13 +148,13 @@ spec:
               key: secret
               optional: true
           {{- end }}
-        {{- if eq ((((.Values.tonicai).web_server).features).host_integration_enabled | default "false") "true" }}
+        {{- if eq (include "tonic.hostIntegration" .) "true"}}
         - name: TONIC_HOST_INTEGRATION
           value: "kubernetes"
         - name: TONIC_KUBERNETES_NAMESPACE
           value: {{ .Release.Namespace }}
         {{- end }}
-        {{- if eq ((((.Values.tonicai).web_server).features).host_integration_enabled | default "false") "tim" }}
+        {{- if eq (include "tonic.hostIntegration" .) "tim" }}
         - name: TONIC_HOST_INTEGRATION
           value: "TonicInstallationManager"
         {{- end }}
