@@ -89,7 +89,7 @@ tonicai:
       https: 443
       http: 80
   notifications:
-    image: quay.io/tonicai/tonic_notifications
+    #image: quay.io/tonicai/tonic_notifications
   pyml_service:
     #image: quay.io/tonicai/tonic_pyml_service
 #
