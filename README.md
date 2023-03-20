@@ -82,8 +82,8 @@ Each of the deployment YAML template files contains resource requests and limits
 Other configuration items are necessary when using and to enable the following functionality. The Tonic support team will provide additional information if these apply for your use case.
 - Connecting to a Snowflake database as a source and destination
 - Connecting to a Redshift database as a source and destination
-- For Enterprise licensed users, configuring login/authentication via [Single Sign-On](https://docs.tonic.ai/app/admin/on-premise-deployment/single-sign-on)
-- For enterprise licensed users, configuring a notifications email server
+- For Professional and Enterprise licensed users, configuring login/authentication via [Single Sign-On](https://docs.tonic.ai/app/admin/on-premise-deployment/single-sign-on)
+- For Professional and Enterprise licensed users, configuring an email server for collaboration/commenting email notifications
 
 
 
