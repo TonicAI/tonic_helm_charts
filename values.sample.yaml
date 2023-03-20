@@ -141,7 +141,7 @@ tonicai:
 #   realmId: <realm-id>
 
 
-# Enterprise License Only: Configuration options for tonic-notifications.
+# Professional and Enterprise License Only: Configuration options for tonic-notifications.
 # tonicSmtpConfig:
 #   tonicUrl: <tonic URL, for links>
 #   sendingAddress: <notifications@yourdomain.com>
