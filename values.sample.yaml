@@ -1,19 +1,4 @@
 environmentName: <company-name>
-# useUnprivilegedContainers will pull images that do not run as root if
-# using tonic provided images rather than rehosted customer images
-# additionally it enforces that containers cannot run as root, uses the
-# default runtime security profile, forbids privilege escalation and drops
-# all SYS_CAP privileges. This setting allows tonic to run in restricted
-# environments such as openshift
-# NOTE setting explicit image tags in any of the tonicai services will
-# overwrite the default unprivileged image tags. If you rehost unprivileged
-# images then you should set useUnprivilegedContainers and tonicai service
-# image tags; otherwise you only need to set this flag to true or false
-useUnprivilegedContainers: false
-# setting this to true will run tonic containers with a read only root
-# filesystem and provides necessary emptyDir volume mounts
-readOnlyRootFilesystem: false
-
 # To enable Nvidia acceleration for the pyml container, uncomment the following
 # lines and specify how many GPUs to allocate for the pod. If this feature is
 # enabled then your cluster must support the nvidia.com/gpu resource.

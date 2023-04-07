@@ -2,11 +2,7 @@
 {{- if  ((.Values.tonicai).worker).image }}
 {{- $image = .Values.tonicai.worker.image }}
 {{- else }}
-  {{- if .Values.useUnprivilegedContainers }}
-  {{ $image = "quay.io/tonicai/tonic_worker_unprivileged" }}
-  {{- else }}
   {{- $image = "quay.io/tonicai/tonic_worker" }}
-  {{- end }}
 {{- end }}
 {{- $ports := .Values.tonicai.worker.ports }}
 {{- $httpsOnly := $ports.httpsOnly | default false }}
@@ -31,13 +27,10 @@ spec:
         app: tonic-worker
     spec:
       securityContext:
-        {{- if .Values.useUnprivilegedContainers }}
         seccompProfile:
           type: RuntimeDefault
         runAsNonRoot: true
-        {{- end }}
       volumes:
-        {{- if .Values.readOnlyRootFilesystem }}
         - name: var-run
           emptyDir: {}
         - name: var-log
@@ -48,19 +41,13 @@ spec:
           emptyDir: {}
         - name: db2
           emptyDir: {}
-        {{- end }}
       containers:
         - securityContext:
-            {{- if .Values.useUnprivilegedContainers }}
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
-            {{- end }}
-            {{- if .Values.readOnlyRootFilesystem }}
             readOnlyRootFilesystem: true
-            {{- end }}
           volumeMounts:
-            {{- if .Values.readOnlyRootFilesystem }}
             - name: var-log
               mountPath: /var/log/supervisor
             - name: var-run
@@ -71,7 +58,6 @@ spec:
               mountPath: /tonic/vector_data
             - name: db2
               mountPath: /publish/clidriver
-            {{- end }}
           env:
             - name: TONIC_DB_DATABASE
               value: {{ .Values.tonicdb.dbName }}
