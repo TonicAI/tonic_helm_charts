@@ -2,11 +2,7 @@
 {{- if  ((.Values.tonicai).notifications).image }}
 {{- $image = .Values.tonicai.notifications.image }}
 {{- else }}
-  {{- if .Values.useUnprivilegedContainers }}
-  {{- $image = "quay.io/tonicai/tonic_notifications_unprivileged" }}
-  {{- else }}
   {{- $image = "quay.io/tonicai/tonic_notifications" }}
-  {{- end }}
 {{- end }}
 apiVersion: apps/v1
 kind: Deployment
@@ -27,21 +23,15 @@ spec:
         app: tonic-notifications
     spec:
       securityContext:
-        {{- if .Values.useUnprivilegedContainers }}
         seccompProfile:
           type: RuntimeDefault
         runAsNonRoot: true
-        {{- end }}
       containers:
       - securityContext:
-          {{- if .Values.useUnprivilegedContainers }}
           allowPrivilegeEscalation: false
           capabilities:
             drop: ["ALL"]
-          {{- end }}
-          {{- if .Values.readOnlyRootFilesystem }}
           readOnlyRootFilesystem: true
-          {{- end }}
         env:
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbName }}
@@ -99,7 +89,6 @@ spec:
         imagePullPolicy: Always
         name: tonic-notifications
         volumeMounts:
-          {{- if .Values.readOnlyRootFilesystem }}
           - name: vector
             mountPath: /tonic/vector_data
           - name: var-run-superd
@@ -110,7 +99,6 @@ spec:
             mountPath: /var/log/nginx
           - name: tmp
             mountPath: /tmp
-          {{- end }}
         resources:
           limits:
             memory: "1Gi"
@@ -141,7 +129,6 @@ spec:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       volumes:
-        {{- if .Values.readOnlyRootFilesystem }}
         - name: tmp
           emptyDir: {}
         - name: var-log-superd
@@ -152,5 +139,4 @@ spec:
           emptyDir: {}
         - name: vector
           emptyDir: {}
-        {{- end }}
 status: {}
