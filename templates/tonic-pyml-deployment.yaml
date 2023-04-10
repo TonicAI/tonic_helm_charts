@@ -82,20 +82,15 @@ spec:
           requests:
             memory: "512Mi"
             ephemeral-storage: "1Gi"
-        livenessProbe:
+        startupProbe:
           httpGet:
             path: /health
             port: 7700
             scheme: HTTPS
-          initialDelaySeconds: 60
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 7700
-            scheme: HTTPS
-          initialDelaySeconds: 10
-          periodSeconds: 10
+          initialDelaySeconds: 5
+          periodSeconds: 60
+          timeoutSeconds: 30
+          failureThreshold: 5
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
