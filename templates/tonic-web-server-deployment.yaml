@@ -192,22 +192,15 @@ spec:
           requests:
             memory: "2Gi"
             ephemeral-storage: "1Gi"
-        livenessProbe:
-          exec:
-            command:
-            - /bin/bash
-            - -c
-            - ps -ef | grep Allos.Api.dll | grep -v grep
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        readinessProbe:
-          exec:
-            command:
-            - /bin/bash
-            - -c
-            - ps -ef | grep Allos.Api.dll | grep -v grep
-          initialDelaySeconds: 10
-          periodSeconds: 10
+        startupProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /health
+            port: {{ $httpsPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 60
+          timeoutSeconds: 30
+          failureThreshold: 5
       restartPolicy: Always
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       imagePullSecrets:
