@@ -63,7 +63,7 @@ tonicai:
 # Use a Tonic license to enable different features. License keys can be obtained from Tonic.
 tonicLicense: <license-key>
 
-# Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
+# Professional and Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
 #   provider: <provider-name>
 #   domain: <sso-domain>
