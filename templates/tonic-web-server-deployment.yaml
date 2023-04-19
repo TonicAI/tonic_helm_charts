@@ -1,3 +1,17 @@
+{{ $image := "" }}
+{{- if  ((.Values.tonicai).web_server).image }}
+{{ $image = .Values.tonicai.web_server.image }}
+{{ else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{ $image = "quay.io/tonicai/tonic_web_server_unprivileged" }}
+  {{- else }}
+  {{ $image = "quay.io/tonicai/tonic_web_server" }}
+  {{- end }}
+{{- end }}
+{{- $ports := .Values.tonicai.web_server.ports }}
+{{- $httpsOnly := $ports.httpsOnly | default false }}
+{{- $httpPort := $ports.http | default 80 }}
+{{- $httpsPort := $ports.https | default 443 }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,8 +30,36 @@ spec:
       labels:
         app: tonic-web-server
     spec:
+      securityContext:
+        {{- if .Values.useUnprivilegedContainers }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        {{- end }}
       containers:
-      - env:
+      - securityContext:
+          {{- if .Values.useUnprivilegedContainers }}
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          {{- end }}
+          {{- if .Values.readOnlyRootFilesystem }}
+          readOnlyRootFilesystem: true
+          {{- end }}
+        volumeMounts:
+        {{- if .Values.readOnlyRootFilesystem }}
+        - name: var-log
+          mountPath: /var/log/supervisor
+        - name: var-run
+          mountPath: /var/run/supervisor
+        - name: tmp
+          mountPath: /tmp
+        - name: vector
+          mountPath: /tonic/vector_data
+        - name: db2
+          mountPath: /publish/clidriver
+        {{- end }}
+        env:
         {{- range $key, $value := .Values.tonicai.web_server.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
@@ -50,13 +92,12 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-          {{- if .Values.tonicLicense }}
         - name: TONIC_LICENSE
           valueFrom:
             secretKeyRef:
               name: tonic-license-secret
               key: license
-          {{- end }}
+              optional: true
           {{- if .Values.tonicSsoConfig }}
           {{- if .Values.tonicSsoConfig.provider }}
         - name: TONIC_SSO_PROVIDER
@@ -70,16 +111,19 @@ spec:
         - name: TONIC_SSO_CLIENT_ID
           value: {{quote .Values.tonicSsoConfig.clientId }}
           {{- end }}
-          {{- if .Values.tonicSsoConfig.clientSecret }}
         - name: TONIC_SSO_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
               name: tonic-sso-client-secret
               key: secret
-          {{- end }}
+              optional: true
           {{- if .Values.tonicSsoConfig.identityProviderId }}
         - name: TONIC_SSO_IDENTITY_PROVIDER_ID
           value: {{quote .Values.tonicSsoConfig.identityProviderId }}
+          {{- end }}
+          {{- if .Values.tonicSsoConfig.realmId }}
+        - name: TONIC_SSO_REALM_ID
+          value: {{quote .Values.tonicSsoConfig.realmId }}
           {{- end }}
           {{- if .Values.tonicSsoConfig.authServerId }}
         - name: TONIC_SSO_AUTHORIZATION_SERVER_ID
@@ -93,12 +137,26 @@ spec:
         - name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
           value: {{quote .Values.tonicSsoConfig.samlIdpMetadata }}
           {{- end }}
+          {{- if .Values.tonicSsoConfig.tenantId }}
+        - name: TONIC_SSO_TENANT_ID
+          value: {{quote .Values.tonicSsoConfig.tenantId }}
           {{- end }}
-        {{- if eq ((((.Values.tonicai).web_server).features).host_integration_enabled | default "false") "true" }}
+        - name: TONIC_SSO_SERVICE_ACCOUNT_JSON_BASE64
+          valueFrom:
+            secretKeyRef:
+              name: tonic-sso-google-account-service-json-secret
+              key: secret
+              optional: true
+          {{- end }}
+        {{- if eq (include "tonic.hostIntegration" .) "true"}}
         - name: TONIC_HOST_INTEGRATION
           value: "kubernetes"
         - name: TONIC_KUBERNETES_NAMESPACE
           value: {{ .Release.Namespace }}
+        {{- end }}
+        {{- if eq (include "tonic.hostIntegration" .) "tim" }}
+        - name: TONIC_HOST_INTEGRATION
+          value: "TonicInstallationManager"
         {{- end }}
         {{- if .Values.tonicai.web_server.administrators }}
         - name: TONIC_ADMINISTRATORS
@@ -110,40 +168,54 @@ spec:
           value: http://tonic-notifications:7000
         - name: TONIC_PYML_URL
           value: https://tonic-pyml-service:7700
-        {{- if  ((.Values.tonicai).web_server).image }}
-        image: {{ .Values.tonicai.web_server.image }}:{{ .Values.tonicVersion }}
-        {{ else }}
-        image: quay.io/tonicai/tonic_web_server:{{ .Values.tonicVersion }}
+        {{- if not $httpsOnly }}
+        - name: TONIC_PORT_HTTP
+          value: {{ $httpPort | quote }}
         {{- end }}
+        - name: TONIC_PORT_HTTPS
+          value: {{ $httpsPort | quote }}
+        - name: TONIC_HTTPS_ONLY
+          value: {{ $httpsOnly | quote }}
+        image: {{ $image }}:{{ .Values.tonicVersion }}
         imagePullPolicy: Always
         name: tonic-web-server
         ports:
-        - containerPort: 80
-        - containerPort: 443
+        {{- if not $httpsOnly }}
+        - containerPort: {{ $httpPort }}
+          name: "http"
+        {{- end }}
+        - containerPort: {{ $httpsPort }}
+          name: "https"
         resources:
           limits:
             memory: "3Gi"
           requests:
             memory: "2Gi"
-        livenessProbe:
-          exec:
-            command:
-            - /bin/bash
-            - -c
-            - ps -ef | grep Allos.Api.dll | grep -v grep
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        readinessProbe:
-          exec:
-            command:
-            - /bin/bash
-            - -c
-            - ps -ef | grep Allos.Api.dll | grep -v grep
-          initialDelaySeconds: 10
-          periodSeconds: 10
+            ephemeral-storage: "1Gi"
+        startupProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /health
+            port: {{ $httpsPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 60
+          timeoutSeconds: 30
+          failureThreshold: 5
       restartPolicy: Always
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
-      volumes: null
+      volumes:
+      {{- if .Values.readOnlyRootFilesystem }}
+      - name: var-run
+        emptyDir: {}
+      - name: var-log
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
+      - name: vector
+        emptyDir: {}
+      - name: db2
+        emptyDir: {}
+      {{- end }}
 status: {}

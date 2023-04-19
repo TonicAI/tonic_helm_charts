@@ -1,3 +1,5 @@
+{{- $workerPorts := .Values.tonicai.worker.workerPorts | default dict }}
+{{- $httpsOnly := $workerPorts.httpsOnly | default false }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,12 +9,14 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
+  {{- if not $httpsOnly }}
   - name: "8080"
     port: 8080
-    targetPort: 80
+    targetPort: "http"
+  {{- end }}
   - name: "4433"
     port: 4433
-    targetPort: 443
+    targetPort: "https"
   selector:
     app: tonic-worker
 status:
