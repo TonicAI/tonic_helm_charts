@@ -1,3 +1,5 @@
+{{- $ports := ((.Values.tonicai).web_server).ports | default dict }}
+{{- $httpsPort := $ports.https | default 6543 }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -20,7 +22,7 @@ spec:
   ports:
   - name: "https"
     port: 443
-    targetPort: "https"
+    targetPort: {{ $httpsPort | quote }}
 # use_ingress currently only used by TIM
 {{- if (.Values.tonicai).use_ingress }}
   type: ClusterIP
