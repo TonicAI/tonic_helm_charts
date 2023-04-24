@@ -58,34 +58,32 @@ spec:
           value: {{ .Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
-        {{- if .Values.tonicSmtpConfig }}
-        {{- if .Values.tonicSmtpConfig.tonicUrl }}
+        {{- if ((.Values).tonicSmtpConfig).tonicUrl }}
         - name: TONIC_URL
           value: {{ .Values.tonicSmtpConfig.tonicUrl }}
         {{- end}}
-        {{- if .Values.tonicSmtpConfig.sendingAddress }}
+        {{- if ((.Values).tonicSmtpConfig).sendingAddress }}
         - name: TONIC_NOTIFICATION_SENDING_ADDRESS
           value: {{ .Values.tonicSmtpConfig.sendingAddress }}
         {{- end}}
-        {{- if .Values.tonicSmtpConfig.smtpServerAddress }}
+        {{- if ((.Values).tonicSmtpConfig).smtpServerAddress }}
         - name: TONIC_NOTIFICATION_SMTP_SERVER_ADDRESS
           value: {{ .Values.tonicSmtpConfig.smtpServerAddress }}
         {{- end}}
-        {{- if .Values.tonicSmtpConfig.smtpServerPort }}
+        {{- if ((.Values).tonicSmtpConfig).smtpServerPort }}
         - name: TONIC_NOTIFICATION_SMTP_SERVER_PORT
           value: {{quote .Values.tonicSmtpConfig.smtpServerPort }}
         {{- end}}
-        {{- if .Values.tonicSmtpConfig.smtpUsername }}
+        {{- if ((.Values).tonicSmtpConfig).smtpUsername }}
         - name: TONIC_NOTIFICATION_SMTP_USERNAME
           value: {{ .Values.tonicSmtpConfig.smtpUsername }}
         {{- end}}
-        {{- if .Values.tonicSmtpConfig.smtpPassword }}
+        {{- if ((.Values).tonicSmtpConfig).smtpPassword }}
         - name: TONIC_NOTIFICATION_SMTP_PASSWORD
           valueFrom:
             secretKeyRef:
               name: tonic-smtp-password
               key: password
-        {{- end}}
         {{- end}}
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
@@ -95,7 +93,7 @@ spec:
           value: "7000"
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
           value: "7001"
-        image: {{ $image }}:{{ .Values.tonicVersion }}
+        image: {{ $image }}:{{ .Values.tonicVersion | default "latest" }}
         imagePullPolicy: Always
         name: tonic-notifications
         volumeMounts:

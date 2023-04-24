@@ -8,10 +8,10 @@
   {{- $image = "quay.io/tonicai/tonic_worker" }}
   {{- end }}
 {{- end }}
-{{- $ports := .Values.tonicai.worker.ports }}
-{{- $httpsOnly := $ports.httpsOnly | default false }}
-{{- $httpPort := $ports.http | default 80 }}
-{{- $httpsPort := $ports.https | default 443 }}
+{{- $ports := ((.Values.tonicai).worker).ports | default dict }}
+{{- $httpsOnly := $ports.httpsOnly | default true }}
+{{- $httpPort := $ports.http | default 2480 }}
+{{- $httpsPort := $ports.https | default 2467 }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -45,8 +45,6 @@ spec:
         - name: tmp
           emptyDir: {}
         - name: vector
-          emptyDir: {}
-        - name: db2
           emptyDir: {}
         {{- end }}
       containers:
@@ -137,7 +135,7 @@ spec:
             {{- end }}
             {{- end }}
             {{- end }}
-          image: {{ $image }}:{{ .Values.tonicVersion }}
+          image: {{ $image }}:{{ .Values.tonicVersion | default "latest" }}
           imagePullPolicy: Always
           name: tonic-worker
           ports:
