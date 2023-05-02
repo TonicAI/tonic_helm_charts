@@ -22,7 +22,7 @@ spec:
   ports:
   - name: "https"
     port: 443
-    targetPort: {{ $httpsPort | quote }}
+    targetPort: {{ $httpsPort }}
 # use_ingress currently only used by TIM
 {{- if (.Values.tonicai).use_ingress }}
   type: ClusterIP
