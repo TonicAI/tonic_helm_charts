@@ -14,11 +14,11 @@ spec:
   {{- if not $httpsOnly }}
   - name: "8080"
     port: 8080
-    targetPort: {{ $httpPort | quote }}
+    targetPort: {{ $httpPort }}
   {{- end }}
   - name: "4433"
     port: 4433
-    targetPort: {{ $httpsPort | quote }}
+    targetPort: {{ $httpsPort }}
   selector:
     app: tonic-worker
 status:
