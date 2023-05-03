@@ -43,6 +43,15 @@ spec:
           readOnlyRootFilesystem: true
           {{- end }}
         env:
+        {{- range $key, $value := ((.Values.tonicai).notifications).env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if ((.Values.tonicai).notifications).envRaw }}
+        {{- with .Values.tonicai.notifications.envRaw }}
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME

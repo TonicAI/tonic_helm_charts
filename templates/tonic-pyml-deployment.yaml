@@ -43,6 +43,15 @@ spec:
           readOnlyRootFilesystem: true
           {{- end }}
         env:
+        {{- range $key, $value := ((.Values.tonicai).pyml_service).env }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- if ((.Values.tonicai).pyml_service).envRaw }}
+        {{- with .Values.tonicai.pyml_service.envRaw }}
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- end }}
         - name: ENABLE_LOG_COLLECTION
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
