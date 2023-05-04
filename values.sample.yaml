@@ -89,8 +89,12 @@ tonicai:
       https: 443
       http: 80
   notifications:
+    env: {}
+    envRaw: {}
     #image: quay.io/tonicai/tonic_notifications
   pyml_service:
+    env: {}
+    envRaw: {}
     #image: quay.io/tonicai/tonic_pyml_service
 
 # Professional and Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
