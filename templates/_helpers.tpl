@@ -1,4 +1,3 @@
-{{/* vim: set filetype=mustache: */}}
 {{/*
 Expand the name of the chart.
 */}}
@@ -104,7 +103,12 @@ the deployment. This should only be called if $.Values.tonicSsoConfig is populat
 {{ fail "Unsupported SSO provider " .provider }}
 {{ end }}
 {{- end -}}
+{{/* end tonic.sso */}}
 
+{{/*
+Given $.Values.tonicSsoConfig, produces the environment variables needed to
+configure AWS sso
+*/}}
 {{- define "tonic.sso.aws" -}}
 {{- if (.metdataXml).url -}}
 - name: TONIC_SSO_SAML_IDP_METADATA_XML_URL
@@ -119,7 +123,12 @@ the deployment. This should only be called if $.Values.tonicSsoConfig is populat
 {{ fail "Either metadataXml.url, metadataXml.base64 or samlIdpMetadataXml must be provided to configure AWS sso" }}
 {{- end -}}
 {{- end -}}
+{{/* end tonic.sso.aws */}}
 
+{{/*
+Given $.Values.tonicSsoConfig, produces the environment variables needed to
+configure Azure sso
+*/}}
 {{- define "tonic.sso.azure" -}}
 - name: TONIC_SSO_TENANT_ID
   value: {{ required "tonicSsoConfig.tenantId is required to configure Azure sso" .tenantId | quote }}
@@ -135,7 +144,12 @@ the deployment. This should only be called if $.Values.tonicSsoConfig is populat
       key: secret
       optional: false
 {{- end -}}
+{{/* end tonic.sso.azure */}}
 
+{{/*
+Given $.Values.tonicSsoConfig, produces the environment variables needed to
+configure Duo sso
+*/}}
 {{- define "tonic.sso.duo" -}}
 - name: TONIC_SSO_DOMAIN
   value: {{ required "tonicSsoConfig.domain is required to configure Duo sso" .domain | quote }}
@@ -151,7 +165,12 @@ the deployment. This should only be called if $.Values.tonicSsoConfig is populat
       key: secret
       optional: false
 {{- end -}}
+{{/* end tonic.sso.duo */}}
 
+{{/*
+Given $.Values.tonicSsoConfig, produces the environment variables needed to
+configure Google sso
+*/}}
 {{- define "tonic.sso.google" -}}
 - name: TONIC_SSO_CLIENT_ID
   value: {{ required "tonicSsoConfig.clientId is required to configure Google sso" .clientId | quote }}
@@ -176,7 +195,12 @@ the deployment. This should only be called if $.Values.tonicSsoConfig is populat
       key: secret
       optional: false
 {{- end -}}
+{{/* end tonic.sso.google */}}
 
+{{/*
+Given $.Values.tonicSsoConfig, produces the environment variables needed to
+configure Okta sso
+*/}}
 {{- define "tonic.sso.okta" -}}
 - name: TONIC_SSO_DOMAIN
   value: {{ required "tonicSsoConfig.domain is required to configure Okta sso" .domain | quote }}
@@ -191,7 +215,12 @@ the deployment. This should only be called if $.Values.tonicSsoConfig is populat
   value: {{ quote .authServerId }}
 {{- end }}
 {{- end -}}
+{{/* end tonic.sso.okta */}}
 
+{{/*
+Given $.Values.tonicSsoConfig, produces the environment variables needed to
+configure Keycloak sso
+*/}}
 {{- define "tonic.sso.keycloak" -}}
 - name: TONIC_SSO_REALM_ID
   value: {{ required "tonicSsoConfig.realmId is required to configure Keycloak sso" .realmId | quote }}
@@ -200,7 +229,12 @@ the deployment. This should only be called if $.Values.tonicSsoConfig is populat
 - name: TONIC_SSO_CLIENT_ID
   value: {{ required "tonicSsoConfig.clientId is required to configure Keycloak sso" .clientId | quote }}
 {{- end -}}
+{{/* end tonic.sso.keycloak */}}
 
+{{/*
+Given $.Values.tonicSsoConfig, produces the environment variables needed to
+configure generic saml sso
+*/}}
 {{- define "tonic.sso.saml" -}}
 {{- if .entityId }}
 - name: TONIC_SSO_SAML_ENTITY_ID
@@ -216,3 +250,4 @@ the deployment. This should only be called if $.Values.tonicSsoConfig is populat
 {{- fail "Either metadataXml.url or metadataXml.base64 is required" }}
 {{- end -}}
 {{- end -}}
+{{/* end tonic.sso.saml */}}
