@@ -106,6 +106,7 @@ tonicai:
 #   provider: AWS
 #   identityProviderId: <identity-provider-id>
 #   samlIdpMetadataXml: <base64 encoded SAML metadata IDP xml>
+#   samlIddMetadataXmlUrl: <url to idp metadata xml>
 
 #   Azure SSO Config
 #   -----------------
@@ -144,6 +145,13 @@ tonicai:
 #   domain: <url-of-keycloak>
 #   realmId: <realm-id>
 
+#   Generic Saml SSO Config
+#   -----------------------
+#   provider: SAML
+#   metadataXml: either url or base64 must be provided, url is given precedence if both are provided
+#     url:
+#     base64:
+#   entityId:  entity id used to send requests from tonic, if not provided, will be determined from metadata xml
 
 # Professional and Enterprise License Only: Configuration options for tonic-notifications.
 # tonicSmtpConfig:

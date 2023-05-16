@@ -73,3 +73,123 @@ Create the name of the service account to use
 {{ "false" }}
 {{- end -}}
 {{- end }}
+
+{{/*
+Given the $.tonicSsoConfig, create all environment variables needed for
+the deployment. This should only be called if $.tonicSsoConfig is populated
+*/}}
+{{- define "tonic.sso" -}}
+{{- $provider := (required "tonicSsoConfig.provider is required for SSO" .provider | lower) -}}
+- name: TONIC_SSO_PROVIDER
+  value: {{ quote .provider }}
+{{- if .groupFilter -}}
+- name: TONIC_SSO_GROUP_FILTER_REGEX
+  value: {{quote .groupFilter}}
+{{- end -}}
+{{- if eq $provider "aws" }}
+{{ include "tonic.sso.aws" . }}
+{{- else if eq $provider "azure" }}
+{{ include "tonic.sso.azure" . }}
+{{- else if eq $provider "duo" }}
+{{ include "tonic.sso.duo" . }}
+{{- else if eq $provider "google" }}
+{{ include "tonic.sso.google" . }}
+{{- else if eq $provider "okta" }}
+{{ include "tonic.sso.okta" . }}
+{{- else if eq $provider "keycloak" }}
+{{ include "tonic.sso.keycloak" . }}
+{{- else if eq $provider "saml" }}
+{{ include "tonic.sso.saml" . }}
+{{- else -}}
+{{- fail "Unsupported SSO provider " .provider -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "tonic.sso.aws" -}}
+{{- if .samlIdpMetadataUrl -}}
+- name: TONIC_SSO_SAML_IDP_METADATA_XML_URL
+  value: {{ quote .samlIdpMetadataUrl }}
+{{- else if .samlIdpMetadataXml }}
+- name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
+  value: {{ quote .samlIdpMetadataXml }}
+{{- else -}}
+{{ fail "Either samlIdpMetadataUrl or samlIdpMetadataXml must be provided to configre AWS SSO" }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tonic.sso.azure" -}}
+- name: TONIC_SSO_TENANT_ID
+  value: {{ quote .tenantId }}
+- name: TONIC_SSO_CLIENT_ID
+  value: {{ quote .clientId }}
+- name: TONIC_SSO_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: tonic-sso-client-secret
+      key: secret
+      optional: false
+{{- end -}}
+
+{{- define "tonic.sso.duo" -}}
+- name: TONIC_SSO_DOMAIN
+  value: {{ quote .domain }}
+- name: TONIC_SSO_CLIENT_ID
+  value: {{ quote .clientId }}
+- name: TONIC_SSO_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: tonic-sso-client-secret
+      key: secret
+      optional: false
+{{- end -}}
+
+{{- define "tonic.sso.google" -}}
+- name: TONIC_SSO_DOMAIN
+  value: {{ quote .domain }}
+- name: TONIC_SSO_SERVICE_ACCOUNT_JSON_BASE64
+  valueFrom:
+    secretKeyRef:
+      name: tonic-sso-google-account-service-json-secret
+      key: secret
+      optional: false
+{{- end -}}
+
+{{- define "tonic.sso.okta" -}}
+- name: TONIC_SSO_DOMAIN
+  value: {{ quote .domain }}
+- name: TONIC_SSO_CLIENT_ID
+  value: {{ quote .clientId }}
+{{- if .identityProviderId }}
+- name: TONIC_SSO_IDENTITY_PROVIDER_ID
+  value: {{ quote .identityProviderId }}
+{{- end -}}
+{{- if .authServerId -}}
+- name: TONIC_SSO_AUTHORIZATION_SERVER_ID
+  value: {{ quote .authServerId }}
+{{- end -}}
+{{- end -}}
+
+{{- define "tonic.sso.keycloak" -}}
+- name: TONIC_SSO_REALM_ID
+  value: {{ quote .realmId }}
+- name: TONIC_SSO_DOMAIN
+  value: {{ quote .domain }}
+- name: TONIC_SSO_CLIENT_ID
+  value: {{ quote .clientId }}
+{{- end -}}
+
+{{- define "tonic.sso.generic" -}}
+{{- if .entityId -}}
+- name: TONIC_SSO_SAML_ENTITY_ID
+  value: {{ quote .entityId }}
+{{- end -}}
+{{- if .metadataXml.url -}}
+- name: TONIC_SSO_SAML_IDP_METADATA_XML_URL
+  value: {{ quote .metadataXml.url }}
+{{- else if .metadataXml.base64 -}}
+- name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
+  value: {{ quote .metadataXml.base64 }}
+{{- else -}}
+{{ fail "Either metadataXml.url or metadataXml.base64 is required" }}
+{{- end -}}
+{{- end -}}
