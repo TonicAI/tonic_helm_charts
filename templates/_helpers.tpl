@@ -75,8 +75,8 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-Given the $.tonicSsoConfig, create all environment variables needed for
-the deployment. This should only be called if $.tonicSsoConfig is populated
+Given the $.Values.tonicSsoConfig, create all environment variables needed for
+the deployment. This should only be called if $.Values.tonicSsoConfig is populated
 */}}
 {{- define "tonic.sso" -}}
 {{- $provider := (required "tonicSsoConfig.provider is required for SSO" .provider | lower) -}}
