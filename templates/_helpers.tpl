@@ -82,12 +82,12 @@ the deployment. This should only be called if $.tonicSsoConfig is populated
 {{- $provider := (required "tonicSsoConfig.provider is required for SSO" .provider | lower) -}}
 - name: TONIC_SSO_PROVIDER
   value: {{ quote .provider }}
-{{- if .groupFilter -}}
+{{- if .groupFilter }}
 - name: TONIC_SSO_GROUP_FILTER_REGEX
   value: {{quote .groupFilter}}
-{{- end -}}
+{{- end }}
 {{- if eq $provider "aws" }}
-{{ include "tonic.sso.aws" . }}
+{{- include "tonic.sso.aws" . }}
 {{- else if eq $provider "azure" }}
 {{ include "tonic.sso.azure" . }}
 {{- else if eq $provider "duo" }}
@@ -99,21 +99,24 @@ the deployment. This should only be called if $.tonicSsoConfig is populated
 {{- else if eq $provider "keycloak" }}
 {{ include "tonic.sso.keycloak" . }}
 {{- else if eq $provider "saml" }}
-{{ include "tonic.sso.saml" . }}
-{{- else -}}
-{{- fail "Unsupported SSO provider " .provider -}}
-{{- end -}}
+{{- include "tonic.sso.saml" . }}
+{{- else }}
+{{ fail "Unsupported SSO provider " .provider }}
+{{ end }}
 {{- end -}}
 
 {{- define "tonic.sso.aws" -}}
-{{- if .samlIdpMetadataUrl -}}
+{{- if (.metdataXml).url -}}
 - name: TONIC_SSO_SAML_IDP_METADATA_XML_URL
-  value: {{ quote .samlIdpMetadataUrl }}
+  value: {{ quote .metadataXml.url }}
+{{- else if (.metdataXml).base64 }}
+- name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
+  value: {{ quote .metadataXml.base64 }}
 {{- else if .samlIdpMetadataXml }}
 - name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
   value: {{ quote .samlIdpMetadataXml }}
 {{- else -}}
-{{ fail "Either samlIdpMetadataUrl or samlIdpMetadataXml must be provided to configre AWS SSO" }}
+{{ fail "Either metadataXml.url, metadataXml.base64 or samlIdpMetadataXml must be provided to configure AWS sso" }}
 {{- end -}}
 {{- end -}}
 
@@ -162,11 +165,11 @@ the deployment. This should only be called if $.tonicSsoConfig is populated
 {{- if .identityProviderId }}
 - name: TONIC_SSO_IDENTITY_PROVIDER_ID
   value: {{ quote .identityProviderId }}
-{{- end -}}
-{{- if .authServerId -}}
+{{- end }}
+{{- if .authServerId }}
 - name: TONIC_SSO_AUTHORIZATION_SERVER_ID
   value: {{ quote .authServerId }}
-{{- end -}}
+{{- end }}
 {{- end -}}
 
 {{- define "tonic.sso.keycloak" -}}
@@ -178,18 +181,18 @@ the deployment. This should only be called if $.tonicSsoConfig is populated
   value: {{ required "tonicSsoConfig.clientId is required to configure Keycloak sso" .clientId | quote }}
 {{- end -}}
 
-{{- define "tonic.sso.generic" -}}
-{{- if .entityId -}}
+{{- define "tonic.sso.saml" -}}
+{{- if .entityId }}
 - name: TONIC_SSO_SAML_ENTITY_ID
   value: {{ quote .entityId }}
-{{- end -}}
-{{- if .metadataXml.url -}}
+{{- end }}
+{{- if .metadataXml.url }}
 - name: TONIC_SSO_SAML_IDP_METADATA_XML_URL
   value: {{ quote .metadataXml.url }}
-{{- else if .metadataXml.base64 -}}
+{{- else if .metadataXml.base64 }}
 - name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
   value: {{ quote .metadataXml.base64 }}
-{{- else -}}
-{{ fail "Either metadataXml.url or metadataXml.base64 is required" }}
+{{- else }}
+{{- fail "Either metadataXml.url or metadataXml.base64 is required" }}
 {{- end -}}
 {{- end -}}
