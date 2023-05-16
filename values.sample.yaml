@@ -105,7 +105,12 @@ tonicai:
 #   -----------------
 #   provider: AWS
 #   identityProviderId: <identity-provider-id>
+#   # provided for existing chart installations, new installations should set
+#   # metadataXml.url or metadataXml.base64 instead
 #   samlIdpMetadataXml: <base64 encoded SAML metadata IDP xml>
+#   metdataXml:
+#     url: <url to metadata xml, given priority>
+#     base64: <base64 encoded SAML metadata IDP xml>
 
 #   Azure SSO Config
 #   -----------------
@@ -123,9 +128,9 @@ tonicai:
 
 #   Google SSO Config
 #   -----------------
-#   provider: Google
 #   clientId: <client-id>
 #   clientSecret: <client-secret>
+#   provider: Google
 #   domain: <sso-domain>
 #   googleAccountServiceJson: <base64 encoded version of your service account json>
 
@@ -144,6 +149,13 @@ tonicai:
 #   domain: <url-of-keycloak>
 #   realmId: <realm-id>
 
+#   Generic Saml SSO Config
+#   -----------------------
+#   provider: SAML
+#   metadataXml:
+#     url: <url to metadataXml, given priority>
+#     base64: <base64 encoded metadataXml>
+#   entityId: <entity id used to send requests from tonic, if not provided, will be determined from metadata xml>
 
 # Professional and Enterprise License Only: Configuration options for tonic-notifications.
 # tonicSmtpConfig:

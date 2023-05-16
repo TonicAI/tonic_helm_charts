@@ -98,56 +98,9 @@ spec:
               name: tonic-license-secret
               key: license
               optional: true
-          {{- if .Values.tonicSsoConfig }}
-          {{- if .Values.tonicSsoConfig.provider }}
-        - name: TONIC_SSO_PROVIDER
-          value: {{quote .Values.tonicSsoConfig.provider }}
-          {{- end }}
-          {{- if .Values.tonicSsoConfig.domain }}
-        - name: TONIC_SSO_DOMAIN
-          value: {{quote .Values.tonicSsoConfig.domain }}
-          {{- end }}
-          {{- if .Values.tonicSsoConfig.clientId }}
-        - name: TONIC_SSO_CLIENT_ID
-          value: {{quote .Values.tonicSsoConfig.clientId }}
-          {{- end }}
-        - name: TONIC_SSO_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: tonic-sso-client-secret
-              key: secret
-              optional: true
-          {{- if .Values.tonicSsoConfig.identityProviderId }}
-        - name: TONIC_SSO_IDENTITY_PROVIDER_ID
-          value: {{quote .Values.tonicSsoConfig.identityProviderId }}
-          {{- end }}
-          {{- if .Values.tonicSsoConfig.realmId }}
-        - name: TONIC_SSO_REALM_ID
-          value: {{quote .Values.tonicSsoConfig.realmId }}
-          {{- end }}
-          {{- if .Values.tonicSsoConfig.authServerId }}
-        - name: TONIC_SSO_AUTHORIZATION_SERVER_ID
-          value: {{quote .Values.tonicSsoConfig.authServerId }}
-          {{- end }}
-          {{- if .Values.tonicSsoConfig.groupFilter }}
-        - name: TONIC_SSO_GROUP_FILTER_REGEX
-          value: {{quote .Values.tonicSsoConfig.groupFilter }}
-          {{- end }}
-          {{- if .Values.tonicSsoConfig.samlIdpMetadata }}
-        - name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
-          value: {{quote .Values.tonicSsoConfig.samlIdpMetadata }}
-          {{- end }}
-          {{- if .Values.tonicSsoConfig.tenantId }}
-        - name: TONIC_SSO_TENANT_ID
-          value: {{quote .Values.tonicSsoConfig.tenantId }}
-          {{- end }}
-        - name: TONIC_SSO_SERVICE_ACCOUNT_JSON_BASE64
-          valueFrom:
-            secretKeyRef:
-              name: tonic-sso-google-account-service-json-secret
-              key: secret
-              optional: true
-          {{- end }}
+        {{- if .Values.tonicSsoConfig }}
+        {{- include "tonic.sso" .Values.tonicSsoConfig | nindent 8 }}
+        {{- end }}
         {{- if eq (include "tonic.hostIntegration" .) "true"}}
         - name: TONIC_HOST_INTEGRATION
           value: "kubernetes"
