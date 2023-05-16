@@ -119,9 +119,9 @@ the deployment. This should only be called if $.tonicSsoConfig is populated
 
 {{- define "tonic.sso.azure" -}}
 - name: TONIC_SSO_TENANT_ID
-  value: {{ quote .tenantId }}
+  value: {{ required "tonicSsoConfig.tenantId is required to configure Azure sso" .tenantId | quote }}
 - name: TONIC_SSO_CLIENT_ID
-  value: {{ quote .clientId }}
+  value: {{ required "tonicSsoConfig.clientId is required to configure Azure sso" .clientId | quote }}
 - name: TONIC_SSO_CLIENT_SECRET
   valueFrom:
     secretKeyRef:
@@ -132,9 +132,9 @@ the deployment. This should only be called if $.tonicSsoConfig is populated
 
 {{- define "tonic.sso.duo" -}}
 - name: TONIC_SSO_DOMAIN
-  value: {{ quote .domain }}
+  value: {{ required "tonicSsoConfig.domain is required to configure Duo sso" .domain | quote }}
 - name: TONIC_SSO_CLIENT_ID
-  value: {{ quote .clientId }}
+  value: {{ required "tonicSsoConfig.clientId is required to configure Duo sso" .clientId | quote }}
 - name: TONIC_SSO_CLIENT_SECRET
   valueFrom:
     secretKeyRef:
@@ -145,7 +145,7 @@ the deployment. This should only be called if $.tonicSsoConfig is populated
 
 {{- define "tonic.sso.google" -}}
 - name: TONIC_SSO_DOMAIN
-  value: {{ quote .domain }}
+  value: {{ required "tonicSsoConfig.domain is required to configure Google sso" .domain | quote }}
 - name: TONIC_SSO_SERVICE_ACCOUNT_JSON_BASE64
   valueFrom:
     secretKeyRef:
@@ -156,9 +156,9 @@ the deployment. This should only be called if $.tonicSsoConfig is populated
 
 {{- define "tonic.sso.okta" -}}
 - name: TONIC_SSO_DOMAIN
-  value: {{ quote .domain }}
+  value: {{ required "tonicSsoConfig.domain is required to configure Okta sso" .domain | quote }}
 - name: TONIC_SSO_CLIENT_ID
-  value: {{ quote .clientId }}
+  value: {{ required "tonicSsoConfig.clientId is required to configure Okta sso" .clientId | quote }}
 {{- if .identityProviderId }}
 - name: TONIC_SSO_IDENTITY_PROVIDER_ID
   value: {{ quote .identityProviderId }}
@@ -171,11 +171,11 @@ the deployment. This should only be called if $.tonicSsoConfig is populated
 
 {{- define "tonic.sso.keycloak" -}}
 - name: TONIC_SSO_REALM_ID
-  value: {{ quote .realmId }}
+  value: {{ required "tonicSsoConfig.realmId is required to configure Keycloak sso" .realmId | quote }}
 - name: TONIC_SSO_DOMAIN
-  value: {{ quote .domain }}
+  value: {{ required "tonicSsoConfig.domain is required to configure Keycloak sso" .domain | quote }}
 - name: TONIC_SSO_CLIENT_ID
-  value: {{ quote .clientId }}
+  value: {{ required "tonicSsoConfig.clientId is required to configure Keycloak sso" .clientId | quote }}
 {{- end -}}
 
 {{- define "tonic.sso.generic" -}}
