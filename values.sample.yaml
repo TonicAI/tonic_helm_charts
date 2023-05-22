@@ -70,8 +70,12 @@ tonicai:
     administrators: example@email.com,other@email.com
     # annotations to apply to the service that routes traffic to the web server
     annotations: {}
-      # For instructions on creating a load balancer to Tonic web server, see documentation from your cloud provider
+      # By default this chart will create an internal load balancer service on
+      # EKS and AKS; however, providing additional annotations will disable this
+      # If additional annotations are applied and you need a load balancer to
+      # the Tonic installation see documentation from your cloud provider
       # AWS: https://docs.aws.amazon.com/eks/latest/userguide/network-load-balancing.html
+      #      https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/
       # Azure: https://learn.microsoft.com/en-us/azure/aks/internal-lb
       # GCP: https://cloud.google.com/kubernetes-engine/docs/concepts/service-load-balancer
     features:
