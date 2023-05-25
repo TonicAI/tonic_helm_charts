@@ -13,7 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/default-backend: "tonic-web-server"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600" # 1 hour
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600" # 1 hour
-    nginx.ingress.kubernetes.io/proxy-body-size: "1024m" # 1GB
+    nginx.ingress.kubernetes.io/proxy-body-size: "0" # disable body size constraint
 spec:
   rules:    
   # Non-default SSL cert requires an FQDN.
