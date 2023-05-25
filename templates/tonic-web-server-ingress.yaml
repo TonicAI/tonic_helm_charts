@@ -11,6 +11,9 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/service-upstream: "true"
     nginx.ingress.kubernetes.io/default-backend: "tonic-web-server"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600" # 1 hour
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600" # 1 hour
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m" #100 MB
 spec:
   rules:    
   # Non-default SSL cert requires an FQDN.
