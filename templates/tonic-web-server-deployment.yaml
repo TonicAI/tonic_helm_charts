@@ -56,8 +56,6 @@ spec:
           mountPath: /tmp
         - name: vector
           mountPath: /tonic/vector_data
-        - name: db2
-          mountPath: /publish/clidriver
         {{- end }}
         env:
         {{- range $key, $value := ((.Values.tonicai).web_server).env }}
