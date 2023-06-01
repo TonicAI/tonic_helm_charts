@@ -67,8 +67,6 @@ spec:
               mountPath: /tmp
             - name: vector
               mountPath: /tonic/vector_data
-            - name: db2
-              mountPath: /publish/clidriver
             {{- end }}
           env:
             - name: TONIC_DB_DATABASE
