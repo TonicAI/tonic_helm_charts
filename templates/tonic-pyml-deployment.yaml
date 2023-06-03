@@ -84,7 +84,7 @@ spec:
         - containerPort: 7700
         resources:
           limits:
-            memory: "1Gi"
+            memory: "8Gi"
             {{- if ((.Values.resources).pyml_gpu).amount }}
             nvidia.com/gpu: {{ .Values.resources.pyml_gpu.amount }}
             {{- end }}
