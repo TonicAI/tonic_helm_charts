@@ -110,10 +110,10 @@ Given $.Values.tonicSsoConfig, produces the environment variables needed to
 configure AWS sso
 */}}
 {{- define "tonic.sso.aws" -}}
-{{- if (.metdataXml).url -}}
+{{- if (.metadataXml).url -}}
 - name: TONIC_SSO_SAML_IDP_METADATA_XML_URL
   value: {{ quote .metadataXml.url }}
-{{- else if (.metdataXml).base64 }}
+{{- else if (.metadataXml).base64 }}
 - name: TONIC_SSO_SAML_IDP_METADATA_XML_BASE64
   value: {{ quote .metadataXml.base64 }}
 {{- else if .samlIdpMetadataXml }}
