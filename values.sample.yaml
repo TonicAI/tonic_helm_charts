@@ -114,7 +114,7 @@ tonicai:
 #   # provided for existing chart installations, new installations should set
 #   # metadataXml.url or metadataXml.base64 instead
 #   samlIdpMetadataXml: <base64 encoded SAML metadata IDP xml>
-#   metdataXml:
+#   metadataXml:
 #     url: <url to metadata xml, given priority>
 #     base64: <base64 encoded SAML metadata IDP xml>
 
