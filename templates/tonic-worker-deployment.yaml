@@ -24,7 +24,9 @@ spec:
   selector:
     matchLabels:
       app: tonic-worker
-  strategy: {}
+  strategy:
+    type: {{ template "tonic.deployStrategy" . }}
+  revisionHistoryLimit: 1
   template:
     metadata:
       labels:
