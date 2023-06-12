@@ -25,8 +25,8 @@ spec:
     matchLabels:
       app: tonic-worker
   strategy:
-    type: Recreate
-    revisionHistoryLimit: 1
+    type: {{ template "tonic.deployStrategy" . }}
+  revisionHistoryLimit: 1
   template:
     metadata:
       labels:

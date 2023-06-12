@@ -73,6 +73,14 @@ Create the name of the service account to use
 {{- end -}}
 {{- end }}
 
+{{- define "tonic.deployStrategy" -}}
+{{- if .Values.deployStrategy -}}
+{{- .Values.deployStrategy -}}
+{{- else -}}
+{{ "Recreate" }}
+{{- end -}}
+{{- end }}
+
 {{/*
 Given the $.Values.tonicSsoConfig, create all environment variables needed for
 the deployment. This should only be called if $.Values.tonicSsoConfig is populated
