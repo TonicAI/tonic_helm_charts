@@ -77,7 +77,7 @@ Create the name of the service account to use
 {{- if .Values.deployStrategy -}}
 {{- .Values.deployStrategy -}}
 {{- else -}}
-{{ "Recreate" }}
+{{ "RollingUpdate" }}
 {{- end -}}
 {{- end }}
 
