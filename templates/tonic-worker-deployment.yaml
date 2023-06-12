@@ -24,7 +24,9 @@ spec:
   selector:
     matchLabels:
       app: tonic-worker
-  strategy: {}
+  strategy:
+    type: Recreate
+    revisionHistoryLimit: 1
   template:
     metadata:
       labels:

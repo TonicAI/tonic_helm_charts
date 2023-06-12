@@ -20,7 +20,9 @@ spec:
   selector:
     matchLabels:
       app: tonic-notifications
-  strategy: {}
+  strategy:
+    type: Recreate
+    revisionHistoryLimit: 1
   template:
     metadata:
       labels:
