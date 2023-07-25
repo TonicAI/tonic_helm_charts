@@ -146,11 +146,9 @@ spec:
           - containerPort: {{ $httpsPort }}
             name: "https"
           resources:
-            limits:
-              memory: "12Gi"
-            requests:
-              memory: "6Gi"
-              ephemeral-storage: "1Gi"
+            {{- with .Values.resources.worker }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           startupProbe:
             httpGet:
               scheme: HTTPS

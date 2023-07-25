@@ -1,0 +1,26 @@
+# Default resource requests and limits used by the Tonic services.
+resources:
+  notifications:
+    requests:
+      memory: "512Mi"
+      ephemeral-storage: "1Gi"
+    limits:
+      memory: "1Gi"
+  pyml_service:
+    requests:
+      memory: "512Mi"
+      ephemeral-storage: "1Gi"
+    limits:
+      memory: "8Gi"
+  web_server:
+    requests:
+      memory: "2Gi"
+      ephemeral-storage: "1Gi"
+    limits:
+      memory: "3Gi"
+  worker:
+    requests:
+      memory: "6Gi"
+      ephemeral-storage: "1Gi"
+    limits:
+      memory: "12Gi"
