@@ -1,4 +1,4 @@
-# use_ingress currently only used by TIM
+# use_ingress typically only used by TIM
 {{- if (.Values.tonicai).use_ingress }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -6,7 +6,7 @@ metadata:
   name: tonic-web-server-ingress
   namespace: {{ .Release.Namespace }}
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: {{ default "nginx" .Values.tonicai.ingress.class | quote }}
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/service-upstream: "true"
@@ -14,6 +14,12 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600" # 1 hour
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600" # 1 hour
     nginx.ingress.kubernetes.io/proxy-body-size: "0" # disable body size constraint
+  {{- if .Values.tonicai.ingress.labels }}
+  labels:
+    {{- with .Values.tonicai.ingress.labels }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
 spec:
   rules:    
   # Non-default SSL cert requires an FQDN.
@@ -36,4 +42,7 @@ spec:
               name: tonic-web-server
               port:
                 number: 443
+    {{- if (.Values.tonicai).ingress.host }}
+    host: {{ .Values.tonicai.ingress.host }}
+    {{- end }}
 {{- end }}

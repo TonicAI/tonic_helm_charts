@@ -102,6 +102,12 @@ tonicai:
     env: {}
     envRaw: {}
     #image: quay.io/tonicai/tonic_pyml_service
+  # use_ingress typically only used by TIM
+  #use_ingress: true
+  #ingress:
+  #  class: nginx
+  #  host: null
+  #  labels: {}
 
 # Deployment Strategy: This can be set to either "RollingUpdate" or "Recreate".  If not provided, the default value
 # is "RollingUpdate".  "RollingUpdate" will perform a rolling update of the deployment similar to a blue/green
