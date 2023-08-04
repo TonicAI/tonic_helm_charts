@@ -5,8 +5,12 @@ kind: Ingress
 metadata:
   name: tonic-web-server-ingress
   namespace: {{ .Release.Namespace }}
+  {{- if ((.Values.tonicai).ingress).annotations }}
   annotations:
-    kubernetes.io/ingress.class: {{ default "nginx" .Values.tonicai.ingress.class | quote }}
+    {{- toYaml .Values.tonicai.ingress.annotations | nindent 4 }}
+  {{- else }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     nginx.ingress.kubernetes.io/service-upstream: "true"
@@ -14,6 +18,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600" # 1 hour
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600" # 1 hour
     nginx.ingress.kubernetes.io/proxy-body-size: "0" # disable body size constraint
+  {{- end }}
   {{- if .Values.tonicai.ingress.labels }}
   labels:
     {{- with .Values.tonicai.ingress.labels }}
