@@ -1,3 +1,7 @@
+{{- /* support values file w/o resource definition */}}
+{{- $resources := coalesce
+  ((((.Values).tonicai).notifications).resources)
+  (dict "limits" (dict "memory" "1Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "1Gi")) -}}
 {{ $image := "" }}
 {{- if  ((.Values.tonicai).notifications).image }}
 {{- $image = .Values.tonicai.notifications.image }}
@@ -121,9 +125,7 @@ spec:
             mountPath: /tmp
           {{- end }}
         resources:
-          {{- with .Values.resources.notifications }}
-          {{- toYaml . | nindent 10 }}
-          {{- end }}
+          {{- toYaml $resources | nindent 10 }}
         ports:
         - containerPort: 7000
         - containerPort: 7001

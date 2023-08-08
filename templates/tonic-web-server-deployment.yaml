@@ -1,3 +1,6 @@
+{{- $resources := coalesce
+  ((((.Values).tonicai).web_server).resources)
+  (dict "limits" (dict "memory" "3Gi") "requests" (dict "memory" "2Gi" "ephemeral-storage" "1Gi")) -}}
 {{ $image := "" }}
 {{- if  ((.Values.tonicai).web_server).image }}
   {{ $image = .Values.tonicai.web_server.image }}
@@ -140,9 +143,7 @@ spec:
         - containerPort: {{ $httpsPort }}
           name: "https"
         resources:
-          {{- with .Values.resources.web_server }}
-          {{- toYaml . | nindent 10 }}
-          {{- end }}
+          {{- toYaml $resources | nindent 10 }}
         startupProbe:
           httpGet:
             scheme: HTTPS

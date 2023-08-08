@@ -1,3 +1,16 @@
+{{- /* support values file w/o resource definition */}}
+{{- $resources := coalesce
+  ((((.Values).tonicai).pyml_service).resources)
+  (dict "limits" (dict "memory" "8Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "1Gi")) -}}
+{{- $legacyGpuAmount := (((.Values).resources).pyml_gpu).amount -}}
+{{- $newGpuAmount := (get $resources.limits "nvida.com/gpu") }}
+{{- $gpuAmount := coalesce $newGpuAmount $legacyGpuAmount 0 -}}
+{{- if ($gpuAmount) -}}
+{{ $_ := set $resources.limits "nvida.com/gpu" $gpuAmount -}}
+{{- end -}}
+{{- $tolerations := (coalesce
+  ((((.Values).resources).pyml_gpu).tolerations)
+  ((((.Values).tonicai).pyml_service).tolerations)) -}}
 {{ $image := "" }}
 {{- if ((.Values.tonicai).pyml_service).image }}
 {{- $image = .Values.tonicai.pyml_service.image }}
@@ -61,7 +74,7 @@ spec:
         image: {{ $image }}:{{ .Values.tonicVersion | default "latest" }}
         imagePullPolicy: Always
         name: tonic-pyml-service
-        volumeMounts: 
+        volumeMounts:
           {{- if .Values.readOnlyRootFilesystem }}
           - name: tmp
             mountPath: /tmp
@@ -85,9 +98,7 @@ spec:
         ports:
         - containerPort: 7700
         resources:
-          {{- with .Values.resources.pyml_service }}
-          {{- toYaml . | nindent 10 }}
-          {{- end }}
+          {{- toYaml $resources | nindent 10 }}
         startupProbe:
           httpGet:
             path: /health
@@ -123,6 +134,6 @@ spec:
           emptyDir: {}
         {{- end }}
       tolerations:
-      {{- if (and (((.Values.resources).pyml_gpu).tolerations) (((.Values.resources).pyml_gpu).amount)) -}}
-      {{ toYaml .Values.resources.pyml_gpu.tolerations | nindent 8 }}
+      {{- if $tolerations -}}
+      {{ toYaml $tolerations | nindent 8 }}
       {{- end }}

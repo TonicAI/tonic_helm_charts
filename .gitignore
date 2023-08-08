@@ -19,3 +19,4 @@ Session.vim
 .netrwhist
 **/charts/*.tgz
 .history
+values.yaml
