@@ -26,6 +26,9 @@ metadata:
     {{- end }}
   {{- end }}
 spec:
+  {{- if .Values.tonicai.ingress.class }}
+  ingressClassName: {{ .Values.tonicai.ingress.class }}
+  {{- end }}
   rules:    
   # Non-default SSL cert requires an FQDN.
   # - host: localhost
