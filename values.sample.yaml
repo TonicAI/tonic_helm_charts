@@ -14,21 +14,6 @@ useUnprivilegedContainers: false
 # filesystem and provides necessary emptyDir volume mounts
 readOnlyRootFilesystem: false
 
-# To enable Nvidia acceleration for the pyml container, uncomment the following
-# lines and specify how many GPUs to allocate for the pod. If this feature is
-# enabled then your cluster must support the nvidia.com/gpu resource.
-# Additionally, if you use node taints and pod tolerances to control scheduling
-# of GPU bound workloads, then you can also provide a list of tolerations the
-# pyml pod should accept
-#resources:
-#  pyml_gpu:
-#    amount: 1
-#    tolerations:
-#      # example toleration
-#      - key: "tonic.ai/gpu"
-#        operator: "Exists"
-#        effect: "NoSchedule"
-
 # tonicdb is the postgres database that will hold information about your workspace.
 tonicdb:
   host: <db-host>
@@ -86,6 +71,12 @@ tonicai:
       httpsOnly: true
       https: 443
       http: 80
+    resources:
+      requests:
+        memory: "2Gi"
+        ephemeral-storage: "1Gi"
+      limits:
+        memory: "3Gi"
   worker:
     #image: quay.io/tonicai/tonic_worker
     env: {}
@@ -94,14 +85,43 @@ tonicai:
       httpsOnly: true
       https: 443
       http: 80
+    resources:
+      requests:
+        memory: "6Gi"
+        ephemeral-storage: "1Gi"
+      limits:
+        memory: "12Gi"
   notifications:
-    env: {}
-    envRaw: {}
     #image: quay.io/tonicai/tonic_notifications
-  pyml_service:
     env: {}
     envRaw: {}
+    resources:
+      requests:
+        memory: "512Mi"
+        ephemeral-storage: "1Gi"
+      limits:
+        memory: "1Gi"
+  pyml_service:
     #image: quay.io/tonicai/tonic_pyml_service
+    env: {}
+    envRaw: {}
+    resources:
+      requests:
+        memory: "512Mi"
+        ephemeral-storage: "1Gi"
+      limits:
+        memory: "8Gi"
+        # To enable Nvidia acceleration for the pyml container, uncomment the following
+        # lines and specify how many GPUs to allocate for the pod. If this feature is
+        # enabled then your cluster must support the nvidia.com/gpu resource.
+        #nvida.com/gpu: 1
+    # If you use node taints and pod tolerances to control scheduling
+    # of GPU bound workloads, then you can also provide a list of tolerations the
+    # pyml pod should accept
+    tolerations: []
+    # - key: "tonic.ai/gpu"
+    #   operator: "Exists"
+    #   effect: "NoSchedule"
   # use_ingress typically only used by TIM
   #use_ingress: true
   #ingress:
