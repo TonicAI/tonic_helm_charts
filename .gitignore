@@ -19,4 +19,4 @@ Session.vim
 .netrwhist
 **/charts/*.tgz
 .history
-values.yaml
+charts/tonic/values.yaml
