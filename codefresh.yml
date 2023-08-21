@@ -55,14 +55,14 @@ steps:
         only:
           - main
   healthCheckProd:
-    stage: prod
-    title: vida-prod-gke sentry-web Kubernetes Healthcheck
+    stage: deploy
+    title: vida-prod-gke Kubernetes Healthcheck
     type: healthcheck
     arguments:
       TYPES: kubernetes_deployment
       CLUSTER: ${{VIDA_API_PROD_CLUSTER}}
       NAMESPACE: tonic
-      DEPLOYMENT: sentry-web
+      DEPLOYMENT: tonic
       DEPLOY_WAIT: 120
       WAIT: 120
       KUBE_CONFIG: /codefresh/volume/sensitive/.kube/config
