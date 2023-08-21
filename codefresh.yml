@@ -53,7 +53,7 @@ steps:
     when:
       branch:
         only:
-          - main
+          - master
   healthCheckProd:
     stage: deploy
     title: vida-prod-gke Kubernetes Healthcheck
@@ -69,4 +69,4 @@ steps:
     when:
       branch:
         only:
-          - main
+          - master
