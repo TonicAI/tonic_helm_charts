@@ -1,4 +1,4 @@
-environmentName: vidahealth
+environmentName: vidahealth-prod
 # useUnprivilegedContainers will pull images that do not run as root if
 # using tonic provided images rather than rehosted customer images
 # additionally it enforces that containers cannot run as root, uses the
