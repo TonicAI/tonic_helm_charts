@@ -16,11 +16,9 @@ readOnlyRootFilesystem: false
 
 # tonicdb is the postgres database that will hold information about your workspace.
 tonicdb:
-#  host: <db-host>
   port: 5432
   dbName: tonic
   user: postgres
-#  password: <password>
   sslMode: Require
 
 # tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
@@ -35,7 +33,7 @@ numberOfWorkers: 1
 enableLogCollection: true
 
 # This value will be provided to you by Tonic and will allow you to authenticate against our private docker repository.
-dockerConfigAuth: <docker-config-auth>
+#dockerConfigAuth: <docker-config-auth>
 
 # Service account for tonic
 serviceAccount:
