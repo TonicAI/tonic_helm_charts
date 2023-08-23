@@ -20,6 +20,8 @@ tonicdb:
   dbName: tonic
   user: postgres
   sslMode: Require
+  # host: <host>
+  # password: <password>
 
 # tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
 # otherwise each generation will be internally consistent, but not consistent with other generations.
@@ -33,7 +35,7 @@ numberOfWorkers: 1
 enableLogCollection: true
 
 # This value will be provided to you by Tonic and will allow you to authenticate against our private docker repository.
-#dockerConfigAuth: <docker-config-auth>
+# dockerConfigAuth: <docker-config-auth>
 
 # Service account for tonic
 serviceAccount:
@@ -146,6 +148,7 @@ deployStrategy: RollingUpdate
 #   -----------------
 provider: Okta
 domain: tonic.vida.com
+# clientId: <CLIENT ID>
 
 # Professional and Enterprise License Only: Configuration options for tonic-notifications.
 # tonicSmtpConfig:
