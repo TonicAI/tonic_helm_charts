@@ -1,6 +1,4 @@
-{{- $resources := coalesce
-  ((((.Values).tonicai).worker).resources)
-  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "ephemeral-storage" "1Gi")) -}}
+{{- $resources = ((.Values.tonicai).worker).image }}
 {{ $image := "" }}
 {{- if  ((.Values.tonicai).worker).image }}
 {{- $image = .Values.tonicai.worker.image }}
@@ -89,12 +87,6 @@ spec:
               value: {{ .Values.tonicdb.sslMode }}
             - name: TONIC_DB_HOST
               value: {{ .Values.tonicdb.host }}
-    #        - name: TONIC_PROCESS_PARALLELISM
-    #          value: "1"
-    #        - name: TONIC_TABLE_PARALLELISM
-    #          value: "1"
-    #        - name: TONIC_WRITE_PARALLELISM
-    #          value: "2"
             {{- if .Values.tonicStatisticsSeed }}
             - name: TONIC_STATISTICS_SEED
               value: {{quote .Values.tonicStatisticsSeed }}
