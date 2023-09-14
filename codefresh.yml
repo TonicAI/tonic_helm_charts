@@ -46,10 +46,10 @@ steps:
       kube_context: ${{VIDA_API_PROD_CLUSTER}}
       helm_version: 3.3.1
       custom_values:
-        - 'tonicdb.host=${{TONIC_DB_HOST}}'
-        - 'tonicdb.password=${{TONIC_DB_PASSWORD}}'
-        - 'clientId=${{OKTA_CLIENT_ID}}'
-        - 'dockerConfigAuth=${{DOCKER_CONFIG_AUTH}}'
+        - 'tonicdb.host="${{TONIC_DB_HOST}}"'
+        - 'tonicdb.password="${{TONIC_DB_PASSWORD}}"'
+        - 'clientId="${{OKTA_CLIENT_ID}}"'
+        - 'dockerConfigAuth="${{DOCKER_CONFIG_AUTH}}"'
     when:
       branch:
         only:
