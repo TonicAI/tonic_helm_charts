@@ -1,6 +1,4 @@
-{{- $resources := coalesce
-  ((((.Values)).tonicai).worker).resources
-  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "ephemeral-storage" "1Gi")) -}}
+{{- $resources = ((.Values.tonicai).web_server).resources }}
 {{- $image = "quay.io/tonicai/tonic_worker" }}
 {{- $ports := ((.Values.tonicai).worker).ports | default dict }}
 {{- $httpsOnly := $ports.httpsOnly | default true }}
