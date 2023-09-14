@@ -1,4 +1,6 @@
-{{- $resources = ((.Values.tonicai).worker).image }}
+{{- $resources := coalesce
+  ((((.Values)).tonicai).worker).resources
+  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "ephemeral-storage" "1Gi")) -}}
 {{ $image := "" }}
 {{- if  ((.Values.tonicai).worker).image }}
 {{- $image = .Values.tonicai.worker.image }}
