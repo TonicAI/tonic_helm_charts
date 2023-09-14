@@ -1,5 +1,5 @@
 {{- $resources = ((.Values.tonicai).web_server).resources }}
-{{ $image = "quay.io/tonicai/tonic_web_server" }}
+{{- $image = "quay.io/tonicai/tonic_web_server" }}
 {{- $ports := ((.Values.tonicai).web_server).ports | default dict }}
 {{- $httpsOnly := $ports.httpsOnly | default true }}
 {{- $httpPort := $ports.http | default 6580 }}
