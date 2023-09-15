@@ -62,7 +62,7 @@ steps:
       TYPES: kubernetes_deployment
       CLUSTER: ${{VIDA_API_PROD_CLUSTER}}
       NAMESPACE: tonic
-      DEPLOYMENT: tonic
+      DEPLOYMENT: tonic-web-server
       DEPLOY_WAIT: 120
       WAIT: 120
       KUBE_CONFIG: /codefresh/volume/sensitive/.kube/config
