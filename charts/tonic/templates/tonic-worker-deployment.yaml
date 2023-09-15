@@ -1,5 +1,16 @@
-{{- $resources = ((.Values.tonicai).worker).resources }}
-{{- $image = "quay.io/tonicai/tonic_worker" }}
+{{- $resources := coalesce
+  ((((.Values).tonicai).worker).resources)
+  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "ephemeral-storage" "1Gi")) -}}
+{{ $image := "" }}
+{{- if  ((.Values.tonicai).worker).image }}
+{{- $image = .Values.tonicai.worker.image }}
+{{- else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{ $image = "quay.io/tonicai/tonic_worker_unprivileged" }}
+  {{- else }}
+  {{- $image = "quay.io/tonicai/tonic_worker" }}
+  {{- end }}
+{{- end }}
 {{- $ports := ((.Values.tonicai).worker).ports | default dict }}
 {{- $httpsOnly := $ports.httpsOnly | default true }}
 {{- $httpPort := $ports.http | default 2480 }}
@@ -78,7 +89,13 @@ spec:
               value: {{ .Values.tonicdb.sslMode }}
             - name: TONIC_DB_HOST
               value: {{ .Values.tonicdb.host }}
-            {{- if .Values.tonicStatisticsSeed }}
+    #        - name: TONIC_PROCESS_PARALLELISM
+    #          value: "1"
+    #        - name: TONIC_TABLE_PARALLELISM
+    #          value: "1"
+    #        - name: TONIC_WRITE_PARALLELISM
+    #          value: "2"
+              {{- if .Values.tonicStatisticsSeed }}
             - name: TONIC_STATISTICS_SEED
               value: {{quote .Values.tonicStatisticsSeed }}
               {{- end }}

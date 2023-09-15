@@ -1,5 +1,16 @@
-{{- $resources = ((.Values.tonicai).web_server).resources }}
-{{- $image = "quay.io/tonicai/tonic_web_server" }}
+{{- $resources := coalesce
+  ((((.Values).tonicai).web_server).resources)
+  (dict "limits" (dict "memory" "3Gi") "requests" (dict "memory" "2Gi" "ephemeral-storage" "1Gi")) -}}
+{{ $image := "" }}
+{{- if  ((.Values.tonicai).web_server).image }}
+  {{ $image = .Values.tonicai.web_server.image }}
+{{ else }}
+  {{- if .Values.useUnprivilegedContainers }}
+  {{ $image = "quay.io/tonicai/tonic_web_server_unprivileged" }}
+  {{- else }}
+  {{ $image = "quay.io/tonicai/tonic_web_server" }}
+  {{- end }}
+{{- end }}
 {{- $ports := ((.Values.tonicai).web_server).ports | default dict }}
 {{- $httpsOnly := $ports.httpsOnly | default true }}
 {{- $httpPort := $ports.http | default 6580 }}
