@@ -44,7 +44,7 @@ steps:
       release_name: tonic
       namespace: tonic
       kube_context: ${{VIDA_API_PROD_CLUSTER}}
-      helm_version: 3.3.1
+      helm_version: 3.12.3
       custom_values:
         - 'tonicdb.host="${{TONIC_DB_HOST}}"'
         - 'tonicdb.password="${{TONIC_DB_PASSWORD}}"'

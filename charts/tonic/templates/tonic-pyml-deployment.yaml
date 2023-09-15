@@ -1,16 +1,12 @@
 {{- /* support values file w/o resource definition */}}
-{{- $resources := coalesce
-  ((((.Values).tonicai).pyml_service).resources)
-  (dict "limits" (dict "memory" "8Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "1Gi")) -}}
+{{- $resources = ((.Values.tonicai).pyml_service).resources }}
 {{- $legacyGpuAmount := (((.Values).resources).pyml_gpu).amount -}}
 {{- $newGpuAmount := (get $resources.limits "nvida.com/gpu") }}
 {{- $gpuAmount := coalesce $newGpuAmount $legacyGpuAmount 0 -}}
 {{- if ($gpuAmount) -}}
 {{ $_ := set $resources.limits "nvida.com/gpu" $gpuAmount -}}
 {{- end -}}
-{{- $tolerations := (coalesce
-  ((((.Values).resources).pyml_gpu).tolerations)
-  ((((.Values).tonicai).pyml_service).tolerations)) -}}
+{{- $tolerations = [] }}
 {{ $image := "" }}
 {{- if ((.Values.tonicai).pyml_service).image }}
 {{- $image = .Values.tonicai.pyml_service.image }}
