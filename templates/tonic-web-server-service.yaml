@@ -1,4 +1,6 @@
 {{- $ports := ((.Values.tonicai).web_server).ports | default dict }}
+{{- $httpsOnly := hasKey $ports "httpsOnly" | ternary $ports.httpsOnly true }}
+{{- $httpPort := $ports.http | default 6580 }}
 {{- $httpsPort := $ports.https | default 6543 }}
 {{- $annotations := dict }}
 {{- if ((.Values.tonicai).web_server).annotations }}
@@ -23,6 +25,11 @@ metadata:
     {{- include "tonic.allLabels" (list $ (dict "app" "tonic-web-server")) | nindent 4 }}
 spec:
   ports:
+  {{- if not $httpsOnly }}
+  - name: "http"
+    port: 80
+    targetPort: {{ $httpPort }}
+  {{- end }}
   - name: "https"
     port: 443
     targetPort: {{ $httpsPort }}
