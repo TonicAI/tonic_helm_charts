@@ -12,7 +12,7 @@
   {{- end }}
 {{- end }}
 {{- $ports := ((.Values.tonicai).worker).ports | default dict }}
-{{- $httpsOnly := $ports.httpsOnly | default true }}
+{{- $httpsOnly := hasKey $ports "httpsOnly" | ternary $ports.httpsOnly true }}
 {{- $httpPort := $ports.http | default 2480 }}
 {{- $httpsPort := $ports.https | default 2467 }}
 apiVersion: apps/v1
