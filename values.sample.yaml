@@ -140,6 +140,20 @@ tonicai:
 # new one created.  This will result in Tonic being down during an update.
 deployStrategy: RollingUpdate
 
+containerization:
+  # if self managing RBAC, to use containerization the tonic service account
+  # will need a rolebinding that grants:
+  # rules:
+  #   - apiGroups: [""]
+  #     resources: ["pods"]
+  #     verbs: ["get", "list", "delete", "create", "watch", "deletecollection"]
+  #   - apiGroups: [""]
+  #     resources: ["secrets"]
+  #     verbs: ["list", "delete", "create", "deletecollection"]
+  rbac:
+    create: true
+  datapacker:
+    imageRepo: quay.io/tonicai/datapacker
 # Professional and Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
 #   groupFilter: <regex that matches groups to import into Tonic, like .*Tonic.*>

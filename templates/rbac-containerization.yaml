@@ -1,0 +1,28 @@
+{{- if ((.Values.containerization).rbac).create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tonic-containerization
+  namespace: {{ .Release.Namespace }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete", "create", "watch", "deletecollection"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["list", "delete", "create", "deletecollection"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tonic-containerization
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tonic-containerization
+subjects:
+- kind: ServiceAccount
+  name: {{ template "tonic.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}
