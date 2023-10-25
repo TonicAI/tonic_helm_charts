@@ -2,6 +2,10 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  labels:
+    {{- include "tonic.allLabels" (list $) | nindent 4 }}
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   name: {{ .Values.tonicai.web_server.features.kubernetes_role | default "default" }}
   namespace: {{ .Release.Namespace }}
 rules:
@@ -12,6 +16,10 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  labels:
+    {{- include "tonic.allLabels" (list $) | nindent 4 }}
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   name: role-binding
   namespace: {{ .Release.Namespace }}
 roleRef:

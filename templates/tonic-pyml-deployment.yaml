@@ -10,7 +10,9 @@
 {{- end -}}
 {{- $tolerations := (coalesce
   ((((.Values).resources).pyml_gpu).tolerations)
-  ((((.Values).tonicai).pyml_service).tolerations)) -}}
+  ((((.Values).tonicai).pyml_service).tolerations)
+  list
+  ) -}}
 {{ $image := "" }}
 {{- if ((.Values.tonicai).pyml_service).image }}
 {{- $image = .Values.tonicai.pyml_service.image }}
@@ -26,9 +28,15 @@ kind: Deployment
 metadata:
   name: tonic-pyml-service
   namespace: {{ .Release.Namespace }}
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   labels:
-    app: tonic-pyml-service
+    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-pyml-service")) | nindent 4 }}
 spec:
+  nodeSelector:
+    {{- include "tonic.nodeSelectors" (list $) | nindent 4 }}
+  tolerations:
+    {{- include "tonic.tolerations" (list $ $tolerations) | nindent 4 }}
   replicas: 1
   selector:
     matchLabels:
@@ -38,8 +46,10 @@ spec:
   revisionHistoryLimit: 1
   template:
     metadata:
+      annotations:
+        {{- include "tonic.annotations" (list $) | nindent 8 }}
       labels:
-        app: tonic-pyml-service
+        {{- include "tonic.allLabels" (list $ (dict "app" "tonic-pyml-service")) | nindent 8 }}
     spec:
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}
@@ -133,7 +143,3 @@ spec:
         - name: tmp
           emptyDir: {}
         {{- end }}
-      tolerations:
-      {{- if $tolerations -}}
-      {{ toYaml $tolerations | nindent 8 }}
-      {{- end }}

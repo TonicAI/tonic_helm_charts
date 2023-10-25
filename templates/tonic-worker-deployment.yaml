@@ -19,10 +19,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: tonic-worker
+    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 4 }}
   name: tonic-worker
   namespace: {{ .Release.Namespace }}
 spec:
+  nodeSelector:
+    {{- include "tonic.nodeSelectors" (list $) | nindent 4 }}
+  tolerations:
+    {{- include "tonic.tolerations" (list $) | nindent 4 }}
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   replicas: {{ .Values.numberOfWorkers }}
   selector:
     matchLabels:
@@ -32,8 +38,10 @@ spec:
   revisionHistoryLimit: 1
   template:
     metadata:
+      annotations:
+        {{- include "tonic.annotations" (list $) | nindent 8 }}
       labels:
-        app: tonic-worker
+        {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 8 }}
     spec:
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}

@@ -2,6 +2,10 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
+  labels:
+    {{- include "tonic.allLabels" (list $) | nindent 4 }}
   name: tonic-containerization
   namespace: {{ .Release.Namespace }}
 rules:
@@ -15,6 +19,10 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
+  labels:
+    {{- include "tonic.allLabels" (list $) | nindent 4 }}
   name: tonic-containerization
   namespace: {{ .Release.Namespace }}
 roleRef:

@@ -1,10 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   name: tonic-pyml-service
   namespace: {{ .Release.Namespace }}
   labels:
-    app: tonic-pyml-service
+    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-pyml-service")) | nindent 4 }}
 spec:
   ports:
   - port: 7700

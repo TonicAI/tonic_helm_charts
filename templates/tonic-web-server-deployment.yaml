@@ -18,11 +18,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   labels:
-    app: tonic-web-server
+    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-web-server")) | nindent 4 }}
   name: tonic-web-server
   namespace: {{ .Release.Namespace }}
 spec:
+  nodeSelector:
+    {{- include "tonic.nodeSelectors" (list $) | nindent 4 }}
+  tolerations:
+    {{- include "tonic.tolerations" (list $) | nindent 4 }}
   replicas: 1
   selector:
     matchLabels:
@@ -32,8 +38,10 @@ spec:
   revisionHistoryLimit: 1
   template:
     metadata:
+      annotations:
+        {{- include "tonic.annotations" (list $) | nindent 8 }}
       labels:
-        app: tonic-web-server
+        {{- include "tonic.allLabels" (list $ (dict "app" "tonic-web-server")) | nindent 8 }}
     spec:
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}
