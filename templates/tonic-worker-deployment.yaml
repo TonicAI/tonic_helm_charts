@@ -23,10 +23,6 @@ metadata:
   name: tonic-worker
   namespace: {{ .Release.Namespace }}
 spec:
-  nodeSelector:
-    {{- include "tonic.nodeSelectors" (list $) | nindent 4 }}
-  tolerations:
-    {{- include "tonic.tolerations" (list $) | nindent 4 }}
   annotations:
     {{- include "tonic.annotations" (list $) | nindent 4 }}
   replicas: {{ .Values.numberOfWorkers }}
@@ -43,6 +39,10 @@ spec:
       labels:
         {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 8 }}
     spec:
+      nodeSelector:
+        {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
+      tolerations:
+        {{- include "tonic.tolerations" (list $) | nindent 8 }}
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}
         seccompProfile:

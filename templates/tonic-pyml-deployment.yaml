@@ -33,10 +33,6 @@ metadata:
   labels:
     {{- include "tonic.allLabels" (list $ (dict "app" "tonic-pyml-service")) | nindent 4 }}
 spec:
-  nodeSelector:
-    {{- include "tonic.nodeSelectors" (list $) | nindent 4 }}
-  tolerations:
-    {{- include "tonic.tolerations" (list $ $tolerations) | nindent 4 }}
   replicas: 1
   selector:
     matchLabels:
@@ -51,6 +47,10 @@ spec:
       labels:
         {{- include "tonic.allLabels" (list $ (dict "app" "tonic-pyml-service")) | nindent 8 }}
     spec:
+      nodeSelector:
+        {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
+      tolerations:
+        {{- include "tonic.tolerations" (list $ $tolerations) | nindent 8 }}
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}
         seccompProfile:

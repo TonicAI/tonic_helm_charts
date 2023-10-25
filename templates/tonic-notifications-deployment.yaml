@@ -22,10 +22,6 @@ metadata:
   name: tonic-notifications
   namespace: {{ .Release.Namespace }}
 spec:
-  nodeSelector:
-    {{- include "tonic.nodeSelectors" (list $) | nindent 4 }}
-  tolerations:
-    {{- include "tonic.tolerations" (list $) | nindent 4 }}
   replicas: 1
   selector:
     matchLabels:
@@ -40,6 +36,10 @@ spec:
       labels:
         {{- include "tonic.allLabels" (list $ (dict "app" "tonic-notifications")) | nindent 8 }}
     spec:
+      nodeSelector:
+        {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
+      tolerations:
+        {{- include "tonic.tolerations" (list $) | nindent 8 }}
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}
         seccompProfile:
