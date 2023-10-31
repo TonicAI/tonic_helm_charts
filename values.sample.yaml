@@ -214,6 +214,18 @@ containerization:
 #     base64: <base64 encoded metadataXml>
 #   entityId: <entity id used to send requests from tonic, if not provided, will be determined from metadata xml>
 
+#   Generic OIDC SSO Config
+#   -----------------
+#   provider: OIDC
+#   clientId: <client-id>
+#   authority: <url-of-authority>
+#   optionalConfig:
+#     scopes: <space delimited scopes>
+#     firstNameClaimName: <Name of first name claim if different than OIDC standard>
+#     lastNameClaimName: <Name of last name claim if different than OIDC standard>
+#     emailClaimName: <Name of email/username claim if different than OIDC standard>
+#     groupsClaimName: <Name of groups claim>
+
 # Professional and Enterprise License Only: Configuration options for tonic-notifications.
 # tonicSmtpConfig:
 #   tonicUrl: <tonic URL, for links>
