@@ -107,6 +107,8 @@ the deployment. This should only be called if $.Values.tonicSsoConfig is populat
 {{ include "tonic.sso.keycloak" . }}
 {{- else if eq $provider "saml" }}
 {{- include "tonic.sso.saml" . }}
+{{- else if eq $provider "oidc" }}
+{{- include "tonic.sso.oidc" . }}
 {{- else }}
 {{ fail "Unsupported SSO provider " .provider }}
 {{ end }}
@@ -259,3 +261,35 @@ configure generic saml sso
 {{- end -}}
 {{- end -}}
 {{/* end tonic.sso.saml */}}
+
+{{/*
+Given $.Values.tonicSsoConfig, produces the environment variables needed to
+configure generic oidc sso
+*/}}
+{{- define "tonic.sso.oidc" -}}
+- name: TONIC_SSO_CLIENT_ID
+  value: {{ required "tonicSsoConfig.clientId is required to configure OIDC sso" .clientId | quote }}
+- name: TONIC_SSO_OIDC_AUTHORITY
+  value: {{ required "tonicSsoConfig.authority is required to configure OIDC sso" .authority | quote }}
+{{- if .optionalConfig.scopes }}
+- name: TONIC_SSO_OIDC_SCOPES
+  value: {{ quote .optionalConfig.scopes }}
+{{- end }}
+{{- if .optionalConfig.firstNameClaimName }}
+- name: TONIC_SSO_OIDC_FIRST_NAME_CLAIM_NAME
+  value: {{ quote .optionalConfig.firstNameClaimName }}
+{{- end }}
+{{- if .optionalConfig.lastNameClaimName }}
+- name: TONIC_SSO_OIDC_LAST_NAME_CLAIM_NAME
+  value: {{ quote .optionalConfig.lastNameClaimName }}
+{{- end }}
+{{- if .optionalConfig.emailClaimName }}
+- name: TONIC_SSO_OIDC_EMAIL_CLAIM_NAME
+  value: {{ quote .optionalConfig.emailClaimName }}
+{{- end }}
+{{- if .optionalConfig.groupsClaimName }}
+- name: TONIC_SSO_OIDC_GROUPS_CLAIM_NAME
+  value: {{ quote .optionalConfig.groupsClaimName }}
+{{- end }}
+{{- end -}}
+{{/* end tonic.sso.oidc */}}
