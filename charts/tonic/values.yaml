@@ -47,7 +47,9 @@ tonicVersion: latest
 # Container repository with tonic images. If you don't use the default one you will have to copy images over before deployment
 tonicai:
   web_server:
-    env: {}
+    env: {
+        "TONIC_DISABLE_ACCOUNT_CREATION": false
+    }
     envRaw: {}
     #image: quay.io/tonicai/tonic_web_server
     # Comma separated list of user emails that should be have the Admin role in Tonic.
