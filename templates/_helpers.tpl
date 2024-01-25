@@ -369,4 +369,40 @@ caller (which is ideally the root value of the chart).
 {{- end }}
 {{ include "tonic.labels" $top }}
 {{- end -}}
->>>>>>> 2286b28 (labels. annotations, selectors, tolerations)
+
+{{- define "tonic.initContainers" -}}
+{{- $top := first . }}
+{{- $inits := index . 1 }}
+{{- if $inits }}
+{{- toYaml $inits }}
+{{- end }}
+{{- end }}
+
+{{- define "tonic.unprivilegeImage" -}}
+{{- $top := first . }}
+{{- $image := index . 1  }}
+{{- if $top.useUnprivilegedContainers }}
+{{- $image }}_unprivileged
+{{- else }}
+{{- $image }}
+{{- end }}
+{{- end }}
+
+{{- define "tonic.image" -}}
+{{- $top := first . }}
+{{- $custImage := index . 1 }}
+{{- $ourImage := index . 2 }}
+{{- if $custImage }}
+{{- $custImage }}
+{{- else }}
+{{- include "tonic.unprivilegeImage" (list $top $ourImage) }}
+{{- end }}
+{{- end }}
+
+{{- define "tonic.imageWithVersion" -}}
+{{- $top := first . }}
+{{- $custImage := index . 1 }}
+{{- $ourImage := index . 2 }}
+{{- $version := (index . 3) |  default "latest" }}
+{{- include "tonic.image" (list $top $custImage $ourImage) }}:{{ $version }}
+{{- end }}

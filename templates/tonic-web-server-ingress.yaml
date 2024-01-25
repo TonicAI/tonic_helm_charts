@@ -1,4 +1,3 @@
-# use_ingress typically only used by TIM
 {{- if (.Values.tonicai).use_ingress }}
 {{- $ingress := .Values.tonicai.ingress }}
 {{- $annotations := dict -}}
