@@ -263,7 +263,6 @@ configure generic saml sso
 {{/* end tonic.sso.saml */}}
 
 {{/*
-<<<<<<< HEAD
 Given $.Values.tonicSsoConfig, produces the environment variables needed to
 configure generic oidc sso
 */}}
@@ -294,8 +293,9 @@ configure generic oidc sso
 {{- end }}
 {{- end -}}
 {{/* end tonic.sso.oidc */}}
-=======
-`$top := first .` and `(list $)`
+
+{{/*
+About `$top := first .` and `(list $)`
 
 `$` always points at the root value for this context. However, inside of a
 named template, our context is different than inside of a template directly.
@@ -381,7 +381,7 @@ caller (which is ideally the root value of the chart).
 {{- define "tonic.unprivilegeImage" -}}
 {{- $top := first . }}
 {{- $image := index . 1  }}
-{{- if $top.useUnprivilegedContainers }}
+{{- if $top.Values.useUnprivilegedContainers }}
 {{- $image }}_unprivileged
 {{- else }}
 {{- $image }}
