@@ -48,7 +48,7 @@ tonicVersion: latest
 tonicai:
   web_server:
     env: {
-        "TONIC_DISABLE_ACCOUNT_CREATION": false
+        "TONIC_DISABLE_ACCOUNT_CREATION": true
     }
     envRaw: {}
     #image: quay.io/tonicai/tonic_web_server
@@ -132,6 +132,7 @@ tonicai:
   # By default this chart will create an nginx ingress, however providing
   # additional annotations will disable this
   #  annotations: {}
+
 
 # Deployment Strategy: This can be set to either "RollingUpdate" or "Recreate".  If not provided, the default value
 # is "RollingUpdate".  "RollingUpdate" will perform a rolling update of the deployment similar to a blue/green

@@ -164,3 +164,14 @@ spec:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
 status: {}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: tonic-worker
+  namespace: tonic
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: tonic-worker

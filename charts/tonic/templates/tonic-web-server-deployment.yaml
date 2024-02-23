@@ -171,3 +171,14 @@ spec:
         emptyDir: {}
       {{- end }}
 status: {}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: tonic-web-server
+  namespace: tonic
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: tonic-web-server
