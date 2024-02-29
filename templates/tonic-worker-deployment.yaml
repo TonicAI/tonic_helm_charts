@@ -21,11 +21,11 @@ kind: Deployment
 metadata:
   labels:
     {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 4 }}
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   name: tonic-worker
   namespace: {{ .Release.Namespace }}
 spec:
-  annotations:
-    {{- include "tonic.annotations" (list $) | nindent 4 }}
   replicas: {{ .Values.numberOfWorkers }}
   selector:
     matchLabels:
