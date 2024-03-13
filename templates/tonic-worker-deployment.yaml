@@ -1,14 +1,15 @@
+{{- $worker := .Values.tonicai.worker }}
 {{- $resources := coalesce
-  ((((.Values).tonicai).worker).resources)
+  $worker.resources
   (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "ephemeral-storage" "1Gi")) -}}
 {{ $image := "" }}
-{{- if  ((.Values.tonicai).worker).image }}
+{{- if  $worker.image }}
 {{- $image = .Values.tonicai.worker.image }}
 {{- else }}
   {{- if .Values.useUnprivilegedContainers }}
   {{ $image = "quay.io/tonicai/tonic_worker_unprivileged" }}
   {{- else }}
-  {{- $image = "quay.io/tonicai/tonic_worker" }}
+  {{- $image = "" }}
   {{- end }}
 {{- end }}
 {{- $ports := ((.Values.tonicai).worker).ports | default dict }}
@@ -19,7 +20,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: tonic-worker
+    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 4 }}
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   name: tonic-worker
   namespace: {{ .Release.Namespace }}
 spec:
@@ -32,9 +35,15 @@ spec:
   revisionHistoryLimit: 1
   template:
     metadata:
+      annotations:
+        {{- include "tonic.annotations" (list $) | nindent 8 }}
       labels:
-        app: tonic-worker
+        {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 8 }}
     spec:
+      nodeSelector:
+        {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
+      tolerations:
+        {{- include "tonic.tolerations" (list $) | nindent 8 }}
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}
         seccompProfile:
@@ -42,6 +51,9 @@ spec:
         runAsNonRoot: true
         {{- end }}
       volumes:
+        {{- if $worker.volumes }}
+        {{- toYaml $worker.volumes | nindent 8 }}
+        {{- end }}
         {{- if .Values.readOnlyRootFilesystem }}
         - name: var-run
           emptyDir: {}
@@ -52,6 +64,8 @@ spec:
         - name: vector
           emptyDir: {}
         {{- end }}
+      initContainers:
+        {{- include "tonic.initContainers" (list $ $worker.initContainers) | nindent 8 }}
       containers:
         - securityContext:
             {{- if .Values.useUnprivilegedContainers }}
@@ -63,6 +77,9 @@ spec:
             readOnlyRootFilesystem: true
             {{- end }}
           volumeMounts:
+            {{- if $worker.volumeMounts }}
+            {{- toYaml $worker.volumeMounts | nindent 10 }}
+            {{- end }}
             {{- if .Values.readOnlyRootFilesystem }}
             - name: var-log
               mountPath: /var/log/supervisor
@@ -125,22 +142,18 @@ spec:
             - name: TONIC_LAMBDA_ROLE
               value: {{ .Values.awsLambdaRoleArn }}
             {{- end }}
-            {{- if .Values.tonicai }}
-            {{- if .Values.tonicai.worker }}
-            {{- if .Values.tonicai.worker.env}}
-            {{- range $key, $value := .Values.tonicai.worker.env }}
+            {{- if $worker.env}}
+            {{- range $key, $value := $worker.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- if .Values.tonicai.worker.envRaw }}
-            {{- with .Values.tonicai.worker.envRaw }}
+            {{- end }}
+            {{- if $worker.envRaw }}
+            {{- with $worker.envRaw }}
                 {{- toYaml . | nindent 12 }}
             {{- end }}
             {{- end }}
-            {{- end }}
-            {{- end }}
-            {{- end }}
-          image: {{ $image }}:{{ .Values.tonicVersion | default "latest" }}
+          image: {{ include "tonic.imageWithVersion" (list $ $worker.image "quay.io/tonicai/tonic_worker" .Values.tonicVersion) }}
           imagePullPolicy: Always
           name: tonic-worker
           ports:

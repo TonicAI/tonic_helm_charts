@@ -5,8 +5,10 @@
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   labels:
-    app: tonic-worker
+    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 4 }}
   name: tonic-worker
   namespace: {{ .Release.Namespace }}
 spec:

@@ -1,24 +1,26 @@
 {{- $ports := ((.Values.tonicai).web_server).ports | default dict }}
 {{- $httpsPort := $ports.https | default 6543 }}
+{{- $annotations := dict }}
+{{- if ((.Values.tonicai).web_server).annotations }}
+{{- $annotations = .Values.tonicai.web_server.annotations }}
+{{- else }}
+{{- $annotations = (dict
+    "service.beta.kubernetes.io/aws-load-balancer-internal" "true"
+    "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type" "ip"
+    "service.beta.kubernetes.io/aws-load-balancer-scheme" "internal"
+    "service.beta.kubernetes.io/aws-load-balancer-type" "nlb"
+    "service.beta.kubernetes.io/azure-load-balancer-internal" "true"
+)}}
+{{- end }}
 apiVersion: v1
 kind: Service
 metadata:
   name: tonic-web-server
   namespace: {{ .Release.Namespace }}
-{{- if  ((.Values.tonicai).web_server).annotations }}
   annotations:
-    {{- toYaml .Values.tonicai.web_server.annotations | nindent 4 }}
-{{- else }}
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-{{- end }}
-
+    {{- include "tonic.annotations" (list $ $annotations) | nindent 4 }}
   labels:
-    app: tonic-web-server
+    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-web-server")) | nindent 4 }}
 spec:
   ports:
   - name: "https"

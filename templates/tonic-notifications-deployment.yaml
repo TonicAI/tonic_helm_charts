@@ -1,22 +1,16 @@
+{{- $notifications := .Values.tonicai.notifications }}
 {{- /* support values file w/o resource definition */}}
 {{- $resources := coalesce
-  ((((.Values).tonicai).notifications).resources)
-  (dict "limits" (dict "memory" "1Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "1Gi")) -}}
-{{ $image := "" }}
-{{- if  ((.Values.tonicai).notifications).image }}
-{{- $image = .Values.tonicai.notifications.image }}
-{{- else }}
-  {{- if .Values.useUnprivilegedContainers }}
-  {{- $image = "quay.io/tonicai/tonic_notifications_unprivileged" }}
-  {{- else }}
-  {{- $image = "quay.io/tonicai/tonic_notifications" }}
-  {{- end }}
-{{- end }}
+  $notifications.resources
+  (dict "limits" (dict "memory" "1Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "1Gi"))
+-}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   labels:
-    app: tonic-notifications
+    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-notifications")) | nindent 4 }}
   name: tonic-notifications
   namespace: {{ .Release.Namespace }}
 spec:
@@ -29,15 +23,23 @@ spec:
   revisionHistoryLimit: 1
   template:
     metadata:
+      annotations:
+        {{- include "tonic.annotations" (list $) | nindent 8 }}
       labels:
-        app: tonic-notifications
+        {{- include "tonic.allLabels" (list $ (dict "app" "tonic-notifications")) | nindent 8 }}
     spec:
+      nodeSelector:
+        {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
+      tolerations:
+        {{- include "tonic.tolerations" (list $) | nindent 8 }}
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}
         seccompProfile:
           type: RuntimeDefault
         runAsNonRoot: true
         {{- end }}
+      initContainers:
+        {{- include "tonic.initContainers" (list $ $notifications.initContainers) | nindent 8 }}
       containers:
       - securityContext:
           {{- if .Values.useUnprivilegedContainers }}
@@ -49,12 +51,12 @@ spec:
           readOnlyRootFilesystem: true
           {{- end }}
         env:
-        {{- range $key, $value := ((.Values.tonicai).notifications).env }}
+        {{- range $key, $value := $notifications.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
         {{- end }}
-        {{- if ((.Values.tonicai).notifications).envRaw }}
-        {{- with .Values.tonicai.notifications.envRaw }}
+        {{- if $notifications.envRaw }}
+        {{- with $notifications.envRaw }}
             {{- toYaml . | nindent 12 }}
         {{- end }}
         {{- end }}
@@ -73,27 +75,28 @@ spec:
           value: {{ .Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
-        {{- if ((.Values).tonicSmtpConfig).tonicUrl }}
+        {{- $smtp := .Values.tonicSmtpConfig }}
+        {{- if $smtp.tonicUrl }}
         - name: TONIC_URL
-          value: {{ .Values.tonicSmtpConfig.tonicUrl }}
+          value: {{ $smtp.tonicUrl }}
         {{- end}}
-        {{- if ((.Values).tonicSmtpConfig).sendingAddress }}
+        {{- if $smtp.sendingAddress }}
         - name: TONIC_NOTIFICATION_SENDING_ADDRESS
-          value: {{ .Values.tonicSmtpConfig.sendingAddress }}
+          value: {{ $smtp.sendingAddress }}
         {{- end}}
-        {{- if ((.Values).tonicSmtpConfig).smtpServerAddress }}
+        {{- if $smtp.smtpServerAddress }}
         - name: TONIC_NOTIFICATION_SMTP_SERVER_ADDRESS
-          value: {{ .Values.tonicSmtpConfig.smtpServerAddress }}
+          value: {{ $smtp.smtpServerAddress }}
         {{- end}}
-        {{- if ((.Values).tonicSmtpConfig).smtpServerPort }}
+        {{- if $smtp.smtpServerPort }}
         - name: TONIC_NOTIFICATION_SMTP_SERVER_PORT
-          value: {{quote .Values.tonicSmtpConfig.smtpServerPort }}
+          value: {{quote $smtp.smtpServerPort }}
         {{- end}}
-        {{- if ((.Values).tonicSmtpConfig).smtpUsername }}
+        {{- if $smtp.smtpUsername }}
         - name: TONIC_NOTIFICATION_SMTP_USERNAME
-          value: {{ .Values.tonicSmtpConfig.smtpUsername }}
+          value: {{ $smtp.smtpUsername }}
         {{- end}}
-        {{- if ((.Values).tonicSmtpConfig).smtpPassword }}
+        {{- if $smtp.smtpPassword }}
         - name: TONIC_NOTIFICATION_SMTP_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -108,10 +111,13 @@ spec:
           value: "7000"
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
           value: "7001"
-        image: {{ $image }}:{{ .Values.tonicVersion | default "latest" }}
+        image: {{ include "tonic.imageWithVersion" (list $ $notifications.image "quay.io/tonicai/tonic_notifications" .Values.tonicVersion) }}
         imagePullPolicy: Always
         name: tonic-notifications
         volumeMounts:
+          {{- if $notifications.volumeMounts }}
+          {{- toYaml $notifications.volumeMounts | nindent 10 }}
+          {{- end }}
           {{- if .Values.readOnlyRootFilesystem }}
           - name: vector
             mountPath: /tonic/vector_data
@@ -143,6 +149,9 @@ spec:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       volumes:
+        {{- if $notifications.volumes }}
+        {{- toYaml $notifications.volumes | nindent 8 }}
+        {{- end }}
         {{- if .Values.readOnlyRootFilesystem }}
         - name: tmp
           emptyDir: {}

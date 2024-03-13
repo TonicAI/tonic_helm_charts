@@ -293,3 +293,116 @@ configure generic oidc sso
 {{- end }}
 {{- end -}}
 {{/* end tonic.sso.oidc */}}
+
+{{/*
+About `$top := first .` and `(list $)`
+
+`$` always points at the root value for this context. However, inside of a
+named template, our context is different than inside of a template directly.
+Many of these named templates accept a list where the first argument is `$` --
+or `$top` inside the template -- which allows it access the root context of the
+caller (which is ideally the root value of the chart).
+*/}}
+
+{{- define "tonic.nodeSelectors" -}}
+{{- $top := first . }}
+{{- $selectors := dict }}
+{{- if ($top.Values).nodeSelector }}
+{{- $selectors = merge $selectors $top.Values.nodeSelector }}
+{{- if (gt (len .) 1) }}
+{{- $selectors = merge $selectors (index . 1) }}
+{{- end }}
+{{- if $selectors }}
+{{- $selectors | toYaml }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "tonic.tolerations" -}}
+{{- $top := first . }}
+{{- $tolerations := list }}
+{{- if ($top.Values).tolerations }}
+{{- $tolerations = concat $tolerations $top.Values.tolerations }}
+{{- end }}
+{{- if (gt (len .) 1) }}
+{{- $these := (index . 1) }}
+{{- if $these }}
+{{- $tolerations = concat $tolerations $these }}
+{{- end }}
+{{- end }}
+{{- if $tolerations }}
+{{- toYaml $tolerations }}
+{{- end }}
+{{- end }}
+
+{{- define "tonic.annotations" -}}
+{{- $top := first . }}
+{{- $annotations := dict }}
+{{- if ($top.Values).annotations }}
+{{- $annotations = (merge $annotations $top.Values.annotations) }}
+{{- end }}
+{{- if (gt (len .) 1) }}
+{{- $these := (index . 1) }}
+{{- if $these }}
+{{- $annotations = (merge $annotations $these) }}
+{{- end }}
+{{- end }}
+{{- if $annotations }}
+{{- $annotations | toYaml }}
+{{- end }}
+{{- end -}}
+
+{{- define "tonic.allLabels" -}}
+{{- $top := first . }}
+{{- $labels := dict }}
+{{- if ($top.Values).labels }}
+{{- $labels = (merge $labels $top.Values.labels) }}
+{{- end }}
+{{- if (gt (len .) 1) }}
+{{- $these := (index . 1) }}
+{{- if $these }}
+{{- $labels = (merge $labels $these) }}
+{{- end }}
+{{- end }}
+{{- if $labels -}}
+{{- $labels | toYaml }}
+{{- end }}
+{{ include "tonic.labels" $top }}
+{{- end -}}
+
+{{- define "tonic.initContainers" -}}
+{{- $top := first . }}
+{{- $inits := index . 1 }}
+{{- if $inits }}
+{{- toYaml $inits }}
+{{- end }}
+{{- end }}
+
+{{- define "tonic.unprivilegeImage" -}}
+{{- $top := first . }}
+{{- $image := index . 1  }}
+{{- if $top.Values.useUnprivilegedContainers }}
+{{- $image }}_unprivileged
+{{- else }}
+{{- $image }}
+{{- end }}
+{{- end }}
+
+{{- define "tonic.image" -}}
+{{- $top := first . }}
+{{- $custImage := index . 1 }}
+{{- $ourImage := index . 2 }}
+{{- if $custImage }}
+{{- $custImage }}
+{{- else }}
+{{- include "tonic.unprivilegeImage" (list $top $ourImage) }}
+{{- end }}
+{{- end }}
+
+{{- define "tonic.imageWithVersion" -}}
+{{- $top := first . }}
+{{- $custImage := index . 1 }}
+{{- $ourImage := index . 2 }}
+{{- $version := (index . 3) |  default "latest" }}
+{{- include "tonic.image" (list $top $custImage $ourImage) }}:{{ $version }}
+{{- end }}

@@ -1,6 +1,7 @@
 {{- /* support values file w/o resource definition */}}
+{{- $pyml := .Values.tonicai.pyml_service }}
 {{- $resources := coalesce
-  ((((.Values).tonicai).pyml_service).resources)
+  $pyml.resources
   (dict "limits" (dict "memory" "8Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "1Gi")) -}}
 {{- $legacyGpuAmount := (((.Values).resources).pyml_gpu).amount -}}
 {{- $newGpuAmount := (get $resources.limits "nvida.com/gpu") }}
@@ -10,24 +11,18 @@
 {{- end -}}
 {{- $tolerations := (coalesce
   ((((.Values).resources).pyml_gpu).tolerations)
-  ((((.Values).tonicai).pyml_service).tolerations)) -}}
-{{ $image := "" }}
-{{- if ((.Values.tonicai).pyml_service).image }}
-{{- $image = .Values.tonicai.pyml_service.image }}
-{{- else }}
-  {{- if .Values.useUnprivilegedContainers }}
-  {{- $image = "quay.io/tonicai/tonic_pyml_service_unprivileged" }}
-  {{- else }}
-  {{- $image = "quay.io/tonicai/tonic_pyml_service" }}
-  {{- end }}
-{{- end }}
+  $pyml.tolerations
+  list
+) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tonic-pyml-service
   namespace: {{ .Release.Namespace }}
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   labels:
-    app: tonic-pyml-service
+    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-pyml-service")) | nindent 4 }}
 spec:
   replicas: 1
   selector:
@@ -38,15 +33,23 @@ spec:
   revisionHistoryLimit: 1
   template:
     metadata:
+      annotations:
+        {{- include "tonic.annotations" (list $) | nindent 8 }}
       labels:
-        app: tonic-pyml-service
+        {{- include "tonic.allLabels" (list $ (dict "app" "tonic-pyml-service")) | nindent 8 }}
     spec:
+      nodeSelector:
+        {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
+      tolerations:
+        {{- include "tonic.tolerations" (list $ $tolerations) | nindent 8 }}
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}
         seccompProfile:
           type: RuntimeDefault
         runAsNonRoot: true
         {{- end }}
+      initContainers:
+        {{- include "tonic.initContainers" (list $ $pyml.initContainers) | nindent 8 }}
       containers:
       - securityContext:
           {{- if .Values.useUnprivilegedContainers }}
@@ -58,12 +61,12 @@ spec:
           readOnlyRootFilesystem: true
           {{- end }}
         env:
-        {{- range $key, $value := ((.Values.tonicai).pyml_service).env }}
+        {{- range $key, $value := $pyml.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
         {{- end }}
-        {{- if ((.Values.tonicai).pyml_service).envRaw }}
-        {{- with .Values.tonicai.pyml_service.envRaw }}
+        {{- if $pyml.envRaw }}
+        {{- with $pyml.envRaw }}
             {{- toYaml . | nindent 12 }}
         {{- end }}
         {{- end }}
@@ -71,10 +74,13 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        image: {{ $image }}:{{ .Values.tonicVersion | default "latest" }}
+        image: {{ include "tonic.imageWithVersion" (list $ $pyml.image "quay.io/tonicai/tonic_pyml_service" .Values.tonicVersion) }}
         imagePullPolicy: Always
         name: tonic-pyml-service
         volumeMounts:
+          {{- if $pyml.volumeMounts }}
+          {{- toYaml $pyml.volumeMounts | nindent 8 }}
+          {{- end }}
           {{- if .Values.readOnlyRootFilesystem }}
           - name: tmp
             mountPath: /tmp
@@ -113,6 +119,9 @@ spec:
       - name: tonicai-build-writer-pull-secret
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       volumes:
+        {{- if $pyml.volumes }}
+        {{- toYaml $pyml.volumes | nindent 8 }}
+        {{- end }}
         {{- if .Values.readOnlyRootFilesystem }}
         - name: public-log
           emptyDir: {}
@@ -133,7 +142,3 @@ spec:
         - name: tmp
           emptyDir: {}
         {{- end }}
-      tolerations:
-      {{- if $tolerations -}}
-      {{ toYaml $tolerations | nindent 8 }}
-      {{- end }}

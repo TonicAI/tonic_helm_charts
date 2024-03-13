@@ -1,25 +1,18 @@
+{{- $server := .Values.tonicai.web_server -}}
 {{- $resources := coalesce
-  ((((.Values).tonicai).web_server).resources)
+  $server.resources
   (dict "limits" (dict "memory" "3Gi") "requests" (dict "memory" "2Gi" "ephemeral-storage" "1Gi")) -}}
-{{ $image := "" }}
-{{- if  ((.Values.tonicai).web_server).image }}
-  {{ $image = .Values.tonicai.web_server.image }}
-{{ else }}
-  {{- if .Values.useUnprivilegedContainers }}
-  {{ $image = "quay.io/tonicai/tonic_web_server_unprivileged" }}
-  {{- else }}
-  {{ $image = "quay.io/tonicai/tonic_web_server" }}
-  {{- end }}
-{{- end }}
-{{- $ports := ((.Values.tonicai).web_server).ports | default dict }}
+{{- $ports := $server.ports | default dict }}
 {{- $httpsOnly := $ports.httpsOnly | default true }}
 {{- $httpPort := $ports.http | default 6580 }}
 {{- $httpsPort := $ports.https | default 6543 }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   labels:
-    app: tonic-web-server
+    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-web-server")) | nindent 4 }}
   name: tonic-web-server
   namespace: {{ .Release.Namespace }}
 spec:
@@ -32,15 +25,23 @@ spec:
   revisionHistoryLimit: 1
   template:
     metadata:
+      annotations:
+        {{- include "tonic.annotations" (list $) | nindent 8 }}
       labels:
-        app: tonic-web-server
+        {{- include "tonic.allLabels" (list $ (dict "app" "tonic-web-server")) | nindent 8 }}
     spec:
+      nodeSelector:
+        {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
+      tolerations:
+        {{- include "tonic.tolerations" (list $) | nindent 8 }}
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}
         seccompProfile:
           type: RuntimeDefault
         runAsNonRoot: true
         {{- end }}
+      initContainers:
+        {{- include "tonic.initContainers" (list $ $server.initContainers) | nindent 8 }}
       containers:
       - securityContext:
           {{- if .Values.useUnprivilegedContainers }}
@@ -52,6 +53,9 @@ spec:
           readOnlyRootFilesystem: true
           {{- end }}
         volumeMounts:
+        {{- if $server.volumeMounts }}
+        {{- toYaml $server.volumeMounts | nindent 10 }}
+        {{- end }}
         {{- if .Values.readOnlyRootFilesystem }}
         - name: var-log
           mountPath: /var/log/supervisor
@@ -63,12 +67,12 @@ spec:
           mountPath: /tonic/vector_data
         {{- end }}
         env:
-        {{- range $key, $value := ((.Values.tonicai).web_server).env }}
+        {{- range $key, $value := $server.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
         {{- end }}
-        {{- if ((.Values.tonicai).web_server).envRaw }}
-        {{- with .Values.tonicai.web_server.envRaw }}
+        {{- if $server.envRaw }}
+        {{- with $server.envRaw }}
             {{- toYaml . | nindent 12 }}
         {{- end }}
         {{- end }}
@@ -110,9 +114,9 @@ spec:
         - name: TONIC_KUBERNETES_NAMESPACE
           value: {{ .Release.Namespace }}
         {{- end }}
-        {{- if ((.Values.tonicai).web_server).administrators }}
+        {{- if $server.administrators }}
         - name: TONIC_ADMINISTRATORS
-          value: {{ .Values.tonicai.web_server.administrators }}
+          value: {{ $server.administrators }}
         {{- end }}
         - name: TONIC_NOTIFICATIONS_URL
           value: http://tonic-notifications:7000
@@ -126,7 +130,7 @@ spec:
           value: {{ $httpsPort | quote }}
         - name: TONIC_HTTPS_ONLY
           value: {{ $httpsOnly | quote }}
-        image: {{ $image }}:{{ .Values.tonicVersion | default "latest" }}
+        image: {{ include "tonic.imageWithVersion" ( list $ $server.image "quay.io/tonicai/tonic_web_server" .Values.tonicVersion ) }}
         imagePullPolicy: Always
         name: tonic-web-server
         ports:
@@ -152,6 +156,9 @@ spec:
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
       volumes:
+      {{- if $server.volumes }}
+      {{- toYaml $server.volumes | nindent 8 }}
+      {{- end }}
       {{- if .Values.readOnlyRootFilesystem }}
       - name: var-run
         emptyDir: {}
@@ -164,4 +171,3 @@ spec:
       - name: db2
         emptyDir: {}
       {{- end }}
-status: {}
