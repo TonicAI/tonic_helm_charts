@@ -56,25 +56,26 @@ spec:
           value: {{ $value | quote }}
         {{- end }}
         {{- if $notifications.envRaw }}
-        {{- with $notifications.envRaw }}
-            {{- toYaml . | nindent 12 }}
+        {{- range $key,$value := $notifications.envRaw }}
+        - name: {{ $value.name }}
+          value: {{ $value.value | quote }}
         {{- end }}
         {{- end }}
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
           value: {{ .Values.tonicdb.user }}
-        - name: TONIC_DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: tonic-db-password
-              key: password
         - name: TONIC_DB_PORT
           value: {{quote .Values.tonicdb.port }}
         - name: TONIC_DB_SSLMODE
           value: {{ .Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
           value: {{ .Values.tonicdb.host }}
+        - name: TONIC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tonic-db-password
+              key: password
         {{- $smtp := .Values.tonicSmtpConfig }}
         {{- if $smtp.tonicUrl }}
         - name: TONIC_URL

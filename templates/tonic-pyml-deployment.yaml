@@ -66,8 +66,9 @@ spec:
           value: {{ $value | quote }}
         {{- end }}
         {{- if $pyml.envRaw }}
-        {{- with $pyml.envRaw }}
-            {{- toYaml . | nindent 12 }}
+        {{- range $key,$value := $pyml.envRaw }}
+        - name: {{ $value.name }}
+          value: {{ $value.value | quote }}
         {{- end }}
         {{- end }}
         - name: ENABLE_LOG_COLLECTION
