@@ -72,9 +72,8 @@ spec:
           value: {{ $value | quote }}
         {{- end }}
         {{- if $server.envRaw }}
-        {{- range $key,$value := $server.envRaw }}
-        - name: {{ $value.name }}
-          value: {{ $value.value | quote }}
+        {{- with $server.envRaw }}
+            {{- toYaml . | nindent 12 }}
         {{- end }}
         {{- end }}
         - name: TONIC_DB_DATABASE

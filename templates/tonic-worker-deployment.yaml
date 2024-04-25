@@ -149,9 +149,8 @@ spec:
             {{- end }}
             {{- end }}
             {{- if $worker.envRaw }}
-            {{- range $key, $value := $worker.envRaw }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
+            {{- with $worker.envRaw }}
+                {{- toYaml . | nindent 12 }}
             {{- end }}
             {{- end }}
           image: {{ include "tonic.imageWithVersion" (list $ $worker.image "quay.io/tonicai/tonic_worker" .Values.tonicVersion) }}

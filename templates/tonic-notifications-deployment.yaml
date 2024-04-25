@@ -56,9 +56,8 @@ spec:
           value: {{ $value | quote }}
         {{- end }}
         {{- if $notifications.envRaw }}
-        {{- range $key,$value := $notifications.envRaw }}
-        - name: {{ $value.name }}
-          value: {{ $value.value | quote }}
+        {{- with $notifications.envRaw }}
+            {{- toYaml . | nindent 12 }}
         {{- end }}
         {{- end }}
         - name: TONIC_DB_DATABASE
