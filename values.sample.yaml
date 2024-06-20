@@ -26,7 +26,7 @@ tonicdb:
 # tonicStatisticsSeed will cause generations to be consisent with each other for anything where consistency is set to true.
 # otherwise each generation will be internally consistent, but not consistent with other generations.
 # add quote to integer values to get rid of helm cast large number to float64, refer to this issue: https://github.com/helm/helm/issues/1707
-tonicStatisticsSeed: "<any-integer>"
+# tonicStatisticsSeed: "<any-integer>"
 
 # numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
 numberOfWorkers: 1
