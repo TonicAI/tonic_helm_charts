@@ -74,6 +74,12 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
+        {{- if $server.envFrom }}
+        envFrom:
+        {{- with $server.envFrom }}
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- end }}
         image: {{ include "tonic.imageWithVersion" (list $ $pyml.image "quay.io/tonicai/tonic_pyml_service" .Values.tonicVersion) }}
         imagePullPolicy: Always
         name: tonic-pyml-service
