@@ -153,9 +153,9 @@ spec:
                 {{- toYaml . | nindent 12 }}
             {{- end }}
             {{- end }}
-          {{- if $server.envFrom }}
+          {{- if $worker.envFrom }}
           envFrom:
-          {{- with $server.envFrom }}
+          {{- with $worker.envFrom }}
               {{- toYaml . | nindent 8 }}
           {{- end }}
           {{- end }}

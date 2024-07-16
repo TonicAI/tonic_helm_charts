@@ -111,9 +111,9 @@ spec:
           value: "7000"
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
           value: "7001"
-        {{- if $server.envFrom }}
+        {{- if $notifications.envFrom }}
         envFrom:
-        {{- with $server.envFrom }}
+        {{- with $notifications.envFrom }}
             {{- toYaml . | nindent 8 }}
         {{- end }}
         {{- end }}

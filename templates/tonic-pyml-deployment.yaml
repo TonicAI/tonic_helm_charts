@@ -74,9 +74,9 @@ spec:
           value: {{quote .Values.enableLogCollection }}
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
-        {{- if $server.envFrom }}
+        {{- if $pyml.envFrom }}
         envFrom:
-        {{- with $server.envFrom }}
+        {{- with $pyml.envFrom }}
             {{- toYaml . | nindent 8 }}
         {{- end }}
         {{- end }}
