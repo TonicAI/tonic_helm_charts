@@ -130,6 +130,12 @@ spec:
           value: {{ $httpsPort | quote }}
         - name: TONIC_HTTPS_ONLY
           value: {{ $httpsOnly | quote }}
+        {{- if $server.envFrom }}
+        envFrom:
+        {{- with $server.envFrom }}
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- end }}
         image: {{ include "tonic.imageWithVersion" ( list $ $server.image "quay.io/tonicai/tonic_web_server" .Values.tonicVersion ) }}
         imagePullPolicy: Always
         name: tonic-web-server

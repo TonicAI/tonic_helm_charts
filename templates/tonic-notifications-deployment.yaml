@@ -111,6 +111,12 @@ spec:
           value: "7000"
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
           value: "7001"
+        {{- if $notifications.envFrom }}
+        envFrom:
+        {{- with $notifications.envFrom }}
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- end }}
         image: {{ include "tonic.imageWithVersion" (list $ $notifications.image "quay.io/tonicai/tonic_notifications" .Values.tonicVersion) }}
         imagePullPolicy: Always
         name: tonic-notifications
