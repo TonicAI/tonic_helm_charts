@@ -156,7 +156,7 @@ spec:
           {{- if $worker.envFrom }}
           envFrom:
           {{- with $worker.envFrom }}
-              {{- toYaml . | nindent 8 }}
+              {{- toYaml . | nindent 10 }}
           {{- end }}
           {{- end }}
           image: {{ include "tonic.imageWithVersion" (list $ $worker.image "quay.io/tonicai/tonic_worker" .Values.tonicVersion) }}
