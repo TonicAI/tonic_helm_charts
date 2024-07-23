@@ -67,119 +67,119 @@ spec:
       initContainers:
         {{- include "tonic.initContainers" (list $ $worker.initContainers) | nindent 8 }}
       containers:
-        - securityContext:
-            {{- if .Values.useUnprivilegedContainers }}
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+      - securityContext:
+          {{- if .Values.useUnprivilegedContainers }}
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+          {{- end }}
+          {{- if .Values.readOnlyRootFilesystem }}
+          readOnlyRootFilesystem: true
+          {{- end }}
+        volumeMounts:
+          {{- if $worker.volumeMounts }}
+          {{- toYaml $worker.volumeMounts | nindent 8 }}
+          {{- end }}
+          {{- if .Values.readOnlyRootFilesystem }}
+          - name: var-log
+            mountPath: /var/log/supervisor
+          - name: var-run
+            mountPath: /var/run/supervisor
+          - name: tmp
+            mountPath: /tmp
+          - name: vector
+            mountPath: /tonic/vector_data
+          {{- end }}
+        env:
+          {{- if ((.Values.containerization).datapacker).imageRepo }}
+          - name: CONTAINERIZATION_IMAGE_REPOSITORY
+            value: {{ .Values.containerization.datapacker.imageRepo }}
+          {{- end }}
+          - name: TONIC_DB_DATABASE
+            value: {{ .Values.tonicdb.dbName }}
+          - name: TONIC_DB_USERNAME
+            value: {{ .Values.tonicdb.user }}
+          - name: TONIC_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: tonic-db-password
+                key: password
+          - name: TONIC_DB_PORT
+            value: {{quote .Values.tonicdb.port }}
+          - name: TONIC_DB_SSLMODE
+            value: {{ .Values.tonicdb.sslMode }}
+          - name: TONIC_DB_HOST
+            value: {{ .Values.tonicdb.host }}
+  #        - name: TONIC_PROCESS_PARALLELISM
+  #          value: "1"
+  #        - name: TONIC_TABLE_PARALLELISM
+  #          value: "1"
+  #        - name: TONIC_WRITE_PARALLELISM
+  #          value: "2"
+            {{- if .Values.tonicStatisticsSeed }}
+          - name: TONIC_STATISTICS_SEED
+            value: {{quote .Values.tonicStatisticsSeed }}
             {{- end }}
-            {{- if .Values.readOnlyRootFilesystem }}
-            readOnlyRootFilesystem: true
-            {{- end }}
-          volumeMounts:
-            {{- if $worker.volumeMounts }}
-            {{- toYaml $worker.volumeMounts | nindent 10 }}
-            {{- end }}
-            {{- if .Values.readOnlyRootFilesystem }}
-            - name: var-log
-              mountPath: /var/log/supervisor
-            - name: var-run
-              mountPath: /var/run/supervisor
-            - name: tmp
-              mountPath: /tmp
-            - name: vector
-              mountPath: /tonic/vector_data
-            {{- end }}
-          env:
-            {{- if ((.Values.containerization).datapacker).imageRepo }}
-            - name: CONTAINERIZATION_IMAGE_REPOSITORY
-              value: {{ .Values.containerization.datapacker.imageRepo }}
-            {{- end }}
-            - name: TONIC_DB_DATABASE
-              value: {{ .Values.tonicdb.dbName }}
-            - name: TONIC_DB_USERNAME
-              value: {{ .Values.tonicdb.user }}
-            - name: TONIC_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: tonic-db-password
-                  key: password
-            - name: TONIC_DB_PORT
-              value: {{quote .Values.tonicdb.port }}
-            - name: TONIC_DB_SSLMODE
-              value: {{ .Values.tonicdb.sslMode }}
-            - name: TONIC_DB_HOST
-              value: {{ .Values.tonicdb.host }}
-    #        - name: TONIC_PROCESS_PARALLELISM
-    #          value: "1"
-    #        - name: TONIC_TABLE_PARALLELISM
-    #          value: "1"
-    #        - name: TONIC_WRITE_PARALLELISM
-    #          value: "2"
-              {{- if .Values.tonicStatisticsSeed }}
-            - name: TONIC_STATISTICS_SEED
-              value: {{quote .Values.tonicStatisticsSeed }}
-              {{- end }}
-            - name: ENABLE_LOG_COLLECTION
-              value: {{quote .Values.enableLogCollection }}
-            - name: ENVIRONMENT_NAME
-              value: {{ .Values.environmentName }}
-            - name: TONIC_NOTIFICATIONS_URL
-              value: https://tonic-notifications:7001
-            - name: TONIC_PYML_URL
-              value: https://tonic-pyml-service:7700
-            - name: TONIC_WEB_URL
-              value: https://tonic-web-server
-            - name: TONIC_HTTPS_ONLY
-              value: {{ $httpsOnly | quote }}
-            {{- if not $httpsOnly }}
-            - name: TONIC_WORKER_HEALTH_PORT_HTTP
-              value: {{ $httpPort | quote }}
-            {{- end }}
-            - name: TONIC_WORKER_HEALTH_PORT_HTTPS
-              value: {{ $httpsPort | quote }}
-            {{- if .Values.awsLambdaRoleArn }}
-            - name: TONIC_LAMBDA_ROLE
-              value: {{ .Values.awsLambdaRoleArn }}
-            {{- end }}
-            {{- if $worker.env}}
-            {{- range $key, $value := $worker.env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }}
-            {{- end }}
-            {{- if $worker.envRaw }}
-            {{- with $worker.envRaw }}
-                {{- toYaml . | nindent 12 }}
-            {{- end }}
-            {{- end }}
-          {{- if $worker.envFrom }}
-          envFrom:
-          {{- with $worker.envFrom }}
+          - name: ENABLE_LOG_COLLECTION
+            value: {{quote .Values.enableLogCollection }}
+          - name: ENVIRONMENT_NAME
+            value: {{ .Values.environmentName }}
+          - name: TONIC_NOTIFICATIONS_URL
+            value: https://tonic-notifications:7001
+          - name: TONIC_PYML_URL
+            value: https://tonic-pyml-service:7700
+          - name: TONIC_WEB_URL
+            value: https://tonic-web-server
+          - name: TONIC_HTTPS_ONLY
+            value: {{ $httpsOnly | quote }}
+          {{- if not $httpsOnly }}
+          - name: TONIC_WORKER_HEALTH_PORT_HTTP
+            value: {{ $httpPort | quote }}
+          {{- end }}
+          - name: TONIC_WORKER_HEALTH_PORT_HTTPS
+            value: {{ $httpsPort | quote }}
+          {{- if .Values.awsLambdaRoleArn }}
+          - name: TONIC_LAMBDA_ROLE
+            value: {{ .Values.awsLambdaRoleArn }}
+          {{- end }}
+          {{- if $worker.env}}
+          {{- range $key, $value := $worker.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if $worker.envRaw }}
+          {{- with $worker.envRaw }}
               {{- toYaml . | nindent 10 }}
           {{- end }}
           {{- end }}
-          image: {{ include "tonic.imageWithVersion" (list $ $worker.image "quay.io/tonicai/tonic_worker" .Values.tonicVersion) }}
-          imagePullPolicy: Always
-          name: tonic-worker
-          ports:
-          {{- if not $httpsOnly }}
-          - containerPort: {{ $httpPort }}
-            name: "http"
-          {{- end }}
-          - containerPort: {{ $httpsPort }}
-            name: "https"
-          resources:
-            {{- toYaml $resources | nindent 12 }}
-          startupProbe:
-            httpGet:
-              scheme: HTTPS
-              path: /health
-              port: {{ $httpsPort }}
-            initialDelaySeconds: 5
-            periodSeconds: 60
-            timeoutSeconds: 30
-            failureThreshold: 5
+        {{- if $worker.envFrom }}
+        envFrom:
+        {{- with $worker.envFrom }}
+            {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- end }}
+        image: {{ include "tonic.imageWithVersion" (list $ $worker.image "quay.io/tonicai/tonic_worker" .Values.tonicVersion) }}
+        imagePullPolicy: Always
+        name: tonic-worker
+        ports:
+        {{- if not $httpsOnly }}
+        - containerPort: {{ $httpPort }}
+          name: "http"
+        {{- end }}
+        - containerPort: {{ $httpsPort }}
+          name: "https"
+        resources:
+          {{- toYaml $resources | nindent 10 }}
+        startupProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /health
+            port: {{ $httpsPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 60
+          timeoutSeconds: 30
+          failureThreshold: 5
       restartPolicy: Always
       imagePullSecrets:
       - name: tonicai-build-writer-pull-secret
