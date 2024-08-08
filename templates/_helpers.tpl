@@ -453,9 +453,6 @@ caller (which is ideally the root value of the chart).
 {{- if $thesePorts.httpsOnly }}
 {{- $_ := set $thesePorts "http" $http }}
 {{- end }}
-{{- if 1 }}
-{{- $_ := set $thesePorts "inputs" (dict "defaults" $defaults "passed" $passed "useUnprivilegedContainers" $useUnprivileged) }}
-{{- end }}
 {{ toYaml $thesePorts }}
 {{- end }}
 
