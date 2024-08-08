@@ -1,7 +1,5 @@
-{{- $ports := ((.Values.tonicai).web_server).ports | default dict }}
-{{- $httpsOnly := hasKey $ports "httpsOnly" | ternary $ports.httpsOnly true }}
-{{- $httpPort := $ports.http | default 6580 }}
-{{- $httpsPort := $ports.https | default 6543 }}
+{{- $server := .Values.tonicai.web_server -}}
+{{- $ports := fromYaml (include "tonic.ports" (list $ $server.ports (dict "httpsOnly" true)))  }}
 {{- $annotations := dict }}
 {{- if ((.Values.tonicai).web_server).annotations }}
 {{- $annotations = .Values.tonicai.web_server.annotations }}
@@ -14,6 +12,7 @@
     "service.beta.kubernetes.io/azure-load-balancer-internal" "true"
 )}}
 {{- end }}
+{{- $serviceType := include "tonic.web.serviceType" (list $) }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -25,20 +24,15 @@ metadata:
     {{- include "tonic.allLabels" (list $ (dict "app" "tonic-web-server")) | nindent 4 }}
 spec:
   ports:
-  {{- if not $httpsOnly }}
+  {{- if not $ports.httpsOnly }}
   - name: "http"
     port: 80
-    targetPort: {{ $httpPort }}
+    targetPort: http
   {{- end }}
   - name: "https"
     port: 443
-    targetPort: {{ $httpsPort }}
-# use_ingress typically only used by TIM
-{{- if (.Values.tonicai).use_ingress }}
-  type: ClusterIP
-{{- else }}
-  type: LoadBalancer
-{{- end }}
+    targetPort: https
+  type: {{ $serviceType }}
   selector:
     app: tonic-web-server
 status:

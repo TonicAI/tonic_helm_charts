@@ -11,10 +11,10 @@ spec:
   ports:
   - name: "7000"
     port: 7000
-    targetPort: 7000
+    targetPort: http
   - name: "7001"
     port: 7001
-    targetPort: 7001
+    targetPort: https
   selector:
     app: tonic-notifications
 status:

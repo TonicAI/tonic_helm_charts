@@ -12,10 +12,10 @@
   {{- $image = "" }}
   {{- end }}
 {{- end }}
-{{- $ports := ((.Values.tonicai).worker).ports | default dict }}
-{{- $httpsOnly := hasKey $ports "httpsOnly" | ternary $ports.httpsOnly true }}
-{{- $httpPort := $ports.http | default 2480 }}
-{{- $httpsPort := $ports.https | default 2467 }}
+{{- $ports := fromYaml (include "tonic.ports" (list $ $worker.ports (dict "http" 2480 "https" 2467 "httpsOnly" true)))  }}
+{{- $httpsOnly := $ports.httpsOnly }}
+{{- $httpPort := $ports.http }}
+{{- $httpsPort := $ports.https }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -175,7 +175,7 @@ spec:
             httpGet:
               scheme: HTTPS
               path: /health
-              port: {{ $httpsPort }}
+              port: https
             initialDelaySeconds: 5
             periodSeconds: 60
             timeoutSeconds: 30

@@ -4,6 +4,7 @@
   $notifications.resources
   (dict "limits" (dict "memory" "1Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "1Gi"))
 -}}
+{{- $ports := fromYaml (include "tonic.ports" (list $ (dict "http" 7000 "https" 7001))) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -108,9 +109,9 @@ spec:
         - name: ENVIRONMENT_NAME
           value: {{ .Values.environmentName }}
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTP
-          value: "7000"
+          value: {{ $ports.http | quote }}
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
-          value: "7001"
+          value: {{ $ports.https | quote }}
         {{- if $notifications.envFrom }}
         envFrom:
         {{- with $notifications.envFrom }}
@@ -139,13 +140,15 @@ spec:
         resources:
           {{- toYaml $resources | nindent 10 }}
         ports:
-        - containerPort: 7000
-        - containerPort: 7001
+        - containerPort: {{ $ports.http | quote }}
+          name: http
+        - containerPort: {{ $ports.https | quote }}
+          name: https
         startupProbe:
           httpGet:
             scheme: HTTPS
             path: /health
-            port: 7001
+            port: https
           initialDelaySeconds: 5
           periodSeconds: 60
           timeoutSeconds: 30
