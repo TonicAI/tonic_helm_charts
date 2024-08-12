@@ -450,7 +450,7 @@ caller (which is ideally the root value of the chart).
 {{- end }}
 {{/* break most places the http port would be placed if it's erronously accessed */}}
 {{- $thesePorts := (dict "http" "HTTP PORT NOT AVAILABLE" "https" $https "httpsOnly" $httpsOnly) }}
-{{- if $thesePorts.httpsOnly }}
+{{- if not $thesePorts.httpsOnly }}
 {{- $_ := set $thesePorts "http" $http }}
 {{- end }}
 {{ toYaml $thesePorts }}
