@@ -14,6 +14,7 @@
   $pyml.tolerations
   list
 ) -}}
+{{- $ports := fromYaml (include "tonic.ports" (list $ (dict "https" 7700 )))  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -108,13 +109,14 @@ spec:
             mountPath: /publish/logs
           {{- end }}
         ports:
-        - containerPort: 7700
+        - containerPort: {{ $ports.https }}
+          name: https
         resources:
           {{- toYaml $resources | nindent 10 }}
         startupProbe:
           httpGet:
             path: /health
-            port: 7700
+            port: https
             scheme: HTTPS
           initialDelaySeconds: 5
           periodSeconds: 60

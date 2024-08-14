@@ -406,3 +406,62 @@ caller (which is ideally the root value of the chart).
 {{- $version := (index . 3) |  default "latest" }}
 {{- include "tonic.image" (list $top $custImage $ourImage) }}:{{ $version }}
 {{- end }}
+
+{{/* usage:
+    $ports := fromYaml (include "tonic.ports" (list $ $service.ports (dict "http" 1337 "https" 31337 "httpsOnly" true)))
+*/}}
+{{- define "tonic.ports" -}}
+{{- $top := first . }}
+{{- $passed := dict }}
+{{- if and (gt (len .) 1) (index . 1) }}
+{{ $passed = index . 1 }}
+{{- end }}
+{{- $defaults := dict }}
+{{- if and (gt (len .) 2) (index . 2) }}
+{{- $defaults = index . 2 }}
+{{- end }}
+{{- $useUnprivileged := false }}
+{{- if hasKey $top.Values "useUnprivilegedContainers" }}
+{{ $useUnprivileged = $top.Values.useUnprivilegedContainers }}
+{{- end }}
+{{- $unprivilegedHttp := 8080 }}
+{{- if and $defaults.http (lt 1024 $defaults.http) }}
+{{- $unprivilegedHttp = $defaults.http }}
+{{- end }}
+{{- $unprivilegedHttps := 8443 }}
+{{- if and $defaults.https (lt 1024 $defaults.https) }}
+{{- $unprivilegedHttps = $defaults.https }}
+{{- end }}
+{{- $http := int (coalesce $passed.http $defaults.http $unprivilegedHttp) }}
+{{- $https := int (coalesce $passed.https $defaults.https $unprivilegedHttps) }}
+{{/* `$passed.httpsOnly | default true` flips an explicit false off */}}
+{{- $httpsOnly := true }}
+{{- if hasKey $passed "httpsOnly" }}
+{{- $httpsOnly = $passed.httpsOnly }}
+{{- else if hasKey $defaults "httpsOnly" }}
+{{- $httpsOnly = $defaults.httpsOnly }}
+{{- end }}
+{{/* 1024 is usually where privileged ports end */}}
+{{- if and $useUnprivileged (ge 1024 $http) -}}
+{{- $http = $unprivilegedHttp }}
+{{- end }}
+{{- if and $useUnprivileged (ge 1024 $https) -}}
+{{- $https = $unprivilegedHttps }}
+{{- end }}
+{{/* break most places the http port would be placed if it's erronously accessed */}}
+{{- $thesePorts := (dict "http" "HTTP PORT NOT AVAILABLE" "https" $https "httpsOnly" $httpsOnly) }}
+{{- if not $thesePorts.httpsOnly }}
+{{- $_ := set $thesePorts "http" $http }}
+{{- end }}
+{{ toYaml $thesePorts }}
+{{- end }}
+
+{{- define "tonic.web.serviceType" -}}
+{{- $top := first . }}
+{{- $useIngress := $top.Values.tonicai.use_ingress }}
+{{- if $useIngress }}
+{{- printf "ClusterIP" }}
+{{- else }}
+{{- printf "LoadBalancer" }}
+{{- end }}
+{{- end }}

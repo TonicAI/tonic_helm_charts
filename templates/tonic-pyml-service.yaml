@@ -10,8 +10,7 @@ metadata:
 spec:
   ports:
   - port: 7700
-    targetPort: 7700
+    targetPort: https
+    name: https
   selector:
     app: tonic-pyml-service
-status:
-  loadBalancer: {}
