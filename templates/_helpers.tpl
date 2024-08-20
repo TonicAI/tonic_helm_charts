@@ -435,6 +435,7 @@ caller (which is ideally the root value of the chart).
 {{- $http := int (coalesce $passed.http $defaults.http $unprivilegedHttp) }}
 {{- $https := int (coalesce $passed.https $defaults.https $unprivilegedHttps) }}
 {{/* `$passed.httpsOnly | default true` flips an explicit false off */}}
+{{/* `coalesce $passed.httpsOnly $defaults.httpsOnly true` will bypass false values and return true */}}
 {{- $httpsOnly := true }}
 {{- if hasKey $passed "httpsOnly" }}
 {{- $httpsOnly = $passed.httpsOnly }}
