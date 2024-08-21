@@ -141,9 +141,9 @@ spec:
         resources:
           {{- toYaml $resources | nindent 10 }}
         ports:
-        - containerPort: {{ $ports.http | quote }}
+        - containerPort: {{ $ports.http }}
           name: http
-        - containerPort: {{ $ports.https | quote }}
+        - containerPort: {{ $ports.https }}
           name: https
         startupProbe:
           httpGet:
