@@ -74,10 +74,10 @@ tonicai:
       http: 80
     resources:
       requests:
-        memory: "2Gi"
+        memory: "4Gi"
         ephemeral-storage: "1Gi"
       limits:
-        memory: "3Gi"
+        memory: "5Gi"
   worker:
     #image: quay.io/tonicai/tonic_worker
     env: {}
@@ -88,10 +88,10 @@ tonicai:
       http: 80
     resources:
       requests:
-        memory: "6Gi"
+        memory: "2Gi"
         ephemeral-storage: "1Gi"
       limits:
-        memory: "12Gi"
+        memory: "4Gi"
   notifications:
     #image: quay.io/tonicai/tonic_notifications
     env: {}

@@ -156,14 +156,3 @@ spec:
           emptyDir: {}
         {{- end }}
 status: {}
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: tonic-notifications
-  namespace: tonic
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      app: tonic-notifications

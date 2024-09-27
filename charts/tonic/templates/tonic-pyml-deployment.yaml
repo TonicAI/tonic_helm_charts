@@ -137,14 +137,3 @@ spec:
       {{- if $tolerations -}}
       {{ toYaml $tolerations | nindent 8 }}
       {{- end }}
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: tonic-pyml-service
-  namespace: tonic
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      app: tonic-pyml-service
