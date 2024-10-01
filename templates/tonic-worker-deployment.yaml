@@ -63,6 +63,8 @@ spec:
           emptyDir: {}
         - name: vector
           emptyDir: {}
+        - name: etc-tonic-monitor
+          emptyDir: {}
         {{- end }}
       initContainers:
         {{- include "tonic.initContainers" (list $ $worker.initContainers) | nindent 8 }}
@@ -89,6 +91,8 @@ spec:
               mountPath: /tmp
             - name: vector
               mountPath: /tonic/vector_data
+            - name: etc-tonic-monitor
+              mountPath: /etc/tonic/monitor
             {{- end }}
           env:
             {{- if ((.Values.containerization).datapacker).imageRepo }}
