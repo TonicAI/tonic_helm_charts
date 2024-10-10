@@ -72,6 +72,10 @@ tonicai:
       httpsOnly: true
       https: 443
       http: 80
+    # Supported values are LoadBalancer, ClusterIP and NodePort.
+    # By default, this is set to LoadBalancer when use_ingress = false and ClusterIP when use_ingress = true
+    # If a value is provided here, it will override the default set based on use_ingress
+    # service_type: "LoadBalancer"
     resources:
       requests:
         memory: "2Gi"
