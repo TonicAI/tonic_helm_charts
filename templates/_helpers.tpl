@@ -460,8 +460,8 @@ caller (which is ideally the root value of the chart).
 {{- define "tonic.web.serviceType" -}}
 {{- $top := first . }}
 {{- $useIngress := $top.Values.tonicai.use_ingress }}
-{{- $serviceType := $top.Values.tonicai.web_server.service_type | default "" }}
-{{- if ne $serviceType "" }}
+{{- $serviceType := $top.Values.tonicai.web_server.service_type }}
+{{- if $serviceType }}
   {{- printf $serviceType }}
 {{- else }}
   {{- if $useIngress }}
