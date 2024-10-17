@@ -167,6 +167,7 @@ containerization:
 #   -----------------
 #   provider: AWS
 #   identityProviderId: <identity-provider-id>
+#   entityId: <entity-id>
 #   # provided for existing chart installations, new installations should set
 #   # metadataXml.url or metadataXml.base64 instead
 #   samlIdpMetadataXml: <base64 encoded SAML metadata IDP xml>
