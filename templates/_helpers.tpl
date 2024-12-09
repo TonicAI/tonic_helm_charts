@@ -136,6 +136,10 @@ configure AWS sso
 {{- else -}}
 {{ fail "Either metadataXml.url, metadataXml.base64 or samlIdpMetadataXml must be provided to configure AWS sso" }}
 {{- end -}}
+{{- if .identityProviderId }}
+- name: TONIC_SSO_IDENTITY_PROVIDER_ID
+  value: {{ quote .identityProviderId }}
+{{- end }}
 {{- end -}}
 {{/* end tonic.sso.aws */}}
 
