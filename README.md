@@ -45,13 +45,6 @@ This value is used to support [Consistency](https://docs.tonic.ai/app/generation
 
 - `numberOfWorkers`: An integer. Increase to more than 1 to deploy additional workers. Each worker can run a single job (Data Generation or Privacy Scan) at a time. Multiple workers are needed to run jobs simultaneously. This sets the number of replicas in the Tonic Worker Deployment spec.
 
-
-### Log collection
-Tonic never collects your sensitive data. Enabling this option securely and safely shares logs with Tonic's engineering team. We recommend that you enable this option. See: https://docs.tonic.ai/app/admin/sharing-logs-with-tonic
-
-- `enableLogCollection`: "false" (default) or "true"
-
-
 ### Authorization to access Tonic application Docker images
 Tonic hosts our application images on a private [quay.io](https://quay.io) repository. Authorization is required to pull the images.
 

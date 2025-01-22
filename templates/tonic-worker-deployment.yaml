@@ -124,8 +124,6 @@ spec:
             - name: TONIC_STATISTICS_SEED
               value: {{quote .Values.tonicStatisticsSeed }}
               {{- end }}
-            - name: ENABLE_LOG_COLLECTION
-              value: {{quote .Values.enableLogCollection }}
             - name: ENVIRONMENT_NAME
               value: {{ .Values.environmentName }}
             - name: TONIC_NOTIFICATIONS_URL
