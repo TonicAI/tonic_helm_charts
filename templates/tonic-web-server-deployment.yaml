@@ -1,3 +1,6 @@
+{{- if semverCompare "<3.15.0" .Capabilities.HelmVersion.Version }}
+{{- fail "This chart requires Helm 3.15.0 or higher" }}
+{{- end }}
 {{- $server := .Values.tonicai.web_server -}}
 {{- $resources := coalesce
   $server.resources
