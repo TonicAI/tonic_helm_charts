@@ -32,9 +32,6 @@ tonicdb:
 # numberOfWorkers will determine how many worker containers are deployed when installing the helm chart.
 numberOfWorkers: 1
 
-# enableLogCollection will send errors and general information about generations to Tonic if true. It will not send user data.
-enableLogCollection: false
-
 # This value will be provided to you by Tonic and will allow you to authenticate against our private docker repository.
 dockerConfigAuth: <docker-config-auth>
 
