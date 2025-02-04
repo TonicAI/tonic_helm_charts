@@ -1,0 +1,12 @@
+name: pre-commit
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  pre-commit:
+    if: github.repository != 'cityblock/cbh-projects-template'
+    uses: cityblock/cbh-workflows/.github/workflows/pre-commit.yaml@pre-commit-v0.1.0
+    secrets: inherit

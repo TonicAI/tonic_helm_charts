@@ -1,0 +1,21 @@
+repos:
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.32.0
+    hooks:
+      - id: yamllint
+        args: [-c=.yamllint]
+  - repo: https://github.com/tofuutils/pre-commit-opentofu
+    rev: v1.0.2
+    hooks:
+      - id: tofu_fmt
+      - id: tofu_tflint
+        args:
+          - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: end-of-file-fixer
+  - repo: https://github.com/psf/black
+    rev: 21.12b0
+    hooks:
+      - id: black
