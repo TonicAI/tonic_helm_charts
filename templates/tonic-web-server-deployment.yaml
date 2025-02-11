@@ -121,8 +121,6 @@ spec:
         {{- end }}
         - name: TONIC_NOTIFICATIONS_URL
           value: http://tonic-notifications:7000
-        - name: TONIC_PYML_URL
-          value: https://tonic-pyml-service:7700
         {{- if not $httpsOnly }}
         - name: TONIC_PORT_HTTP
           value: {{ $httpPort | quote }}

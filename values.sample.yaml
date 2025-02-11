@@ -103,20 +103,7 @@ tonicai:
         ephemeral-storage: "1Gi"
       limits:
         memory: "1Gi"
-  pyml_service:
-    #image: quay.io/tonicai/tonic_pyml_service
-    env: {}
-    envRaw: {}
-    resources:
-      requests:
-        memory: "512Mi"
-        ephemeral-storage: "1Gi"
-      limits:
-        memory: "8Gi"
-        # To enable Nvidia acceleration for the pyml container, uncomment the following
-        # lines and specify how many GPUs to allocate for the pod. If this feature is
-        # enabled then your cluster must support the nvidia.com/gpu resource.
-        #nvida.com/gpu: 1
+
     # If you use node taints and pod tolerances to control scheduling
     # of GPU bound workloads, then you can also provide a list of tolerations the
     # pyml pod should accept
