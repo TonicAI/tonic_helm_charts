@@ -40,6 +40,17 @@ serviceAccount:
   create: true
   annotations: {}
 
+# To configure the affinity. This same configuration is used for each service.
+affinity:
+#   nodeAffinity:
+#     requiredDuringSchedulingIgnoredDuringExecution:
+#       nodeSelectorTerms:
+#       - matchExpressions:
+#         - key: topology.kubernetes.io/zone
+#           operator: In
+#           values:
+#           - antarctica-east1
+
 # You can set this to a specific Tonic version number if you wish to ensure you always get the same version. Otherwise you will always deploy the latest version of Tonic.
 tonicVersion: latest
 
