@@ -35,6 +35,8 @@ spec:
     spec:
       nodeSelector:
         {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
+      affinity:
+        {{- include "tonic.affinity" (list $) | nindent 8 }}
       tolerations:
         {{- include "tonic.tolerations" (list $) | nindent 8 }}
       securityContext:

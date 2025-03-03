@@ -326,6 +326,20 @@ caller (which is ideally the root value of the chart).
 {{- end }}
 {{- end }}
 
+{{- define "tonic.affinity" -}}
+{{- $top := first . }}
+{{- $affinity := dict }}
+{{- if ($top.Values).affinity }}
+{{- $affinity = merge $affinity $top.Values.affinity }}
+{{- if (gt (len .) 1) }}
+{{- $affinity = merge $affinity (index . 1) }}
+{{- end }}
+{{- if $affinity }}
+{{- $affinity | toYaml }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{- define "tonic.tolerations" -}}
 {{- $top := first . }}
 {{- $tolerations := list }}
