@@ -62,14 +62,18 @@ spec:
         {{- toYaml $server.volumeMounts | nindent 10 }}
         {{- end }}
         {{- if .Values.readOnlyRootFilesystem }}
-        - name: var-log
+        - name: scratch
           mountPath: /var/log/supervisor
-        - name: var-run
+          subPath: log/superd
+        - name: scratch
           mountPath: /var/run/supervisor
-        - name: tmp
+          subPath: run/superd
+        - name: scratch
           mountPath: /tmp
-        - name: vector
+          subPath: tmp
+        - name: scratch
           mountPath: /tonic/vector_data
+          subPath: run/vector
         {{- end }}
         env:
         {{- range $key, $value := $server.env }}
@@ -167,14 +171,6 @@ spec:
       {{- toYaml $server.volumes | nindent 8 }}
       {{- end }}
       {{- if .Values.readOnlyRootFilesystem }}
-      - name: var-run
-        emptyDir: {}
-      - name: var-log
-        emptyDir: {}
-      - name: tmp
-        emptyDir: {}
-      - name: vector
-        emptyDir: {}
-      - name: db2
+      - name: scratch
         emptyDir: {}
       {{- end }}
