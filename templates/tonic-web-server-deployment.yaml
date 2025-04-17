@@ -161,7 +161,7 @@ spec:
       restartPolicy: Always
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       imagePullSecrets:
-      - name: tonicai-build-writer-pull-secret
+      {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}
       volumes:
       {{- if $server.volumes }}
       {{- toYaml $server.volumes | nindent 8 }}
