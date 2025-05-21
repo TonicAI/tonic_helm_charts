@@ -201,17 +201,18 @@ configure Google sso
       name: tonic-sso-client-secret
       key: secret
       optional: false
+{{- if .domain }}
 - name: TONIC_SSO_DOMAIN
-  value: {{ required "tonicSsoConfig.domain is required to configure Google sso" .domain | quote }}
-{{- if not .googleAccountServiceJson }}
-{{ fail "tonicSsoConfig.googleAccountServiceJson is required to configure Google sso"}}
+  value: {{ quote .domain }}
 {{- end }}
+{{- if .googleAccountServiceJson }}
 - name: TONIC_SSO_SERVICE_ACCOUNT_JSON_BASE64
   valueFrom:
     secretKeyRef:
       name: tonic-sso-google-account-service-json-secret
       key: secret
       optional: false
+{{- end }}
 {{- end -}}
 {{/* end tonic.sso.google */}}
 
