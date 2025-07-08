@@ -2,6 +2,7 @@
 {{- fail "This chart requires Helm 3.15.0 or higher" }}
 {{- end }}
 {{- $server := .Values.tonicai.web_server -}}
+{{- $separateBackgroundTasks := (eq (include "tonic.web.separateBackgroundTasks" (list $ $server)) "separateBackgroundTasks") }}
 {{- $ports := fromYaml (include "tonic.ports" (list $ $server.ports (dict "http" 6580 "https" 6543 "httpsOnly" true)))  }}
 {{- $httpsOnly := $ports.httpsOnly }}
 {{- $httpPort := $ports.http }}
@@ -47,7 +48,9 @@ spec:
         volumeMounts:
           {{- include "tonic.web.volumeMounts" (list $ $server) | nindent 10 }}
         env:
-          {{- include "tonic.web.envVars" (list $ $server $httpsOnly $httpsPort $httpPort) | nindent 8 }}
+          - name: TONIC_DISABLE_STARTUP_BACKGROUND_TASKS
+            value: {{ $separateBackgroundTasks | quote }}
+          {{- include "tonic.web.envVars" (list $ $server $httpsOnly $httpsPort $httpPort) | nindent 10 }}
         {{- if $server.envFrom }}
         envFrom:
         {{- with $server.envFrom }}
