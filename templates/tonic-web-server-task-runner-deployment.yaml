@@ -1,12 +1,10 @@
-{{- if semverCompare "<3.15.0" .Capabilities.HelmVersion.Version }}
-{{- fail "This chart requires Helm 3.15.0 or higher" }}
-{{- end }}
 {{- $server := .Values.tonicai.web_server -}}
+{{- if eq (include "tonic.web.separateBackgroundTasks" (list $ $server)) "separateBackgroundTasks" }}
 {{- $ports := fromYaml (include "tonic.ports" (list $ $server.ports (dict "http" 6580 "https" 6543 "httpsOnly" true)))  }}
 {{- $httpsOnly := $ports.httpsOnly }}
 {{- $httpPort := $ports.http }}
 {{- $httpsPort := $ports.https }}
-{{- $appName := "tonic-web-server" }}
+{{- $appName := "tonic-task-runner" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -60,12 +58,13 @@ spec:
         ports:
           {{- include "tonic.web.ports" (list $ $httpsOnly $httpsPort $httpPort) | nindent 8 }}
         resources:
-          {{- include "tonic.web.server.container.resources" (list $ $server) | nindent 10 }}
+          {{- include "tonic.web.tasks.container.resources" (list $ $server) | nindent 10 }}
         startupProbe:
           {{- include "tonic.web.startupProbe" (list $ $httpsPort) | nindent 10 }}
       restartPolicy: Always
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       imagePullSecrets:
-      - name: {{- include "tonic.imagePullSecret.name" . }}
+      - name: {{ include "tonic.imagePullSecret.name" . }}
       volumes:
       {{- (include "tonic.web.volumes" (list $ $server)) | nindent 8 }}
+{{- end }}

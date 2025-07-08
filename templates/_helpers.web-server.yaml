@@ -1,0 +1,174 @@
+{{- define "tonic.web.separateBackgroundTasks" }}
+{{- $server := index . 1 }}
+{{- $server.separateBackgroundTasks }}
+{{- end }}
+
+{{- define "tonic.web.envVars" }}
+{{- $top := first . }}
+{{- $server := index . 1 }}
+{{- $httpsOnly := index . 2 }}
+{{- $httpsPort := index . 3 }}
+{{- $httpPort := index . 4 }}
+{{- range $key, $value := $server.env }}
+- name: {{ $key }}
+  value: {{ $value | quote }}
+{{- end }}
+{{- if $server.envRaw }}
+{{- with $server.envRaw }}
+    {{- toYaml . | nindent 12 }}
+{{- end }}
+{{- end }}
+- name: TONIC_DB_DATABASE
+  value: {{ $top.Values.tonicdb.dbName }}
+- name: TONIC_DB_USERNAME
+  value: {{ $top.Values.tonicdb.user }}
+- name: TONIC_DB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: tonic-db-password
+      key: password
+- name: TONIC_DB_PORT
+  value: {{quote $top.Values.tonicdb.port }}
+- name: TONIC_DB_SSLMODE
+  value: {{ $top.Values.tonicdb.sslMode }}
+- name: TONIC_DB_HOST
+  value: {{ $top.Values.tonicdb.host }}
+  {{- if $top.Values.tonicStatisticsSeed }}
+- name: TONIC_STATISTICS_SEED
+  value: {{quote $top.Values.tonicStatisticsSeed }}
+  {{- end }}
+- name: ENVIRONMENT_NAME
+  value: {{ $top.Values.environmentName }}
+- name: TONIC_LICENSE
+  valueFrom:
+    secretKeyRef:
+      name: tonic-license-secret
+      key: license
+      optional: true
+{{- if $top.Values.tonicSsoConfig }}
+{{- include "tonic.sso" $top.Values.tonicSsoConfig | nindent 8 }}
+{{- end }}
+{{- if eq (include "tonic.hostIntegration" $top) "true"}}
+- name: TONIC_HOST_INTEGRATION
+  value: "kubernetes"
+- name: TONIC_KUBERNETES_NAMESPACE
+  value: {{ $top.Release.Namespace }}
+{{- end }}
+{{- if $server.administrators }}
+- name: TONIC_ADMINISTRATORS
+  value: {{ $server.administrators }}
+{{- end }}
+- name: TONIC_NOTIFICATIONS_URL
+  value: http://tonic-notifications:7000
+{{- if not $httpsOnly }}
+- name: TONIC_PORT_HTTP
+  value: {{ $httpPort | quote }}
+{{- end }}
+- name: TONIC_PORT_HTTPS
+  value: {{ $httpsPort | quote }}
+- name: TONIC_HTTPS_ONLY
+  value: {{ $httpsOnly | quote }}
+{{- end }}
+
+{{- define "tonic.web.volumes" }}
+{{- $top := first . }}
+{{- $server := index . 1 }}
+{{- if $server.volumes }}
+{{- toYaml $server.volumes | nindent 8 }}
+{{- end }}
+{{- if $top.Values.readOnlyRootFilesystem }}
+- name: scratch
+  emptyDir: {}
+{{- end }}
+{{- end }}
+
+{{- define "tonic.web.volumeMounts" }}
+{{- $top := first . }}
+{{- $server := index . 1 }}
+{{- if $server.volumeMounts }}
+{{- toYaml $server.volumeMounts }}
+{{- end }}
+{{- if $top.Values.readOnlyRootFilesystem }}
+- name: scratch
+  mountPath: /var/log/supervisor
+  subPath: supervisor-logs
+- name: scratch
+  mountPath: /var/run/supervisor
+  subPath: supervisor-run
+- name: scratch
+  mountPath: /tmp
+  subPath: tmp
+- name: vector
+  mountPath: /tonic/vector_data
+  subPath: vector
+{{- end }}
+{{- end }}
+
+{{- define "tonic.web.pod.securityContext" }}
+{{- $top := first . }}
+{{- if $top.Values.useUnprivilegedContainers }}
+seccompProfile:
+  type: RuntimeDefault
+runAsNonRoot: true
+{{- end }}
+{{- end }}
+
+{{- define "tonic.web.container.securityContext" }}
+{{- $top := first . }}
+{{- if $top.Values.useUnprivilegedContainers }}
+allowPrivilegeEscalation: false
+capabilities:
+  drop: ["ALL"]
+{{- end }}
+{{- if $top.Values.readOnlyRootFilesystem }}
+readOnlyRootFilesystem: true
+{{- end }}
+{{- end }}
+
+{{- define "tonic.web.container.image" -}}
+{{- $top := first . -}}
+{{- $server := index . 1 -}}
+{{- include "tonic.imageWithVersion" ( list $top $server.image "quay.io/tonicai/tonic_web_server" $top.Values.tonicVersion ) -}}
+{{- end -}}
+
+{{- define "tonic.web.server.container.resources" }}
+{{- $server := index . 1 }}
+{{- $resources := coalesce
+  $server.resources
+  (dict "limits" (dict "memory" "3Gi") "requests" (dict "memory" "2Gi" "ephemeral-storage" "1Gi")) -}}
+{{- toYaml $resources }}
+{{- end }}
+
+{{- define "tonic.web.tasks.container.resources" }}
+{{- $top := first . }}
+{{- $server := $top.Values.tonicai.web_server }}
+{{- $resources := coalesce
+  ($server.tasks).resources
+  (dict "limits" (dict "memory" "3Gi") "requests" (dict "memory" "2Gi" "ephemeral-storage" "1Gi")) -}}
+{{- toYaml $resources }}
+{{- end }}
+
+{{- define "tonic.web.startupProbe" }}
+{{- $top := first . }}
+{{- $httpsPort := index . 1 }}
+httpGet:
+  scheme: HTTPS
+  path: /health
+  port: {{ $httpsPort }}
+initialDelaySeconds: 5
+periodSeconds: 60
+timeoutSeconds: 30
+failureThreshold: 5
+{{- end }}
+
+{{- define "tonic.web.ports" }}
+{{- $httpsOnly := index . 1 }}
+{{- $httpsPort := index . 2 }}
+{{- $httpPort := index . 3 }}
+{{- if not $httpsOnly }}
+- containerPort: {{ $httpPort }}
+  name: "http"
+{{- end }}
+- containerPort: {{ $httpsPort }}
+  name: "https"
+{{- end }}

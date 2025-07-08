@@ -493,3 +493,7 @@ caller (which is ideally the root value of the chart).
   {{- end }}
 {{- end }}
 {{- end }}
+
+{{- define "tonic.imagePullSecret.name" -}}
+tonicai-build-writer-pull-secret
+{{- end -}}
