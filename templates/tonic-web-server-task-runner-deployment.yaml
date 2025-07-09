@@ -4,7 +4,7 @@
 {{- $httpsOnly := $ports.httpsOnly }}
 {{- $httpPort := $ports.http }}
 {{- $httpsPort := $ports.https }}
-{{- $appName := "tonic-task-runner" }}
+{{- $appName := "tonic-web-task-runner" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -63,6 +63,8 @@ spec:
           {{- include "tonic.web.startupProbe" (list $ $httpsPort) | nindent 10 }}
       restartPolicy: Always
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
+      imagePullSecrets:
+      {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}
       volumes:
       {{- (include "tonic.web.volumes" (list $ $server)) | nindent 8 }}
-      {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}
+{{- end }}

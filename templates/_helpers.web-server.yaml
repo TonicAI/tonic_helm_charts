@@ -76,7 +76,7 @@
 {{- if $server.volumes }}
 {{- toYaml $server.volumes | nindent 8 }}
 {{- end }}
-{{- if .Values.readOnlyRootFilesystem }}
+{{- if $top.Values.readOnlyRootFilesystem }}
 - name: scratch
   emptyDir: {}
 {{- end }}
@@ -88,7 +88,7 @@
 {{- if $server.volumeMounts }}
 {{- toYaml $server.volumeMounts | nindent 10 }}
 {{- end }}
-{{- if .Values.readOnlyRootFilesystem }}
+{{- if $top.Values.readOnlyRootFilesystem }}
 - name: scratch
   mountPath: /var/log/supervisor
   subPath: log/superd
