@@ -76,7 +76,7 @@
 {{- if $server.volumes }}
 {{- toYaml $server.volumes | nindent 8 }}
 {{- end }}
-{{- if $top.Values.readOnlyRootFilesystem }}
+{{- if .Values.readOnlyRootFilesystem }}
 - name: scratch
   emptyDir: {}
 {{- end }}
@@ -86,21 +86,21 @@
 {{- $top := first . }}
 {{- $server := index . 1 }}
 {{- if $server.volumeMounts }}
-{{- toYaml $server.volumeMounts }}
+{{- toYaml $server.volumeMounts | nindent 10 }}
 {{- end }}
-{{- if $top.Values.readOnlyRootFilesystem }}
+{{- if .Values.readOnlyRootFilesystem }}
 - name: scratch
   mountPath: /var/log/supervisor
-  subPath: supervisor-logs
+  subPath: log/superd
 - name: scratch
   mountPath: /var/run/supervisor
-  subPath: supervisor-run
+  subPath: run/superd
 - name: scratch
   mountPath: /tmp
   subPath: tmp
-- name: vector
+- name: scratch
   mountPath: /tonic/vector_data
-  subPath: vector
+  subPath: run/vector
 {{- end }}
 {{- end }}
 

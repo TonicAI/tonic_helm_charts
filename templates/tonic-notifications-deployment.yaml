@@ -127,16 +127,21 @@ spec:
           {{- toYaml $notifications.volumeMounts | nindent 10 }}
           {{- end }}
           {{- if .Values.readOnlyRootFilesystem }}
-          - name: vector
+          - name: scratch
             mountPath: /tonic/vector_data
-          - name: var-run-superd
+            subPath: vector
+          - name: scratch
             mountPath: /var/run/supervisor
-          - name: var-log-superd
+            subPath: superd
+          - name: scratch
             mountPath: /var/log/supervisor
-          - name: var-log-nginx
+            subPath: logs/superd
+          - name: scratch
             mountPath: /var/log/nginx
-          - name: tmp
+            subPath: logs/nginx
+          - name: scratch
             mountPath: /tmp
+            subPath: tmp
           {{- end }}
         resources:
           {{- toYaml $resources | nindent 10 }}
@@ -156,22 +161,14 @@ spec:
           failureThreshold: 5
       restartPolicy: Always
       imagePullSecrets:
-      - name: tonicai-build-writer-pull-secret
+      {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
       volumes:
         {{- if $notifications.volumes }}
         {{- toYaml $notifications.volumes | nindent 8 }}
         {{- end }}
         {{- if .Values.readOnlyRootFilesystem }}
-        - name: tmp
-          emptyDir: {}
-        - name: var-log-superd
-          emptyDir: {}
-        - name: var-log-nginx
-          emptyDir: {}
-        - name: var-run-superd
-          emptyDir: {}
-        - name: vector
+        - name: scratch
           emptyDir: {}
         {{- end }}
 status: {}

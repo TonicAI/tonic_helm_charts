@@ -57,15 +57,7 @@ spec:
         {{- toYaml $worker.volumes | nindent 8 }}
         {{- end }}
         {{- if .Values.readOnlyRootFilesystem }}
-        - name: var-run
-          emptyDir: {}
-        - name: var-log
-          emptyDir: {}
-        - name: tmp
-          emptyDir: {}
-        - name: vector
-          emptyDir: {}
-        - name: etc-tonic-monitor
+        - name: scratch
           emptyDir: {}
         {{- end }}
       initContainers:
@@ -85,15 +77,20 @@ spec:
             {{- toYaml $worker.volumeMounts | nindent 10 }}
             {{- end }}
             {{- if .Values.readOnlyRootFilesystem }}
-            - name: var-log
+            - name: scratch
+              subPath: log/superd
               mountPath: /var/log/supervisor
-            - name: var-run
+            - name: scratch
+              subPath: run/superd
               mountPath: /var/run/supervisor
-            - name: tmp
+            - name: scratch
+              subPath: tmp
               mountPath: /tmp
-            - name: vector
+            - name: scratch
+              subPath: run/vector
               mountPath: /tonic/vector_data
-            - name: etc-tonic-monitor
+            - name: scratch
+              subPath: run/monitor
               mountPath: /etc/tonic/monitor
             {{- end }}
           env:
@@ -184,6 +181,6 @@ spec:
             failureThreshold: 5
       restartPolicy: Always
       imagePullSecrets:
-      - name: tonicai-build-writer-pull-secret
+      {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
 status: {}

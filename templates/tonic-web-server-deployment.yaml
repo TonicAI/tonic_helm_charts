@@ -48,8 +48,10 @@ spec:
         volumeMounts:
           {{- include "tonic.web.volumeMounts" (list $ $server) | nindent 10 }}
         env:
+          {{- if $separateBackgroundTasks }}
           - name: TONIC_DISABLE_STARTUP_BACKGROUND_TASKS
-            value: {{ $separateBackgroundTasks | quote }}
+            value: "true"
+          {{- end }}
           {{- include "tonic.web.envVars" (list $ $server $httpsOnly $httpsPort $httpPort) | nindent 10 }}
         {{- if $server.envFrom }}
         envFrom:
@@ -68,7 +70,6 @@ spec:
           {{- include "tonic.web.startupProbe" (list $ $httpsPort) | nindent 10 }}
       restartPolicy: Always
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
-      imagePullSecrets:
-      - name: {{- include "tonic.imagePullSecret.name" . }}
       volumes:
       {{- (include "tonic.web.volumes" (list $ $server)) | nindent 8 }}
+      {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}

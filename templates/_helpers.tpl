@@ -201,17 +201,18 @@ configure Google sso
       name: tonic-sso-client-secret
       key: secret
       optional: false
+{{- if .domain }}
 - name: TONIC_SSO_DOMAIN
-  value: {{ required "tonicSsoConfig.domain is required to configure Google sso" .domain | quote }}
-{{- if not .googleAccountServiceJson }}
-{{ fail "tonicSsoConfig.googleAccountServiceJson is required to configure Google sso"}}
+  value: {{ quote .domain }}
 {{- end }}
+{{- if .googleAccountServiceJson }}
 - name: TONIC_SSO_SERVICE_ACCOUNT_JSON_BASE64
   valueFrom:
     secretKeyRef:
       name: tonic-sso-google-account-service-json-secret
       key: secret
       optional: false
+{{- end }}
 {{- end -}}
 {{/* end tonic.sso.google */}}
 
@@ -494,6 +495,13 @@ caller (which is ideally the root value of the chart).
 {{- end }}
 {{- end }}
 
-{{- define "tonic.imagePullSecret.name" -}}
+{{- define "tonic.imagePullSecret.default" -}}
+{{- $top := first . }}
+{{- if $top.Values.dockerConfigAuth }}
+- name: {{ include "tonic.imagePullSecret.defaultName" $top }}
+{{- end }}
+{{- end }}
+
+{{- define "tonic.imagePullSecret.defaultName" -}}
 tonicai-build-writer-pull-secret
-{{- end -}}
+{{- end }}

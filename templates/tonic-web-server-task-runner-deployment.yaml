@@ -45,7 +45,7 @@ spec:
         volumeMounts:
           {{- include "tonic.web.volumeMounts" (list $ $server) | nindent 10 }}
         env:
-          {{- include "tonic.web.envVars" (list $ $server $httpsOnly $httpsPort $httpPort) | nindent 8 }}
+          {{- include "tonic.web.envVars" (list $ $server $httpsOnly $httpsPort $httpPort) | nindent 10 }}
         {{- if $server.envFrom }}
         envFrom:
         {{- with $server.envFrom }}
@@ -58,13 +58,11 @@ spec:
         ports:
           {{- include "tonic.web.ports" (list $ $httpsOnly $httpsPort $httpPort) | nindent 8 }}
         resources:
-          {{- include "tonic.web.tasks.container.resources" (list $ $server) | nindent 10 }}
+          {{- include "tonic.web.server.container.resources" (list $ $server) | nindent 10 }}
         startupProbe:
           {{- include "tonic.web.startupProbe" (list $ $httpsPort) | nindent 10 }}
       restartPolicy: Always
       serviceAccountName: {{ template "tonic.serviceAccountName" . }}
-      imagePullSecrets:
-      - name: {{ include "tonic.imagePullSecret.name" . }}
       volumes:
       {{- (include "tonic.web.volumes" (list $ $server)) | nindent 8 }}
-{{- end }}
+      {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}
