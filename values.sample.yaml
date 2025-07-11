@@ -39,6 +39,24 @@ dockerConfigAuth: <docker-config-auth>
 serviceAccount:
   create: true
   annotations: {}
+  # see: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#rolebinding-and-clusterrolebinding
+  roleBindings:
+    annotations: {}
+    labels: {}
+    bindings:
+    # - apiGroup: rbac.authorization.k8s.io
+    #   kind: ClusterRole
+    #   name: my-cluster-role
+    # - apiGroup: rbac.authorization.k8s.io
+    #   kind: Role
+    #   name: my-role
+  clusterRoleBindings:
+    annotations: {}
+    labels: {}
+    bindings:
+    # - apiGroup: rbac.authorization.k8s.io
+    #   kind: ClusterRole
+    #   name: my-cluster-role
 
 # To configure the affinity. This same configuration is used for each service.
 affinity:
