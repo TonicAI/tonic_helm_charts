@@ -181,10 +181,10 @@ containerization:
     create: true
   datapacker:
     imageRepo: quay.io/tonicai/datapacker
-  serviceAccount:
-    create: false
-  environment:
-    configMaps: []
+    serviceAccount:
+      create: false
+    environment:
+      configMaps: []
 # Professional and Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
 #   groupFilter: <regex that matches groups to import into Tonic, like .*Tonic.*>
