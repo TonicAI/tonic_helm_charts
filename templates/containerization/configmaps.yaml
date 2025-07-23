@@ -1,0 +1,33 @@
+{{- define "tonic.configMapFromLiterals" }}
+{{- $top := first . }}
+{{- $map := index . 1 }}
+apiVersion: v1
+data:
+{{- range $literal := $map.literals }}
+    "{{ $literal.name }}": "{{ $literal.value }}"
+{{- end }}
+kind: ConfigMap
+metadata:
+  name: {{ $map.name }}
+  namespace: {{ $top.Release.Namespace }}
+  annotations:
+    {{- include "tonic.annotations" (list $top) | nindent 4 }}
+  labels:
+    {{- include "tonic.allLabels" (list $top) | nindent 4 }}
+{{- end }}
+
+{{- define "tonic.configMapsFromLiterals" }}
+{{- $top := first . }}
+{{- $maps := index . 1 }}
+{{- range $map := $maps }}
+{{- if (and $map.name $map.literals (gt (len $map.literals) 0)) }}
+{{- include "tonic.configMapFromLiterals" (list $top $map) }}
+---
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- $containerizationConfigMaps := (((.Values.containerization).datapacker).environment).configMaps }}
+{{- if $containerizationConfigMaps }}
+{{ include "tonic.configMapsFromLiterals" (list $ $containerizationConfigMaps) }}
+{{- end }}
