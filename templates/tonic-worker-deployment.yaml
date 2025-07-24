@@ -16,6 +16,9 @@
 {{- $httpsOnly := $ports.httpsOnly }}
 {{- $httpPort := $ports.http }}
 {{- $httpsPort := $ports.https }}
+{{- $datapacker := (.Values.containerization).datapacker }}
+{{- $datapackerSA := $datapacker.serviceAccount }}
+{{- $datapackerConfigMaps := ($datapacker.environment).configMaps }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -113,12 +116,6 @@ spec:
               value: {{ .Values.tonicdb.sslMode }}
             - name: TONIC_DB_HOST
               value: {{ .Values.tonicdb.host }}
-    #        - name: TONIC_PROCESS_PARALLELISM
-    #          value: "1"
-    #        - name: TONIC_TABLE_PARALLELISM
-    #          value: "1"
-    #        - name: TONIC_WRITE_PARALLELISM
-    #          value: "2"
               {{- if .Values.tonicStatisticsSeed }}
             - name: TONIC_STATISTICS_SEED
               value: {{quote .Values.tonicStatisticsSeed }}
@@ -140,6 +137,18 @@ spec:
             {{- if .Values.awsLambdaRoleArn }}
             - name: TONIC_LAMBDA_ROLE
               value: {{ .Values.awsLambdaRoleArn }}
+            {{- end }}
+            {{- if $datapackerConfigMaps }}
+            - name: CONTAINERIZATION_DATAPACKER_CONFIGMAPS
+              value: {{ include "tonic.joinedContainerizationConfigMapNames"  $datapackerConfigMaps}}
+            {{- end }}
+            {{- if $datapackerSA.name }}
+            - name: CONTAINERIZATION_POD_SERVICEACCOUNT_NAME
+              value: {{ $datapackerSA.name | quote }}
+            {{- end }}
+            {{- if $datapackerSA.audience }}
+            - name: CONTAINERIZATION_DATAPACKER_SERVICEACCOUNT_AUDIENCE
+              value: {{ $datapackerSA.audience | quote }}
             {{- end }}
             {{- if $worker.env}}
             {{- range $key, $value := $worker.env }}

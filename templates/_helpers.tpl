@@ -505,3 +505,16 @@ caller (which is ideally the root value of the chart).
 {{- define "tonic.imagePullSecret.defaultName" -}}
 tonicai-build-writer-pull-secret
 {{- end }}
+
+{{- define "tonic.joinedContainerizationConfigMapNames" }}
+{{- $allMaps := . }}
+{{- $envMaps := list }}
+{{- if $allMaps }}
+{{- range $map := $allMaps }}
+{{- if $map.name }}
+{{- $envMaps = append $envMaps $map.name }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- $envMaps | join "," }}
+{{- end }}
