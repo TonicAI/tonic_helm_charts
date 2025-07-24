@@ -46,7 +46,7 @@
       key: license
       optional: true
 {{- if $top.Values.tonicSsoConfig }}
-{{- include "tonic.sso" $top.Values.tonicSsoConfig | nindent 8 }}
+{{ include "tonic.sso" $top.Values.tonicSsoConfig }}
 {{- end }}
 {{- if eq (include "tonic.hostIntegration" $top) "true"}}
 - name: TONIC_HOST_INTEGRATION
