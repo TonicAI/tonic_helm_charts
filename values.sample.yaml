@@ -181,6 +181,38 @@ containerization:
     create: true
   datapacker:
     imageRepo: quay.io/tonicai/datapacker
+    # It is possible to assign a service account and/or configmap environment
+    # variables to the datapacker container. ConfigMaps with literal values are
+    # created, and ones without literals are assumed to exist within the
+    # namespace already. These are only mounted to the datapacker container and
+    # are not available to its companion database container. As an example,
+    # this can be used to manually implement an AWS trust relationship:
+    #
+    # serviceAccount:
+    #   create: true
+    #   name: datapacker
+    #   audience: sts.amazonaws.com
+    #   annotations: {}
+    # environment:
+    #   configMaps:
+    #     - name: aws-iam-role
+    #       literals:
+    #         - name: AWS_STS_REGIONAL_ENDPOINTS
+    #           value: regional
+    #         - name: AWS_DEFAULT_REGION
+    #           value: us-east-1
+    #         - name: AWS_REGION
+    #           value: us-east-1
+    #         - name: AWS_ROLE_ARN
+    #           value: arn:aws:iam::${AWS_ACCOUNT_ID}:role/${DATAPACKER_ROLE}
+    #         - name: AWS_WEB_IDENTITY_TOKEN_FILE
+    #           # service account token is always mounted here
+    #           value: /var/run/tonic/projected/service-account/token
+    serviceAccount:
+      create: false
+      name: default
+    environment:
+      configMaps: []
 # Professional and Enterprise License Only: Below are the settings for Single Sign On. Not every provider requires every value. The Tonic support team will help you configure this.
 # tonicSsoConfig:
 #   groupFilter: <regex that matches groups to import into Tonic, like .*Tonic.*>
