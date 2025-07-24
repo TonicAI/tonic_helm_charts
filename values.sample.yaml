@@ -39,6 +39,33 @@ dockerConfigAuth: <docker-config-auth>
 serviceAccount:
   create: true
   annotations: {}
+  # Allows attaching arbitrary roles and clusteroles to the structural service
+  # account. This allows managing RBAC grants to the Structural installation
+  # outside of this helm chart. For RBAC grants that Structural uses, please
+  # consult documentation.
+  # see: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+  # see: https://docs.tonic.ai/app/admin/on-premise-deployment/enable-output-to-container-artifacts/kubernetes-required-containerization-access#container-access-rolebinding
+  # Note: If a Role or ClusterRole is changed, these bindings will not
+  # automatically update. The binding will need to be deleted and recreated per
+  # the RBAC documentation.
+  # See: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#clusterrolebinding-example
+  roleBindings:
+    annotations: {}
+    labels: {}
+    bindings:
+    # - apiGroup: rbac.authorization.k8s.io
+    #   kind: ClusterRole
+    #   name: my-cluster-role
+    # - apiGroup: rbac.authorization.k8s.io
+    #   kind: Role
+    #   name: my-role
+  clusterRoleBindings:
+    annotations: {}
+    labels: {}
+    bindings:
+    # - apiGroup: rbac.authorization.k8s.io
+    #   kind: ClusterRole
+    #   name: my-cluster-role
 
 # To configure the affinity. This same configuration is used for each service.
 affinity:
