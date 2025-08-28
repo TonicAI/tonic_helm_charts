@@ -1,13 +1,10 @@
-{{- if semverCompare "<3.15.0" .Capabilities.HelmVersion.Version }}
-{{- fail "This chart requires Helm 3.15.0 or higher" }}
-{{- end }}
 {{- $server := .Values.tonicai.web_server -}}
-{{- $separateBackgroundTasks := (eq (include "tonic.web.separateBackgroundTasks" (list $ $server)) "separateBackgroundTasks") }}
+{{- if eq (include "tonic.web.separateBackgroundTasks" (list $ $server)) "separateBackgroundTasks" }}
 {{- $ports := fromYaml (include "tonic.ports" (list $ $server.ports (dict "http" 6580 "https" 6543 "httpsOnly" true)))  }}
 {{- $httpsOnly := $ports.httpsOnly }}
 {{- $httpPort := $ports.http }}
 {{- $httpsPort := $ports.https }}
-{{- $appName := "tonic-web-server" }}
+{{- $appName := "tonic-web-task-runner" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -49,10 +46,6 @@ spec:
           {{- include "tonic.web.volumeMounts" (list $ $server) | nindent 10 }}
         env:
           {{- include "tonic.web.envVars" (list $ $server $httpsOnly $httpsPort $httpPort) | nindent 10 }}
-          {{- if $separateBackgroundTasks }}
-          - name: TONIC_DISABLE_STARTUP_BACKGROUND_TASKS
-            value: "true"
-          {{- end }}
         {{- if $server.envFrom }}
         envFrom:
         {{- with $server.envFrom }}
@@ -74,3 +67,4 @@ spec:
       {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}
       volumes:
       {{- (include "tonic.web.volumes" (list $ $server)) | nindent 8 }}
+{{- end }}
