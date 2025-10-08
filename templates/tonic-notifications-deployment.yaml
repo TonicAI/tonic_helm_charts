@@ -64,6 +64,7 @@ spec:
             {{- toYaml . | nindent 12 }}
         {{- end }}
         {{- end }}
+        {{- if .Values.tonicdb.dbConfigFromValues }}
         - name: TONIC_DB_DATABASE
           value: {{ .Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
@@ -79,6 +80,7 @@ spec:
             secretKeyRef:
               name: tonic-db-password
               key: password
+        {{- end }}
         {{- $smtp := .Values.tonicSmtpConfig }}
         {{- if $smtp.tonicUrl }}
         - name: TONIC_URL

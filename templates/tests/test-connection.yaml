@@ -1,3 +1,4 @@
+{{- if .Values.enableTests }}
 apiVersion: v1
 kind: Pod
 metadata:
@@ -13,3 +14,4 @@ spec:
       command: ['wget']
       args: ['tonic-web-server:443']
   restartPolicy: Never
+{{- end }}

@@ -101,6 +101,7 @@ spec:
             - name: CONTAINERIZATION_IMAGE_REPOSITORY
               value: {{ .Values.containerization.datapacker.imageRepo }}
             {{- end }}
+            {{- if .Values.tonicdb.dbConfigFromValues }}
             - name: TONIC_DB_DATABASE
               value: {{ .Values.tonicdb.dbName }}
             - name: TONIC_DB_USERNAME
@@ -116,6 +117,7 @@ spec:
               value: {{ .Values.tonicdb.sslMode }}
             - name: TONIC_DB_HOST
               value: {{ .Values.tonicdb.host }}
+            {{- end }}  
               {{- if .Values.tonicStatisticsSeed }}
             - name: TONIC_STATISTICS_SEED
               value: {{quote .Values.tonicStatisticsSeed }}

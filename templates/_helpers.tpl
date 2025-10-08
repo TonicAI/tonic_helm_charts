@@ -497,7 +497,9 @@ caller (which is ideally the root value of the chart).
 
 {{- define "tonic.imagePullSecret.default" -}}
 {{- $top := first . }}
-{{- if $top.Values.dockerConfigAuth }}
+{{- if $top.Values.dockerConfigSecretRef }}
+- name: {{ $top.Values.dockerConfigSecretRef }}
+{{- else if $top.Values.dockerConfigAuth }}
 - name: {{ include "tonic.imagePullSecret.defaultName" $top }}
 {{- end }}
 {{- end }}

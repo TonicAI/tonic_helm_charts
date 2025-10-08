@@ -17,6 +17,21 @@ readOnlyRootFilesystem: false
 
 # tonicdb is the postgres database that will hold information about your workspace.
 tonicdb:
+  # dbConfigFromValues field specifies where the database properties are retrieved from.
+  # If it is set to true, the database properties are retrieved from values.yaml file and
+  # added to env section of the deployments as environment variables (named TONIC_DB_XXX).
+  # If it is set to false, the environment variables will not be added to the deployments.
+  # In that case, the environment variables can be put into a Kubernetes secret or config map and
+  # can be referenced with envFrom.
+  # tonicai:
+  #    web_server:
+  #      envFrom:
+  #        - secretRef:
+  #            name: tonic-structural
+  #        - configMapRef:
+  #            name: tonic-structural
+  dbConfigFromValues: true
+
   host: <db-host>
   port: 5432
   dbName: tonic
@@ -34,6 +49,8 @@ numberOfWorkers: 1
 
 # This value will be provided to you by Tonic and will allow you to authenticate against our private docker repository.
 dockerConfigAuth: <docker-config-auth>
+# Alternatively, you can put it in a secret and reference it below.
+dockerConfigSecretRef: 
 
 # Service account for tonic
 serviceAccount:
@@ -301,3 +318,6 @@ containerization:
 
 # Your license should be configured by an admin within the Tonic UI. It can optionally be set here if there is no admin.
 # tonicLicense: <license-key>
+
+# Enable or disable test pods
+enableTests: true

@@ -18,6 +18,7 @@
     {{- toYaml . | nindent 12 }}
 {{- end }}
 {{- end }}
+{{- if $top.Values.tonicdb.dbConfigFromValues }}
 - name: TONIC_DB_DATABASE
   value: {{ $top.Values.tonicdb.dbName }}
 - name: TONIC_DB_USERNAME
@@ -33,6 +34,7 @@
   value: {{ $top.Values.tonicdb.sslMode }}
 - name: TONIC_DB_HOST
   value: {{ $top.Values.tonicdb.host }}
+{{- end }}
   {{- if $top.Values.tonicStatisticsSeed }}
 - name: TONIC_STATISTICS_SEED
   value: {{quote $top.Values.tonicStatisticsSeed }}
