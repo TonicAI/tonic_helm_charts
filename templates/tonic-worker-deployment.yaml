@@ -34,7 +34,7 @@ spec:
     matchLabels:
       app: tonic-worker
   strategy:
-    type: {{ template "tonic.deployStrategy" . }}
+    type: {{ include "tonic.deployStrategy" (list $ $worker.deployStrategy) }}
   revisionHistoryLimit: 1
   template:
     metadata:

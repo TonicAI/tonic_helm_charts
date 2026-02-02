@@ -23,7 +23,7 @@ spec:
     matchLabels:
       app: {{ $appName }}
   strategy:
-    type: {{ template "tonic.deployStrategy" . }}
+    type: {{ include "tonic.deployStrategy" (list $ $server.deployStrategy) }}
   revisionHistoryLimit: 1
   template:
     metadata:
