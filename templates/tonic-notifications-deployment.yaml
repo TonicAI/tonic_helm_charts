@@ -21,7 +21,7 @@ spec:
     matchLabels:
       app: tonic-notifications
   strategy:
-    type: {{ template "tonic.deployStrategy" . }}
+    type: {{ include "tonic.deployStrategy" (list $ $notifications.deployStrategy) }}
   revisionHistoryLimit: 1
   template:
     metadata:

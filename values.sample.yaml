@@ -101,6 +101,8 @@ tonicVersion: latest
 # Container repository with tonic images. If you don't use the default one you will have to copy images over before deployment
 tonicai:
   web_server:
+    # Overrides the global deployStrategy.
+    # deployStrategy: RollingUpdate
     env: {}
     envRaw: {}
     #image: quay.io/tonicai/tonic_web_server
@@ -136,6 +138,8 @@ tonicai:
         memory: "3Gi"
   worker:
     #image: quay.io/tonicai/tonic_worker
+    # Overrides the global deployStrategy.
+    # deployStrategy: RollingUpdate
     env: {}
     envRaw: {}
     ports:
@@ -150,6 +154,8 @@ tonicai:
         memory: "12Gi"
   notifications:
     #image: quay.io/tonicai/tonic_notifications
+    # Overrides the global deployStrategy.
+    # deployStrategy: RollingUpdate
     env: {}
     envRaw: {}
     resources:
@@ -182,6 +188,8 @@ tonicai:
 # for several minutes. Tonic will be available during this time, but behavior may be unpredictable depending on
 # differences in the running an new versions. "Recreate" means that the current deployment will be deleted and a
 # new one created.  This will result in Tonic being down during an update.
+# This is the global default. Each service can override this with tonicai.<service>.deployStrategy.
+# If unset here and per-service deployStrategy is also unset, the default is RollingUpdate.
 deployStrategy: RollingUpdate
 
 containerization:

@@ -74,8 +74,15 @@ Create the name of the service account to use
 {{- end }}
 
 {{- define "tonic.deployStrategy" -}}
-{{- if .Values.deployStrategy -}}
-{{- .Values.deployStrategy -}}
+{{- $top := first . }}
+{{- $serviceStrategy := "" }}
+{{- if gt (len .) 1 }}
+{{- $serviceStrategy = index . 1 }}
+{{- end }}
+{{- if $serviceStrategy -}}
+{{- $serviceStrategy -}}
+{{- else if $top.Values.deployStrategy -}}
+{{- $top.Values.deployStrategy -}}
 {{- else -}}
 {{ "RollingUpdate" }}
 {{- end -}}
