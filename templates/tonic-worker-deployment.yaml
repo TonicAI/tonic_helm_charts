@@ -182,6 +182,9 @@ spec:
           resources:
             {{- toYaml $resources | nindent 12 }}
           startupProbe:
+          {{- if "tonic.worker.startupProbe" }}
+            {{- toYaml "tonic.worker.startupProbe" | nindent 12 }}
+          {{- else }}
             httpGet:
               scheme: HTTPS
               path: /health
@@ -190,6 +193,7 @@ spec:
             periodSeconds: 60
             timeoutSeconds: 30
             failureThreshold: 5
+          {{- end }}
       restartPolicy: Always
       imagePullSecrets:
       {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}
