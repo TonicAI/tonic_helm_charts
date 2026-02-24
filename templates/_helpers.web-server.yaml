@@ -173,4 +173,6 @@ failureThreshold: 5
 {{- end }}
 - containerPort: {{ $httpsPort }}
   name: "https"
+- containerPort: 9464
+  name: metrics
 {{- end }}

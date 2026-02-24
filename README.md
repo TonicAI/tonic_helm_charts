@@ -154,3 +154,13 @@ Run `kubectl logs deployment/tonic-web-server -n <namespace_name> | grep "Failed
 ```
 
 2. If Tonic appears to be running and in a healthy state but you are unable to load the UI, verify that Tonic is reachable. Common issues may be a requirement to be on a VPN , firewall rules preventing access, or another issue with the ingress configuration used to expose your cluster to external user traffic.
+
+## Monitor
+
+This chart can additionally configure Prometheus metrics exporting. This requires the `monitoring.coreos.com.v1.PodMonitor` CRD to be available. To enable Prometheus export monitoring set:
+
+```yaml
+monitoring:
+  podMonitors:
+    create: true
+```

@@ -28,6 +28,7 @@ spec:
       annotations:
         {{- include "tonic.annotations" (list $) | nindent 8 }}
       labels:
+        tonic.ai/metrics: "structural-notifications"
         {{- include "tonic.allLabels" (list $ (dict "app" "tonic-notifications")) | nindent 8 }}
     spec:
       nodeSelector:
@@ -152,6 +153,8 @@ spec:
           name: http
         - containerPort: {{ $ports.https }}
           name: https
+        - containerPort: 9464
+          name: metrics
         startupProbe:
           httpGet:
             scheme: HTTPS

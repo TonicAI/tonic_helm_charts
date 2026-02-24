@@ -50,7 +50,7 @@ numberOfWorkers: 1
 # This value will be provided to you by Tonic and will allow you to authenticate against our private docker repository.
 dockerConfigAuth: <docker-config-auth>
 # Alternatively, you can put it in a secret and reference it below.
-dockerConfigSecretRef: 
+dockerConfigSecretRef:
 
 # Service account for tonic
 serviceAccount:
@@ -329,3 +329,7 @@ containerization:
 
 # Enable or disable test pods
 enableTests: true
+
+monitoring:
+  podMonitors:
+    create: false
