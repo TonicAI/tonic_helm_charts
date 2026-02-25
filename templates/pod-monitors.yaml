@@ -1,0 +1,25 @@
+{{- if ((.Values.monitoring).podMonitors).create }}
+{{- $matchValues := (list
+  "structural-web-server"
+  "structural-notifications"
+  "structural-worker"
+  "structural-data-packer"
+)}}
+{{- range $matchValue := $matchValues }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ $matchValue }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    tonic.ai/metrics: {{ $matchValue }}
+spec:
+  podMetricsEndpoints:
+    - port: metrics
+      path: '/metrics'
+  selector:
+    matchLabels:
+      tonic.ai/metrics: {{ $matchValue }}
+---
+{{- end }}
+{{- end }}

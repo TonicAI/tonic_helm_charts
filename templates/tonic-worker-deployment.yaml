@@ -41,6 +41,7 @@ spec:
       annotations:
         {{- include "tonic.annotations" (list $) | nindent 8 }}
       labels:
+        tonic.ai/metrics: "structural-worker"
         {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 8 }}
     spec:
       nodeSelector:
@@ -117,7 +118,7 @@ spec:
               value: {{ .Values.tonicdb.sslMode }}
             - name: TONIC_DB_HOST
               value: {{ .Values.tonicdb.host }}
-            {{- end }}  
+            {{- end }}
               {{- if .Values.tonicStatisticsSeed }}
             - name: TONIC_STATISTICS_SEED
               value: {{quote .Values.tonicStatisticsSeed }}
@@ -179,6 +180,8 @@ spec:
           {{- end }}
           - containerPort: {{ $httpsPort }}
             name: "https"
+          - containerPort: 9464
+            name: metrics
           resources:
             {{- toYaml $resources | nindent 12 }}
           startupProbe:

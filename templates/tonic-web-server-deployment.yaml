@@ -30,6 +30,7 @@ spec:
       annotations:
         {{- include "tonic.annotations" (list $) | nindent 8 }}
       labels:
+        tonic.ai/metrics: "structural-web-server"
         {{- include "tonic.allLabels" (list $ (dict "app" $appName)) | nindent 8 }}
     spec:
       nodeSelector:
