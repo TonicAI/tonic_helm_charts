@@ -6,13 +6,17 @@
 -}}
 {{- $rawPorts := include "tonic.ports" (list $ (dict "http" 7000 "https" 7001 "httpsOnly" false)) }}
 {{- $ports := fromYaml $rawPorts }}
+{{- $podLabels := merge (dict "app" "tonic-notifications") ($notifications.pod).labels }}
+{{- $podAnnotations := coalesce ($notifications.pod).annotations (dict) }}
+{{- $deploymentLabels := merge (dict "app" "tonic-notifications") ($notifications.deployment).labels }}
+{{- $deploymentAnnotations := coalesce ($notifications.deployment).annotations (dict) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    {{- include "tonic.annotations" (list $) | nindent 4 }}
+    {{- include "tonic.annotations" (list $ $deploymentAnnotations) | nindent 4 }}
   labels:
-    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-notifications")) | nindent 4 }}
+    {{- include "tonic.allLabels" (list $ $deploymentLabels) | nindent 4 }}
   name: tonic-notifications
   namespace: {{ .Release.Namespace }}
 spec:
@@ -26,10 +30,10 @@ spec:
   template:
     metadata:
       annotations:
-        {{- include "tonic.annotations" (list $) | nindent 8 }}
+        {{- include "tonic.annotations" (list $ $podAnnotations) | nindent 8 }}
       labels:
+        {{- include "tonic.allLabels" (list $ $podLabels) | nindent 8 }}
         tonic.ai/metrics: "structural-notifications"
-        {{- include "tonic.allLabels" (list $ (dict "app" "tonic-notifications")) | nindent 8 }}
     spec:
       nodeSelector:
         {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
