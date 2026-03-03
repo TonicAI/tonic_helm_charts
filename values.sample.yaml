@@ -52,6 +52,9 @@ dockerConfigAuth: <docker-config-auth>
 # Alternatively, you can put it in a secret and reference it below.
 dockerConfigSecretRef:
 
+# Annotations here are applied to every resource
+annotations: {}
+
 # Service account for tonic
 serviceAccount:
   create: true
@@ -136,6 +139,14 @@ tonicai:
         ephemeral-storage: "1Gi"
       limits:
         memory: "3Gi"
+    # adds configuration to the web server deployment
+    deployment:
+      annotations: {}
+      labels: {}
+    # adds configuration to the web server pod
+    pod:
+      annotations: {}
+      labels: {}
   worker:
     #image: quay.io/tonicai/tonic_worker
     # Overrides the global deployStrategy.
@@ -152,6 +163,14 @@ tonicai:
         ephemeral-storage: "1Gi"
       limits:
         memory: "12Gi"
+    # adds configuration to the worker deployment
+    deployment:
+      annotations: {}
+      labels: {}
+    # adds configuration to the worker pod
+    pod:
+      annotations: {}
+      labels: {}
   notifications:
     #image: quay.io/tonicai/tonic_notifications
     # Overrides the global deployStrategy.
@@ -172,6 +191,14 @@ tonicai:
     # - key: "tonic.ai/gpu"
     #   operator: "Exists"
     #   effect: "NoSchedule"
+    # adds configuration to the notifications deployment
+    deployment:
+      annotations: {}
+      labels: {}
+    # adds configuration to the notifications pod
+    pod:
+      annotations: {}
+      labels: {}
   # use_ingress typically only used by TIM
   #use_ingress: true
   #ingress:

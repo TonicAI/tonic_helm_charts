@@ -8,13 +8,17 @@
 {{- $httpPort := $ports.http }}
 {{- $httpsPort := $ports.https }}
 {{- $appName := "tonic-web-server" }}
+{{- $podLabels := merge (dict "app" $appName) ($server.pod).labels }}
+{{- $podAnnotations := coalesce ($server.pod).annotations (dict) }}
+{{- $deploymentLabels := merge (dict "app" "tonic-server") ($server.deployment).labels }}
+{{- $deploymentAnnotations := coalesce ($server.deployment).annotations (dict) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    {{- include "tonic.annotations" (list $) | nindent 4 }}
+    {{- include "tonic.annotations" (list $ $deploymentAnnotations) | nindent 4 }}
   labels:
-    {{- include "tonic.allLabels" (list $ (dict "app" $appName)) | nindent 4 }}
+    {{- include "tonic.allLabels" (list $ $deploymentLabels) | nindent 4 }}
   name: {{ $appName }}
   namespace: {{ .Release.Namespace }}
 spec:
@@ -28,10 +32,10 @@ spec:
   template:
     metadata:
       annotations:
-        {{- include "tonic.annotations" (list $) | nindent 8 }}
+        {{- include "tonic.annotations" (list $ $podAnnotations) | nindent 8 }}
       labels:
+        {{- include "tonic.allLabels" (list $ $podLabels) | nindent 8 }}
         tonic.ai/metrics: "structural-web-server"
-        {{- include "tonic.allLabels" (list $ (dict "app" $appName)) | nindent 8 }}
     spec:
       nodeSelector:
         {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}

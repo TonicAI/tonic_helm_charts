@@ -11,6 +11,8 @@ kind: PodMonitor
 metadata:
   name: {{ $matchValue }}
   namespace: {{ $.Release.Namespace }}
+  annotations:
+    {{- include "tonic.annotations" (list $) | nindent 4 }}
   labels:
     tonic.ai/metrics: {{ $matchValue }}
 spec:

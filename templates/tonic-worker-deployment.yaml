@@ -19,13 +19,17 @@
 {{- $datapacker := (.Values.containerization).datapacker }}
 {{- $datapackerSA := $datapacker.serviceAccount }}
 {{- $datapackerConfigMaps := ($datapacker.environment).configMaps }}
+{{- $podLabels := merge (dict "app" "tonic-worker") ($worker.pod).labels }}
+{{- $podAnnotations := coalesce ($worker.pod).annotations (dict) }}
+{{- $deploymentLabels := merge (dict "app" "tonic-worker") ($worker.deployment).labels }}
+{{- $deploymentAnnotations := coalesce ($worker.deployment).annotations (dict) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 4 }}
   annotations:
-    {{- include "tonic.annotations" (list $) | nindent 4 }}
+    {{- include "tonic.annotations" (list $ $deploymentAnnotations) | nindent 4 }}
+  labels:
+    {{- include "tonic.allLabels" (list $ $deploymentLabels) | nindent 4 }}
   name: tonic-worker
   namespace: {{ .Release.Namespace }}
 spec:
@@ -39,10 +43,10 @@ spec:
   template:
     metadata:
       annotations:
-        {{- include "tonic.annotations" (list $) | nindent 8 }}
+        {{- include "tonic.annotations" (list $ $podAnnotations) | nindent 8 }}
       labels:
+        {{- include "tonic.allLabels" (list $ $podLabels) | nindent 8 }}
         tonic.ai/metrics: "structural-worker"
-        {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 8 }}
     spec:
       nodeSelector:
         {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
