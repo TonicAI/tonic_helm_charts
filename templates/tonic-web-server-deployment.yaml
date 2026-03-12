@@ -54,10 +54,6 @@ spec:
           {{- include "tonic.web.volumeMounts" (list $ $server) | nindent 10 }}
         env:
           {{- include "tonic.web.envVars" (list $ $server $httpsOnly $httpsPort $httpPort) | nindent 10 }}
-          {{- if $separateBackgroundTasks }}
-          - name: TONIC_DISABLE_STARTUP_BACKGROUND_TASKS
-            value: "true"
-          {{- end }}
         {{- if $server.envFrom }}
         envFrom:
         {{- with $server.envFrom }}
