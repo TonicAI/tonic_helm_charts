@@ -76,7 +76,7 @@
 {{- $top := first . }}
 {{- $server := index . 1 }}
 {{- if $server.volumes }}
-{{- toYaml $server.volumes | nindent 8 }}
+{{- toYaml $server.volumes }}
 {{- end }}
 {{- if $top.Values.readOnlyRootFilesystem }}
 - name: scratch
@@ -88,7 +88,7 @@
 {{- $top := first . }}
 {{- $server := index . 1 }}
 {{- if $server.volumeMounts }}
-{{- toYaml $server.volumeMounts | nindent 10 }}
+{{- toYaml $server.volumeMounts }}
 {{- end }}
 {{- if $top.Values.readOnlyRootFilesystem }}
 - name: scratch

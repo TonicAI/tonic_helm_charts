@@ -82,7 +82,7 @@ spec:
             {{- end }}
           volumeMounts:
             {{- if $worker.volumeMounts }}
-            {{- toYaml $worker.volumeMounts | nindent 10 }}
+            {{- toYaml $worker.volumeMounts | nindent 12 }}
             {{- end }}
             {{- if .Values.readOnlyRootFilesystem }}
             - name: scratch
