@@ -1,0 +1,22 @@
+{{- $httpRoutes := .Values.httpRoutes }}
+{{- if (and ($httpRoutes).create ($httpRoutes).web) }}
+apiVersion: {{ $httpRoutes.apiVersion }}
+kind: HTTPRoute
+metadata:
+  name: "tonic-web-server"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- if ($httpRoutes.web).labels }}
+    {{- $httpRoutes.web.labels | toYaml | nindent 4 }}
+    {{- end }}
+    {{- include "tonic.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    {{- $httpRoutes.web.parentRefs | toYaml | nindent 4 }}
+  hostnames:
+    {{- $httpRoutes.web.hostnames | toYaml | nindent 4 }}
+  rules:
+  - backendRefs:
+    - name: "tonic-web-server"
+      port: 443
+{{- end }}

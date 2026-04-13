@@ -110,25 +110,21 @@ The deployment may take a few minutes with pods in the `ContainerCreating` statu
 ❯ kubectl get all -n my-tonic-namespace
 NAME                                       READY   STATUS              RESTARTS   AGE
 pod/tonic-notifications-578d8b8568-7tktx   0/1     ContainerCreating   0          3s
-pod/tonic-pyml-service-7d99675b89-2jktq    0/1     ContainerCreating   0          3s
 pod/tonic-web-server-b4b795d8-bbr6g        0/1     Running             0          3s
 pod/tonic-worker-b8f87bc5c-srd6p           0/1     ContainerCreating   0          3s
 
 NAME                          TYPE           CLUSTER-IP       EXTERNAL-IP                                                                       PORT(S)             AGE
 service/tonic-notifications   ClusterIP      10.100.211.114   <none>                                                                            7000/TCP,7001/TCP   3s
-service/tonic-pyml-service    ClusterIP      10.100.202.103   <none>                                                                            7700/TCP            3s
 service/tonic-web-server      LoadBalancer   10.100.105.239   <load-balancer-assigned-url>                                                      443:32479/TCP       3s
 service/tonic-worker          ClusterIP      10.100.26.158    <none>                                                                            8080/TCP,4433/TCP   3s
 
 NAME                                  READY   UP-TO-DATE   AVAILABLE   AGE
 deployment.apps/tonic-notifications   0/1     1            0           3s
-deployment.apps/tonic-pyml-service    0/1     1            0           3s
 deployment.apps/tonic-web-server      0/1     1            0           3s
 deployment.apps/tonic-worker          0/1     1            0           3s
 
 NAME                                             DESIRED   CURRENT   READY   AGE
 replicaset.apps/tonic-notifications-578d8b8568   1         1         0       3s
-replicaset.apps/tonic-pyml-service-7d99675b89    1         1         0       3s
 replicaset.apps/tonic-web-server-b4b795d8        1         1         0       3s
 replicaset.apps/tonic-worker-b8f87bc5c           1         1         0       3s
 ```
@@ -163,4 +159,69 @@ This chart can additionally configure Prometheus metrics exporting. This require
 monitoring:
   podMonitors:
     create: true
+```
+
+## Gateway API
+
+This chart can be used to create Gateway API resources. These options are
+controlled by the `httpRoutes` value. By default the chart will create
+resources using the `gateway.networking.k8s.io/v1beta1` version. This can be
+changed by setting `httpRoutes.apiVersion`.
+
+Example: Creating an HTTPRoute for the Structural web server
+```yaml
+httpRoutes:
+  create: true
+  apiVersion: gateway.networking.k8s.io/v1beta1
+  web:
+    labels:
+        k8s.tonic.ai/gateway-1-access: true
+    hostnames:
+        - structural.internal.example.com
+    parentRefs:
+      - group: gateway.networking.k8s.io
+        kind: Gateway
+        name: gateway-1
+        namespace: gateways
+        sectionName: https
+```
+
+After access via the Gateway API is confirmed, it is recommended to disable
+ingress resources and explicitly use a ClusterIP for the web server via:
+
+```yaml
+tonicai:
+  use_ingress: false
+  web_server:
+    service_type: "ClusterIP"
+```
+
+Because Gateway API implementations often rely on arbitrary custom resources,
+this chart provides the `additionalResources` key that can be used to create
+arbitrary resources. These resources are templated with the chart values.
+
+Example: Creating a `TargetGroupConfiguration` resource for the `AWS
+LoadBalancer Operator` for the Structural web server
+```yaml
+additionalResources:
+  - |-
+    {{- $httpRoutes := .Values.httpRoutes }}
+    apiVersion: gateway.k8s.aws/v1beta1
+    kind: TargetGroupConfiguration
+    metadata:
+      name: tonic-web-server
+      namespace: {{ .Release.Namespace }}
+      labels:
+        {{- if ($httpRoutes.web).labels }}
+        {{- $httpRoutes.web.labels | toYaml | nindent 4 }}
+        {{- end }}
+        {{- include "tonic.labels" . | nindent 4 }}
+    spec:
+      targetReference:
+        name: tonic-web-server
+      defaultConfiguration:
+          protocol: "HTTPS"
+          healthCheckConfig:
+            healthCheckPath: /health
+            healthCheckProtocol: HTTPS
 ```
