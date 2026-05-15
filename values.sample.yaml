@@ -177,6 +177,10 @@ tonicai:
     # deployStrategy: RollingUpdate
     env: {}
     envRaw: {}
+    ports:
+      httpsOnly: false
+      http: 7000
+      https: 7001
     resources:
       requests:
         memory: "512Mi"

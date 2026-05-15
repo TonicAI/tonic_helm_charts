@@ -1,3 +1,5 @@
+{{- $notifications := .Values.tonicai.notifications }}
+{{- $ports := fromYaml (include "tonic.ports" (list $ $notifications.ports (dict "http" 7000 "https" 7001 "httpsOnly" false))) }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,11 +11,13 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   ports:
-  - name: "7000"
-    port: 7000
+  {{- if not $ports.httpsOnly }}
+  - name: {{ $ports.http | quote }}
+    port: {{ $ports.http }}
     targetPort: http
-  - name: "7001"
-    port: 7001
+  {{- end }}
+  - name: {{ $ports.https | quote }}
+    port: {{ $ports.https }}
     targetPort: https
   selector:
     app: tonic-notifications
