@@ -4,7 +4,7 @@
   $notifications.resources
   (dict "limits" (dict "memory" "1Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "1Gi"))
 -}}
-{{- $rawPorts := include "tonic.ports" (list $ (dict "http" 7000 "https" 7001 "httpsOnly" false)) }}
+{{- $rawPorts := include "tonic.ports" (list $ $notifications.ports (dict "http" 7000 "https" 7001 "httpsOnly" false)) }}
 {{- $ports := fromYaml $rawPorts }}
 {{- $podLabels := merge (dict "app" "tonic-notifications") ($notifications.pod).labels }}
 {{- $podAnnotations := coalesce ($notifications.pod).annotations (dict) }}
