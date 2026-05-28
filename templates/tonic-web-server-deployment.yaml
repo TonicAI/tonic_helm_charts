@@ -38,11 +38,11 @@ spec:
         tonic.ai/metrics: "structural-web-server"
     spec:
       nodeSelector:
-        {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
+        {{- include "tonic.nodeSelectors" (list $ $server.nodeSelector) | nindent 8 }}
       affinity:
-        {{- include "tonic.affinity" (list $) | nindent 8 }}
+        {{- include "tonic.affinity" (list $ $server.affinity) | nindent 8 }}
       tolerations:
-        {{- include "tonic.tolerations" (list $) | nindent 8 }}
+        {{- include "tonic.tolerations" (list $ $server.tolerations) | nindent 8 }}
       securityContext:
         {{- include "tonic.web.pod.securityContext" (list $) | nindent 8 }}
       initContainers:

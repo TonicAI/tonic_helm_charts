@@ -325,12 +325,15 @@ caller (which is ideally the root value of the chart).
 {{- $selectors := dict }}
 {{- if ($top.Values).nodeSelector }}
 {{- $selectors = merge $selectors $top.Values.nodeSelector }}
+{{- end }}
 {{- if (gt (len .) 1) }}
+{{- $these := index . 1 }}
+{{- if $these }}
 {{- $selectors = merge $selectors (index . 1) }}
+{{- end }}
 {{- end }}
 {{- if $selectors }}
 {{- $selectors | toYaml }}
-{{- end }}
 {{- end }}
 {{- end }}
 
@@ -339,12 +342,15 @@ caller (which is ideally the root value of the chart).
 {{- $affinity := dict }}
 {{- if ($top.Values).affinity }}
 {{- $affinity = merge $affinity $top.Values.affinity }}
+{{- end }}
 {{- if (gt (len .) 1) }}
-{{- $affinity = merge $affinity (index . 1) }}
+{{- $these := index . 1 }}
+{{- if $these }}
+{{- $affinity = merge $affinity $these }}
+{{- end }}
 {{- end }}
 {{- if $affinity }}
 {{- $affinity | toYaml }}
-{{- end }}
 {{- end }}
 {{- end }}
 

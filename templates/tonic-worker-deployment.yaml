@@ -49,11 +49,11 @@ spec:
         tonic.ai/metrics: "structural-worker"
     spec:
       nodeSelector:
-        {{- include "tonic.nodeSelectors" (list $) | nindent 8 }}
+        {{- include "tonic.nodeSelectors" (list $ $worker.nodeSelector) | nindent 8 }}
       affinity:
-        {{- include "tonic.affinity" (list $) | nindent 8 }}
+        {{- include "tonic.affinity" (list $ $worker.affinity) | nindent 8 }}
       tolerations:
-        {{- include "tonic.tolerations" (list $) | nindent 8 }}
+        {{- include "tonic.tolerations" (list $ $worker.tolerations) | nindent 8 }}
       securityContext:
         {{- if .Values.useUnprivilegedContainers }}
         seccompProfile:
