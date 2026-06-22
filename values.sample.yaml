@@ -379,3 +379,28 @@ httpRoutes:
     #    namespace: my-gateway-namespace
     #    sectionName: my-gateway-sectionName
 additionalResources: []
+
+# allows creating autoscaling worker pools, requires the Structural worker
+# autoscaler and its CRDs to be installed
+workerPools: []
+#  - name: "worker-2xl"
+#    pool:
+#      capacity: 10
+#      className: my-autoscaler-class
+#      status: Active
+#      retainFailedWorkers: false
+#      queue:
+#        interval: "00:00:10"
+#        zoneId: "89F0539F-225C-4130-A5E6-106AE7BF3B25"
+#        secretName: my-autoscaler-api-key
+#      worker:
+#        idleTimeoutMinutes: 3
+#    worker:
+#      resources:
+#        requests:
+#          memory: "32Gi"
+#          cpu: "8"
+#          ephemeral-storage: "40Gi"
+#        limits:
+#          memory: "32Gi"
+#          cpu: "8"

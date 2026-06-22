@@ -1,0 +1,253 @@
+{{- define "tonic.worker.containerName" -}}tonic-worker{{- end -}}
+
+{{- define "tonic.worker.deployment" }}
+{{- $top := first . }}
+{{- $worker := index . 1 }}
+{{- $containerization := index . 2 }}
+{{- $resources := coalesce
+  $worker.resources
+  (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "ephemeral-storage" "1Gi")) -}}
+{{ $image := "" }}
+{{- if  $worker.image }}
+{{- $image = $worker.image }}
+{{- else }}
+  {{- if $top.Values.useUnprivilegedContainers }}
+  {{ $image = "quay.io/tonicai/tonic_worker_unprivileged" }}
+  {{- else }}
+  {{- $image = "" }}
+  {{- end }}
+{{- end }}
+{{- $ports := fromYaml (include "tonic.ports" (list $top $worker.ports (dict "http" 2480 "https" 2467 "httpsOnly" true)))  }}
+{{- $httpsOnly := $ports.httpsOnly }}
+{{- $httpPort := $ports.http }}
+{{- $httpsPort := $ports.https }}
+{{- $datapacker := ($containerization).datapacker }}
+{{- $datapackerSA := $datapacker.serviceAccount }}
+{{- $datapackerConfigMaps := ($datapacker.environment).configMaps }}
+{{- $podLabels := merge (dict "app" "tonic-worker") ($worker.pod).labels }}
+{{- $podAnnotations := coalesce ($worker.pod).annotations (dict) }}
+{{- $deploymentLabels := merge (dict "app" "tonic-worker") ($worker.deployment).labels }}
+{{- $deploymentAnnotations := coalesce ($worker.deployment).annotations (dict) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    {{- include "tonic.annotations" (list $top $deploymentAnnotations) | nindent 4 }}
+  labels:
+    {{- include "tonic.allLabels" (list $top $deploymentLabels) | nindent 4 }}
+  name: {{ $worker.name }}
+  namespace: {{ $top.Release.Namespace }}
+spec:
+  replicas: {{ $worker.replicas }}
+  selector:
+    matchLabels:
+      app: tonic-worker
+  strategy:
+    type: {{ include "tonic.deployStrategy" (list $top $worker.deployStrategy) }}
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      annotations:
+        {{- include "tonic.annotations" (list $top $podAnnotations) | nindent 8 }}
+      labels:
+        {{- include "tonic.allLabels" (list $top $podLabels) | nindent 8 }}
+        tonic.ai/metrics: "structural-worker"
+    spec:
+      nodeSelector:
+        {{- include "tonic.nodeSelectors" (list $top $worker.nodeSelector) | nindent 8 }}
+      affinity:
+        {{- include "tonic.affinity" (list $top $worker.affinity) | nindent 8 }}
+      tolerations:
+        {{- include "tonic.tolerations" (list $top $worker.tolerations) | nindent 8 }}
+      securityContext:
+        {{- if $top.Values.useUnprivilegedContainers }}
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
+        {{- end }}
+      volumes:
+        {{- if $worker.volumes }}
+        {{- toYaml $worker.volumes | nindent 8 }}
+        {{- end }}
+        {{- if $top.Values.readOnlyRootFilesystem }}
+        - name: scratch
+          emptyDir: {}
+        {{- end }}
+      initContainers:
+        {{- include "tonic.initContainers" (list $top $worker.initContainers) | nindent 8 }}
+      containers:
+        - securityContext:
+            {{- if $top.Values.useUnprivilegedContainers }}
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            {{- end }}
+            {{- if $top.Values.readOnlyRootFilesystem }}
+            readOnlyRootFilesystem: true
+            {{- end }}
+          volumeMounts:
+            {{- if $worker.volumeMounts }}
+            {{- toYaml $worker.volumeMounts | nindent 12 }}
+            {{- end }}
+            {{- if $top.Values.readOnlyRootFilesystem }}
+            - name: scratch
+              subPath: log/superd
+              mountPath: /var/log/supervisor
+            - name: scratch
+              subPath: run/superd
+              mountPath: /var/run/supervisor
+            - name: scratch
+              subPath: tmp
+              mountPath: /tmp
+            - name: scratch
+              subPath: run/vector
+              mountPath: /tonic/vector_data
+            - name: scratch
+              subPath: run/monitor
+              mountPath: /etc/tonic/monitor
+            {{- end }}
+          env:
+            {{- if (($containerization).datapacker).imageRepo }}
+            - name: CONTAINERIZATION_IMAGE_REPOSITORY
+              value: {{ $containerization.datapacker.imageRepo }}
+            {{- end }}
+            {{- if $top.Values.tonicdb.dbConfigFromValues }}
+            - name: TONIC_DB_DATABASE
+              value: {{ $top.Values.tonicdb.dbName }}
+            - name: TONIC_DB_USERNAME
+              value: {{ $top.Values.tonicdb.user }}
+            - name: TONIC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: tonic-db-password
+                  key: password
+            - name: TONIC_DB_PORT
+              value: {{quote $top.Values.tonicdb.port }}
+            - name: TONIC_DB_SSLMODE
+              value: {{ $top.Values.tonicdb.sslMode }}
+            - name: TONIC_DB_HOST
+              value: {{ $top.Values.tonicdb.host }}
+            {{- end }}
+            {{- if $top.Values.tonicStatisticsSeed }}
+            - name: TONIC_STATISTICS_SEED
+              value: {{quote $top.Values.tonicStatisticsSeed }}
+            {{- end }}
+            - name: ENVIRONMENT_NAME
+              value: {{ $top.Values.environmentName }}
+            - name: TONIC_NOTIFICATIONS_URL
+              value: https://tonic-notifications:7001
+            - name: TONIC_WEB_URL
+              value: https://tonic-web-server
+            - name: TONIC_HTTPS_ONLY
+              value: {{ $httpsOnly | quote }}
+            {{- if not $httpsOnly }}
+            - name: TONIC_WORKER_HEALTH_PORT_HTTP
+              value: {{ $httpPort | quote }}
+            {{- end }}
+            - name: TONIC_WORKER_HEALTH_PORT_HTTPS
+              value: {{ $httpsPort | quote }}
+            {{- if $top.Values.awsLambdaRoleArn }}
+            - name: TONIC_LAMBDA_ROLE
+              value: {{ $top.Values.awsLambdaRoleArn }}
+            {{- end }}
+            {{- if $datapackerConfigMaps }}
+            - name: CONTAINERIZATION_DATAPACKER_CONFIGMAPS
+              value: {{ include "tonic.joinedContainerizationConfigMapNames"  $datapackerConfigMaps}}
+            {{- end }}
+            {{- if $datapackerSA.name }}
+            - name: CONTAINERIZATION_POD_SERVICEACCOUNT_NAME
+              value: {{ $datapackerSA.name | quote }}
+            {{- end }}
+            {{- if $datapackerSA.audience }}
+            - name: CONTAINERIZATION_DATAPACKER_SERVICEACCOUNT_AUDIENCE
+              value: {{ $datapackerSA.audience | quote }}
+            {{- end }}
+            {{- if $worker.env}}
+            {{- range $key, $value := $worker.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if $worker.envRaw }}
+            {{- with $worker.envRaw }}
+                {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- end }}
+          {{- if $worker.envFrom }}
+          envFrom:
+          {{- with $worker.envFrom }}
+              {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- end }}
+          image: {{ include "tonic.imageWithVersion" (list $top $worker.image "quay.io/tonicai/tonic_worker" $top.Values.tonicVersion) }}
+          imagePullPolicy: Always
+          name: {{ include "tonic.worker.containerName" $top }}
+          ports:
+          {{- if not $httpsOnly }}
+          - containerPort: {{ $httpPort }}
+            name: "http"
+          {{- end }}
+          - containerPort: {{ $httpsPort }}
+            name: "https"
+          - containerPort: 9464
+            name: metrics
+          resources:
+            {{- toYaml $resources | nindent 12 }}
+          startupProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /health
+              port: https
+            initialDelaySeconds: 5
+            periodSeconds: 60
+            timeoutSeconds: 30
+            failureThreshold: 5
+      restartPolicy: Always
+      imagePullSecrets:
+      {{- include "tonic.imagePullSecret.default" (list $top) | nindent 8 }}
+      serviceAccountName: {{ template "tonic.serviceAccountName" $top }}
+{{- end }}
+
+
+{{- define "tonic.worker.pool" }}
+{{- $top := first . }}
+{{- $pool := index . 1 }}
+{{- $namespace := $top.Release.Namespace }}
+apiVersion: structural.tonic.ai/v1alpha1
+kind: StructuralWorkerPool
+metadata:
+  name: {{ $pool.name }}
+  namespace: {{ $namespace  }}
+spec:
+  poolCapacity: {{ $pool.capacity }}
+  workerPoolClassName: {{ $pool.className }}
+  status: {{ $pool.status }}
+  queue:
+    interval: {{ $pool.queue.interval }}
+    zoneId: {{ $pool.queue.zoneId }}
+    source:
+      endpoint: https://{{- include "tonic.web.serviceName" (list $top) -}}.{{- $namespace -}}/api/job/peek_queue
+      secretName: {{ $pool.queue.secretName }}
+  workerSpec:
+    idleTimeoutMinutes: {{ $pool.worker.idleTimeoutMinutes }}
+    podTemplate:
+      containerName: {{ include "tonic.worker.containerName" $top }}
+      source:
+        kind: Deployment
+        name: {{ $pool.worker.deploymentName }}
+    retainFailedWorkers: {{ $pool.retainFailedWorkers }}
+{{- end }}
+
+
+{{- define "tonic.worker.autoscalingPool" }}
+{{- $top := first . -}}
+{{- $autoscalingPool := index . 1 -}}
+{{- $poolWorker := $autoscalingPool.worker | default (dict) -}}
+
+{{- $worker := deepCopy $top.Values.tonicai.worker | mustMerge (dict "name" $autoscalingPool.name "numberOfWorkers" 0) ($poolWorker.overrides) -}}
+{{- $poolSpec := deepCopy $autoscalingPool.pool | mustMerge (dict "name" $autoscalingPool.name "worker" (dict "deploymentName" $autoscalingPool.name)) -}}
+---
+{{ include "tonic.worker.pool" (list $top $poolSpec) }}
+---
+{{ include "tonic.worker.deployment" (list $top $worker $top.Values.containerization) }}
+{{- end }}
