@@ -7,16 +7,6 @@
 {{- $resources := coalesce
   $worker.resources
   (dict "limits" (dict "memory" "12Gi") "requests" (dict "memory" "6Gi" "ephemeral-storage" "1Gi")) -}}
-{{ $image := "" }}
-{{- if  $worker.image }}
-{{- $image = $worker.image }}
-{{- else }}
-  {{- if $top.Values.useUnprivilegedContainers }}
-  {{ $image = "quay.io/tonicai/tonic_worker_unprivileged" }}
-  {{- else }}
-  {{- $image = "" }}
-  {{- end }}
-{{- end }}
 {{- $ports := fromYaml (include "tonic.ports" (list $top $worker.ports (dict "http" 2480 "https" 2467 "httpsOnly" true)))  }}
 {{- $httpsOnly := $ports.httpsOnly }}
 {{- $httpPort := $ports.http }}
@@ -107,9 +97,9 @@ spec:
               mountPath: /etc/tonic/monitor
             {{- end }}
           env:
-            {{- if (($containerization).datapacker).imageRepo }}
+            {{- if $datapacker.imageRepo }}
             - name: CONTAINERIZATION_IMAGE_REPOSITORY
-              value: {{ $containerization.datapacker.imageRepo }}
+              value: {{ $datapacker.imageRepo }}
             {{- end }}
             {{- if $top.Values.tonicdb.dbConfigFromValues }}
             - name: TONIC_DB_DATABASE
@@ -244,7 +234,7 @@ spec:
 {{- $autoscalingPool := index . 1 -}}
 {{- $poolWorker := $autoscalingPool.worker | default (dict) -}}
 
-{{- $worker := deepCopy $top.Values.tonicai.worker | mustMerge (dict "name" $autoscalingPool.name "numberOfWorkers" 0) ($poolWorker.overrides) -}}
+{{- $worker := deepCopy $top.Values.tonicai.worker | mustMerge (dict "name" $autoscalingPool.name "replicas" 0) ($poolWorker) -}}
 {{- $poolSpec := deepCopy $autoscalingPool.pool | mustMerge (dict "name" $autoscalingPool.name "worker" (dict "deploymentName" $autoscalingPool.name)) -}}
 ---
 {{ include "tonic.worker.pool" (list $top $poolSpec) }}
