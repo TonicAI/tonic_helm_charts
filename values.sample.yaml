@@ -382,6 +382,8 @@ additionalResources: []
 
 # allows creating autoscaling worker pools, requires the Structural worker
 # autoscaler and its CRDs to be installed
+# see https://github.com/TonicAI/structural-worker-autoscaler-chart
+# for details on installing and managing the operator and pools
 workerPools: []
 #  - name: "worker-2xl"
 #    pool:
@@ -395,6 +397,7 @@ workerPools: []
 #        secretName: my-autoscaler-api-key
 #      worker:
 #        idleTimeoutMinutes: 3
+#    # overrides values in tonicai.worker
 #    worker:
 #      resources:
 #        requests:

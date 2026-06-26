@@ -233,8 +233,9 @@ spec:
 {{- $top := first . -}}
 {{- $autoscalingPool := index . 1 -}}
 {{- $poolWorker := $autoscalingPool.worker | default (dict) -}}
-
-{{- $worker := deepCopy $top.Values.tonicai.worker | mustMerge (dict "name" $autoscalingPool.name "replicas" 0) ($poolWorker) -}}
+{{- $worker := mustMerge ($poolWorker) (deepCopy $top.Values.tonicai.worker) -}}
+{{- $_ := set $worker "replicas" 0 -}}
+{{- $_ := set $worker "name" $autoscalingPool.name -}}
 {{- $poolSpec := deepCopy $autoscalingPool.pool | mustMerge (dict "name" $autoscalingPool.name "worker" (dict "deploymentName" $autoscalingPool.name)) -}}
 ---
 {{ include "tonic.worker.pool" (list $top $poolSpec) }}
