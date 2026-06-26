@@ -42,7 +42,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: tonic-web-server
+                name: {{ include "tonic.web.serviceName" (list $) }}
                 port:
                   number: 443
       {{- if $ingress.host }}

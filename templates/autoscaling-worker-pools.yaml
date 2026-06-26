@@ -1,0 +1,6 @@
+{{- $autoscalingPools := $.Values.workerPools }}
+{{- if $autoscalingPools -}}
+{{- range $i, $autoscalingPool := $autoscalingPools }}
+{{ include "tonic.worker.autoscalingPool" (list $ $autoscalingPool) }}
+{{- end }}
+{{- end }}

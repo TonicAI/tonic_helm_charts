@@ -17,6 +17,6 @@ spec:
     {{- $httpRoutes.web.hostnames | toYaml | nindent 4 }}
   rules:
   - backendRefs:
-    - name: "tonic-web-server"
+    - name: {{ include "tonic.web.serviceName" (list $) }}
       port: 443
 {{- end }}

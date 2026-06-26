@@ -176,3 +176,6 @@ failureThreshold: 5
 - containerPort: 9464
   name: metrics
 {{- end }}
+
+
+{{- define "tonic.web.serviceName" }}tonic-web-server{{- end }}
