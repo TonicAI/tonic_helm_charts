@@ -14,9 +14,9 @@
 {{- $datapacker := ($containerization).datapacker }}
 {{- $datapackerSA := $datapacker.serviceAccount }}
 {{- $datapackerConfigMaps := ($datapacker.environment).configMaps }}
-{{- $podLabels := merge (dict "app" "tonic-worker") ($worker.pod).labels }}
+{{- $podLabels := merge (dict "app" $worker.name) ($worker.pod).labels }}
 {{- $podAnnotations := coalesce ($worker.pod).annotations (dict) }}
-{{- $deploymentLabels := merge (dict "app" "tonic-worker") ($worker.deployment).labels }}
+{{- $deploymentLabels := merge (dict "app" $worker.name) ($worker.deployment).labels }}
 {{- $deploymentAnnotations := coalesce ($worker.deployment).annotations (dict) }}
 apiVersion: apps/v1
 kind: Deployment
@@ -31,7 +31,7 @@ spec:
   replicas: {{ $worker.replicas }}
   selector:
     matchLabels:
-      app: tonic-worker
+      app: {{ $worker.name }}
   strategy:
     type: {{ include "tonic.deployStrategy" (list $top $worker.deployStrategy) }}
   revisionHistoryLimit: 1
