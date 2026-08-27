@@ -407,3 +407,21 @@ workerPools: []
 #        limits:
 #          memory: "32Gi"
 #          cpu: "8"
+#
+
+remoteLink:
+  enabled: false
+  mtls:
+    secretName: null
+    # base64 encoded string
+    pepper: null
+
+# allows mounting a custom TLS certificate on the structural pod. the TLS
+# certificate MUST be a PKCS12/PFX formatted certificate and it MUST be secured
+# with a password
+customTlsCert:
+  enabled: false
+  secret:
+    name: null
+    key: null
+  password: null
