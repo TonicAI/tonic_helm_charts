@@ -70,6 +70,26 @@
   value: {{ $httpsPort | quote }}
 - name: TONIC_HTTPS_ONLY
   value: {{ $httpsOnly | quote }}
+{{- with $top.Values.remoteLink }}
+{{- if .enabled }}
+- name: TONIC_REMOTE_LINK_ENABLED
+  value: "true"
+- name: TONIC_REMOTE_LINK_CA_CERTIFICATE_PATH
+  value: /var/run/remote-link/certs/tls.crt
+- name: TONIC_REMOTE_LINK_CA_PRIVATE_KEY_PATH
+  value: /var/run/remote-link/certs/tls.key
+- name: TONIC_REMOTE_LINK_CLOUD_SERVER_CA_PATH
+  value: /var/run/remote-link/certs/ca.crt
+- name: TONIC_REMOTE_LINK_TOKEN_PEPPER_BASE64
+  value: {{ .mtls.pepper | required "remoteLink.mtls.pepper is required when remote-link is enabled" | quote }}
+{{- end }}
+{{- end }}
+{{- with $top.Values.customTlsCert }}
+{{- if .enabled }}
+- name: TONIC_PFX_PASSWORD
+  value: {{ .password | required "customTlsCert.password is required for a custom certifcate" | quote }}
+{{- end }}
+{{- end }}
 {{- end }}
 
 {{- define "tonic.web.volumes" }}
@@ -81,6 +101,22 @@
 {{- if $top.Values.readOnlyRootFilesystem }}
 - name: scratch
   emptyDir: {}
+{{- end }}
+{{- with $top.Values.remoteLink }}
+{{- if .enabled }}
+- name: mtls-certs
+  secret:
+    secretName: {{ .mtls.secretName | required "remoteLink.mtls.secretName is required for remote link" | quote }}
+    optional: false
+{{- end }}
+{{- end }}
+{{- with $top.Values.customTlsCert }}
+{{- if .enabled }}
+- name: tls-cert
+  secret:
+    secretName: {{ .secret.name | required "customTlsCert.secret.name is required for a custom certificate" | quote }}
+    optional: false
+{{- end }}
 {{- end }}
 {{- end }}
 
@@ -103,6 +139,19 @@
 - name: scratch
   mountPath: /tonic/vector_data
   subPath: run/vector
+{{- end }}
+{{- with $top.Values.remoteLink }}
+{{- if .enabled }}
+- name: mtls-certs
+  mountPath: /var/run/remote-link/certs
+{{- end }}
+{{- end }}
+{{- with $top.Values.customTlsCert }}
+{{- if .enabled }}
+- name: tls-cert
+  mountPath: /certificates/tonic.pfx
+  subPath: {{ .secret.key | required "customTlsCert.secret.key is required for using a custom TLS certificate" | quote }}
+{{- end }}
 {{- end }}
 {{- end }}
 
