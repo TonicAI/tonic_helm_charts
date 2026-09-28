@@ -1,15 +1,18 @@
-{{- $httpRoutes := .Values.httpRoutes }}
+{{- $top := $ }}
+{{- if (include "tonic.isWebServerEnabled" $top) }}
+{{- $server := $top.Values.tonicai.web_server -}}
+{{- $httpRoutes := $top.Values.httpRoutes }}
 {{- if (and ($httpRoutes).create ($httpRoutes).web) }}
 apiVersion: {{ $httpRoutes.apiVersion }}
 kind: HTTPRoute
 metadata:
   name: "tonic-web-server"
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $top.Release.Namespace }}
   labels:
     {{- if ($httpRoutes.web).labels }}
     {{- $httpRoutes.web.labels | toYaml | nindent 4 }}
     {{- end }}
-    {{- include "tonic.labels" . | nindent 4 }}
+    {{- include "tonic.labels" $top | nindent 4 }}
 spec:
   parentRefs:
     {{- $httpRoutes.web.parentRefs | toYaml | nindent 4 }}
@@ -17,6 +20,7 @@ spec:
     {{- $httpRoutes.web.hostnames | toYaml | nindent 4 }}
   rules:
   - backendRefs:
-    - name: {{ include "tonic.web.serviceName" (list $) }}
+    - name: {{ include "tonic.web.serviceName" (list $top) }}
       port: 443
+{{- end }}
 {{- end }}

@@ -103,7 +103,10 @@ tonicVersion: latest
 
 # Container repository with tonic images. If you don't use the default one you will have to copy images over before deployment
 tonicai:
+  overrides:
+    webHost: null
   web_server:
+    enabled: true
     # Overrides the global deployStrategy.
     # deployStrategy: RollingUpdate
     env: {}
@@ -148,6 +151,7 @@ tonicai:
       annotations: {}
       labels: {}
   worker:
+    enabled: true
     #image: quay.io/tonicai/tonic_worker
     # Overrides the global deployStrategy.
     # deployStrategy: RollingUpdate
@@ -172,6 +176,7 @@ tonicai:
       annotations: {}
       labels: {}
   notifications:
+    enabled: true
     #image: quay.io/tonicai/tonic_notifications
     # Overrides the global deployStrategy.
     # deployStrategy: RollingUpdate

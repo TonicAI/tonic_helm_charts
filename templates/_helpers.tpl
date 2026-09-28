@@ -533,3 +533,66 @@ tonicai-build-writer-pull-secret
 {{- end }}
 {{- $envMaps | join "," }}
 {{- end }}
+
+
+{{- define "tonic.podMonitor" }}
+{{- $top := first . }}
+{{- $matchValue := index . 1 }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ $matchValue }}
+  namespace: {{ $top.Release.Namespace }}
+  annotations:
+    {{- include "tonic.annotations" (list $top) | nindent 4 }}
+  labels:
+    tonic.ai/metrics: {{ $matchValue }}
+spec:
+  podMetricsEndpoints:
+    - port: metrics
+      path: '/metrics'
+  selector:
+    matchLabels:
+      tonic.ai/metrics: {{ $matchValue }}
+{{- end }}
+
+
+{{- define "tonic.isServiceEnabled" }}
+{{- $top := first . -}}
+{{- $name := index . 1 -}}
+{{- $service := get $top.Values.tonicai $name -}}
+{{/*
+    helm deep merges values and objects except for when it doesn't so do some
+    footwork to enable services that don't have an explicit enabled: false
+
+    `get $dict "key"` returns "" (empty string) when the key isn't present
+    which is considered a falsey value by helm so we can't use that result
+    directly. however, `eq "" $getResult` will throw an error for comparing a
+    boolean and string if the key is present.
+
+    if the key _isn't_ present OR if the key is present and truthy the service
+    is considered enabled; if the key is present but falsey the service is
+    considered disabled
+*/}}
+{{- if hasKey $service "enabled" -}}
+{{- if get $service "enabled" -}}
+{{- print "1" -}}
+{{- end -}}
+{{/* key not present */}}
+{{- else -}}
+{{- print "1" -}}
+{{- end -}}
+{{- end }}
+
+
+{{- define "tonic.isWebServerEnabled" }}
+{{- include "tonic.isServiceEnabled" (list . "web_server") -}}
+{{- end }}
+
+{{- define "tonic.isWorkerEnabled" }}
+{{- include "tonic.isServiceEnabled" (list . "worker") -}}
+{{- end }}
+
+{{- define "tonic.isNotificationsEnabled" }}
+{{- include "tonic.isServiceEnabled" (list . "notifications") -}}
+{{- end }}

@@ -1,9 +1,11 @@
 {{- if semverCompare "<3.15.0" .Capabilities.HelmVersion.Version }}
 {{- fail "This chart requires Helm 3.15.0 or higher" }}
 {{- end }}
-{{- $server := .Values.tonicai.web_server -}}
-{{- $separateBackgroundTasks := (eq (include "tonic.web.separateBackgroundTasks" (list $ $server)) "separateBackgroundTasks") }}
-{{- $ports := fromYaml (include "tonic.ports" (list $ $server.ports (dict "http" 6580 "https" 6543 "httpsOnly" true)))  }}
+{{- $top := $ }}
+{{- $server := $top.Values.tonicai.web_server -}}
+{{- if (include "tonic.isWebServerEnabled" $top) }}
+{{- $separateBackgroundTasks := (eq (include "tonic.web.separateBackgroundTasks" (list $top $server)) "separateBackgroundTasks") }}
+{{- $ports := fromYaml (include "tonic.ports" (list $top $server.ports (dict "http" 6580 "https" 6543 "httpsOnly" true)))  }}
 {{- $httpsOnly := $ports.httpsOnly }}
 {{- $httpPort := $ports.http }}
 {{- $httpsPort := $ports.https }}
@@ -16,9 +18,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    {{- include "tonic.annotations" (list $ $deploymentAnnotations) | nindent 4 }}
+    {{- include "tonic.annotations" (list $top $deploymentAnnotations) | nindent 4 }}
   labels:
-    {{- include "tonic.allLabels" (list $ $deploymentLabels) | nindent 4 }}
+    {{- include "tonic.allLabels" (list $top $deploymentLabels) | nindent 4 }}
   name: {{ $appName }}
   namespace: {{ .Release.Namespace }}
 spec:
@@ -27,51 +29,52 @@ spec:
     matchLabels:
       app: {{ $appName }}
   strategy:
-    type: {{ include "tonic.deployStrategy" (list $ $server.deployStrategy) }}
+    type: {{ include "tonic.deployStrategy" (list $top $server.deployStrategy) }}
   revisionHistoryLimit: 1
   template:
     metadata:
       annotations:
-        {{- include "tonic.annotations" (list $ $podAnnotations) | nindent 8 }}
+        {{- include "tonic.annotations" (list $top $podAnnotations) | nindent 8 }}
       labels:
-        {{- include "tonic.allLabels" (list $ $podLabels) | nindent 8 }}
+        {{- include "tonic.allLabels" (list $top $podLabels) | nindent 8 }}
         tonic.ai/metrics: "structural-web-server"
     spec:
       nodeSelector:
-        {{- include "tonic.nodeSelectors" (list $ $server.nodeSelector) | nindent 8 }}
+        {{- include "tonic.nodeSelectors" (list $top $server.nodeSelector) | nindent 8 }}
       affinity:
-        {{- include "tonic.affinity" (list $ $server.affinity) | nindent 8 }}
+        {{- include "tonic.affinity" (list $top $server.affinity) | nindent 8 }}
       tolerations:
-        {{- include "tonic.tolerations" (list $ $server.tolerations) | nindent 8 }}
+        {{- include "tonic.tolerations" (list $top $server.tolerations) | nindent 8 }}
       securityContext:
-        {{- include "tonic.web.pod.securityContext" (list $) | nindent 8 }}
+        {{- include "tonic.web.pod.securityContext" (list $top) | nindent 8 }}
       initContainers:
-        {{- include "tonic.initContainers" (list $ $server.initContainers) | nindent 8 }}
+        {{- include "tonic.initContainers" (list $top $server.initContainers) | nindent 8 }}
       containers:
       - securityContext:
-          {{- include "tonic.web.container.securityContext" (list $ $server) | nindent 10 }}
+          {{- include "tonic.web.container.securityContext" (list $top $server) | nindent 10 }}
         volumeMounts:
-          {{- include "tonic.web.volumeMounts" (list $ $server) | nindent 10 }}
+          {{- include "tonic.web.volumeMounts" (list $top $server) | nindent 10 }}
         env:
-          {{- include "tonic.web.envVars" (list $ $server $httpsOnly $httpsPort $httpPort) | nindent 10 }}
+          {{- include "tonic.web.envVars" (list $top $server $httpsOnly $httpsPort $httpPort) | nindent 10 }}
         {{- if $server.envFrom }}
         envFrom:
         {{- with $server.envFrom }}
             {{- toYaml . | nindent 8 }}
         {{- end }}
         {{- end }}
-        image: {{ include "tonic.web.container.image" (list $ $server) }}
+        image: {{ include "tonic.web.container.image" (list $top $server) }}
         imagePullPolicy: Always
         name: {{ $appName }}
         ports:
-          {{- include "tonic.web.ports" (list $ $httpsOnly $httpsPort $httpPort) | nindent 8 }}
+          {{- include "tonic.web.ports" (list $top $httpsOnly $httpsPort $httpPort) | nindent 8 }}
         resources:
-          {{- include "tonic.web.server.container.resources" (list $ $server) | nindent 10 }}
+          {{- include "tonic.web.server.container.resources" (list $top $server) | nindent 10 }}
         startupProbe:
-          {{- include "tonic.web.startupProbe" (list $ $httpsPort) | nindent 10 }}
+          {{- include "tonic.web.startupProbe" (list $top $httpsPort) | nindent 10 }}
       restartPolicy: Always
-      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
+      serviceAccountName: {{ template "tonic.serviceAccountName" $top }}
       imagePullSecrets:
-      {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}
+      {{- include "tonic.imagePullSecret.default" (list $top) | nindent 8 }}
       volumes:
-      {{- (include "tonic.web.volumes" (list $ $server)) | nindent 8 }}
+      {{- (include "tonic.web.volumes" (list $top $server)) | nindent 8 }}
+{{- end }}

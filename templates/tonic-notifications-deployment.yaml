@@ -1,10 +1,12 @@
-{{- $notifications := .Values.tonicai.notifications }}
+{{- $top := $ }}
+{{- if (include "tonic.isNotificationsEnabled" $top) }}
+{{- $notifications := $top.Values.tonicai.notifications }}
 {{- /* support values file w/o resource definition */}}
 {{- $resources := coalesce
   $notifications.resources
   (dict "limits" (dict "memory" "1Gi") "requests" (dict "memory" "512Mi" "ephemeral-storage" "1Gi"))
 -}}
-{{- $rawPorts := include "tonic.ports" (list $ $notifications.ports (dict "http" 7000 "https" 7001 "httpsOnly" false)) }}
+{{- $rawPorts := include "tonic.ports" (list $top $notifications.ports (dict "http" 7000 "https" 7001 "httpsOnly" false)) }}
 {{- $ports := fromYaml $rawPorts }}
 {{- $podLabels := merge (dict "app" "tonic-notifications") ($notifications.pod).labels }}
 {{- $podAnnotations := coalesce ($notifications.pod).annotations (dict) }}
@@ -14,49 +16,49 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    {{- include "tonic.annotations" (list $ $deploymentAnnotations) | nindent 4 }}
+    {{- include "tonic.annotations" (list $top $deploymentAnnotations) | nindent 4 }}
   labels:
-    {{- include "tonic.allLabels" (list $ $deploymentLabels) | nindent 4 }}
+    {{- include "tonic.allLabels" (list $top $deploymentLabels) | nindent 4 }}
   name: tonic-notifications
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $top.Release.Namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: tonic-notifications
   strategy:
-    type: {{ include "tonic.deployStrategy" (list $ $notifications.deployStrategy) }}
+    type: {{ include "tonic.deployStrategy" (list $top $notifications.deployStrategy) }}
   revisionHistoryLimit: 1
   template:
     metadata:
       annotations:
-        {{- include "tonic.annotations" (list $ $podAnnotations) | nindent 8 }}
+        {{- include "tonic.annotations" (list $top $podAnnotations) | nindent 8 }}
       labels:
-        {{- include "tonic.allLabels" (list $ $podLabels) | nindent 8 }}
+        {{- include "tonic.allLabels" (list $top $podLabels) | nindent 8 }}
         tonic.ai/metrics: "structural-notifications"
     spec:
       nodeSelector:
-        {{- include "tonic.nodeSelectors" (list $ $notifications.nodeSelector) | nindent 8 }}
+        {{- include "tonic.nodeSelectors" (list $top $notifications.nodeSelector) | nindent 8 }}
       affinity:
-        {{- include "tonic.affinity" (list $ $notifications.affinity) | nindent 8 }}
+        {{- include "tonic.affinity" (list $top $notifications.affinity) | nindent 8 }}
       tolerations:
-        {{- include "tonic.tolerations" (list $ $notifications.tolerations) | nindent 8 }}
+        {{- include "tonic.tolerations" (list $top $notifications.tolerations) | nindent 8 }}
       securityContext:
-        {{- if .Values.useUnprivilegedContainers }}
+        {{- if $top.Values.useUnprivilegedContainers }}
         seccompProfile:
           type: RuntimeDefault
         runAsNonRoot: true
         {{- end }}
       initContainers:
-        {{- include "tonic.initContainers" (list $ $notifications.initContainers) | nindent 8 }}
+        {{- include "tonic.initContainers" (list $top $notifications.initContainers) | nindent 8 }}
       containers:
       - securityContext:
-          {{- if .Values.useUnprivilegedContainers }}
+          {{- if $top.Values.useUnprivilegedContainers }}
           allowPrivilegeEscalation: false
           capabilities:
             drop: ["ALL"]
           {{- end }}
-          {{- if .Values.readOnlyRootFilesystem }}
+          {{- if $top.Values.readOnlyRootFilesystem }}
           readOnlyRootFilesystem: true
           {{- end }}
         env:
@@ -69,24 +71,24 @@ spec:
             {{- toYaml . | nindent 12 }}
         {{- end }}
         {{- end }}
-        {{- if .Values.tonicdb.dbConfigFromValues }}
+        {{- if $top.Values.tonicdb.dbConfigFromValues }}
         - name: TONIC_DB_DATABASE
-          value: {{ .Values.tonicdb.dbName }}
+          value: {{ $top.Values.tonicdb.dbName }}
         - name: TONIC_DB_USERNAME
-          value: {{ .Values.tonicdb.user }}
+          value: {{ $top.Values.tonicdb.user }}
         - name: TONIC_DB_PORT
-          value: {{quote .Values.tonicdb.port }}
+          value: {{quote $top.Values.tonicdb.port }}
         - name: TONIC_DB_SSLMODE
-          value: {{ .Values.tonicdb.sslMode }}
+          value: {{ $top.Values.tonicdb.sslMode }}
         - name: TONIC_DB_HOST
-          value: {{ .Values.tonicdb.host }}
+          value: {{ $top.Values.tonicdb.host }}
         - name: TONIC_DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: tonic-db-password
               key: password
         {{- end }}
-        {{- $smtp := .Values.tonicSmtpConfig }}
+        {{- $smtp := $top.Values.tonicSmtpConfig }}
         {{- if $smtp.tonicUrl }}
         - name: TONIC_URL
           value: {{ $smtp.tonicUrl }}
@@ -115,7 +117,7 @@ spec:
               key: password
         {{- end}}
         - name: ENVIRONMENT_NAME
-          value: {{ .Values.environmentName }}
+          value: {{ $top.Values.environmentName }}
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTP
           value: {{ $ports.http | quote }}
         - name: TONIC_NOTIFICATIONS_HEALTH_PORT_HTTPS
@@ -126,14 +128,14 @@ spec:
             {{- toYaml . | nindent 8 }}
         {{- end }}
         {{- end }}
-        image: {{ include "tonic.imageWithVersion" (list $ $notifications.image "quay.io/tonicai/tonic_notifications" .Values.tonicVersion) }}
+        image: {{ include "tonic.imageWithVersion" (list $top $notifications.image "quay.io/tonicai/tonic_notifications" $top.Values.tonicVersion) }}
         imagePullPolicy: Always
         name: tonic-notifications
         volumeMounts:
           {{- if $notifications.volumeMounts }}
           {{- toYaml $notifications.volumeMounts | nindent 10 }}
           {{- end }}
-          {{- if .Values.readOnlyRootFilesystem }}
+          {{- if $top.Values.readOnlyRootFilesystem }}
           - name: scratch
             mountPath: /tonic/vector_data
             subPath: vector
@@ -171,13 +173,13 @@ spec:
       restartPolicy: Always
       imagePullSecrets:
       {{- include "tonic.imagePullSecret.default" (list $) | nindent 8 }}
-      serviceAccountName: {{ template "tonic.serviceAccountName" . }}
+      serviceAccountName: {{ template "tonic.serviceAccountName" $top }}
       volumes:
         {{- if $notifications.volumes }}
         {{- toYaml $notifications.volumes | nindent 8 }}
         {{- end }}
-        {{- if .Values.readOnlyRootFilesystem }}
+        {{- if $top.Values.readOnlyRootFilesystem }}
         - name: scratch
           emptyDir: {}
         {{- end }}
-status: {}
+{{- end }}
