@@ -1,4 +1,6 @@
-{{- $notifications := .Values.tonicai.notifications }}
+{{- $top := $ }}
+{{- if (include "tonic.isNotificationsEnabled" $top) }}
+{{- $notifications := $top.Values.tonicai.notifications }}
 {{- $ports := fromYaml (include "tonic.ports" (list $ $notifications.ports (dict "http" 7000 "https" 7001 "httpsOnly" false))) }}
 apiVersion: v1
 kind: Service
@@ -21,5 +23,4 @@ spec:
     targetPort: https
   selector:
     app: tonic-notifications
-status:
-  loadBalancer: {}
+{{- end }}

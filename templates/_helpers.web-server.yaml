@@ -227,4 +227,21 @@ failureThreshold: 5
 {{- end }}
 
 
-{{- define "tonic.web.serviceName" }}tonic-web-server{{- end }}
+{{- define "tonic.web.serviceName" }}
+{{- print "tonic-web-server" -}}
+{{- end }}
+
+{{- define "tonic.web.qualifiedServiceName" }}
+{{- $top := . -}}
+{{- printf "%s.%s" (include "tonic.web.serviceName" $top) ($top.Release.Namespace) -}}
+{{- end }}
+
+{{- define "tonic.web.host" }}
+{{- $top := . -}}
+{{- $overridden := ($top.Values.tonicai.overrides).webHost }}
+{{- if $overridden -}}
+{{- $overridden -}}
+{{- else -}}
+{{- include "tonic.web.qualifiedServiceName" $top -}}
+{{- end -}}
+{{- end }}

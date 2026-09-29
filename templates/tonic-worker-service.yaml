@@ -1,12 +1,14 @@
-{{- $worker := .Values.tonicai.worker }}
-{{- $ports := fromYaml (include "tonic.ports" (list $ $worker.ports (dict "http" 8080 "https" 4433 "httpsOnly" true)))  }}
+{{- $top := $ }}
+{{- if (include "tonic.isWorkerEnabled" $top) }}
+{{- $worker := $top.Values.tonicai.worker }}
+{{- $ports := fromYaml (include "tonic.ports" (list $top $worker.ports (dict "http" 8080 "https" 4433 "httpsOnly" true)))  }}
 apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    {{- include "tonic.annotations" (list $) | nindent 4 }}
+    {{- include "tonic.annotations" (list $top) | nindent 4 }}
   labels:
-    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-worker")) | nindent 4 }}
+    {{- include "tonic.allLabels" (list $top (dict "app" "tonic-worker")) | nindent 4 }}
   name: tonic-worker
   namespace: {{ .Release.Namespace }}
 spec:
@@ -21,5 +23,4 @@ spec:
     targetPort: https
   selector:
     app: tonic-worker
-status:
-  loadBalancer: {}
+{{- end }}

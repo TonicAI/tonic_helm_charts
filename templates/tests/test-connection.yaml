@@ -1,4 +1,5 @@
 {{- if .Values.enableTests }}
+{{- if (include "tonic.isWebServerEnabled" .) }}
 apiVersion: v1
 kind: Pod
 metadata:
@@ -12,6 +13,9 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['tonic-web-server:443']
+      {{- $domain := (include "tonic.web.host" .) }}
+      {{- $args := (list (printf "%s:443" $domain)) }}
+      args: {{ toJson $args }}
   restartPolicy: Never
+{{- end }}
 {{- end }}

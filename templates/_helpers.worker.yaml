@@ -1,5 +1,4 @@
 {{- define "tonic.worker.containerName" -}}tonic-worker{{- end -}}
-
 {{- define "tonic.worker.deployment" }}
 {{- $top := first . }}
 {{- $worker := index . 1 }}
@@ -127,7 +126,7 @@ spec:
             - name: TONIC_NOTIFICATIONS_URL
               value: https://tonic-notifications:7001
             - name: TONIC_WEB_URL
-              value: https://tonic-web-server
+              value: https://{{- include "tonic.web.host" $top }}
             - name: TONIC_HTTPS_ONLY
               value: {{ $httpsOnly | quote }}
             {{- if not $httpsOnly }}
@@ -216,7 +215,7 @@ spec:
     interval: {{ $pool.queue.interval }}
     zoneId: {{ $pool.queue.zoneId }}
     source:
-      endpoint: https://{{- include "tonic.web.serviceName" (list $top) -}}.{{- $namespace -}}/api/job/peek_queue
+      endpoint: https://{{- include "tonic.web.host" $top -}}/api/job/peek_queue
       secretName: {{ $pool.queue.secretName }}
   workerSpec:
     idleTimeoutMinutes: {{ $pool.worker.idleTimeoutMinutes }}

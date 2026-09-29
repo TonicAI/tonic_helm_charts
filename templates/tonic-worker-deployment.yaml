@@ -1,3 +1,5 @@
-{{- $top := . }}
-{{- $worker := deepCopy $top.Values.tonicai.worker | mustMerge (dict "name" "tonic-worker" "replicas" $.Values.numberOfWorkers) }}
+{{- $top := $ }}
+{{- if (include "tonic.isWorkerEnabled" $top) }}
+{{- $worker := deepCopy $top.Values.tonicai.worker | mustMerge (dict "name" "tonic-worker" "replicas" $top.Values.numberOfWorkers) }}
 {{- include "tonic.worker.deployment" (list $top $worker $top.Values.containerization) }}
+{{- end }}

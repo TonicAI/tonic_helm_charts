@@ -1,8 +1,10 @@
+{{- $top := $ }}
+{{- if (include "tonic.isWebServerEnabled" $top) }}
 {{- $server := .Values.tonicai.web_server -}}
-{{- $ports := fromYaml (include "tonic.ports" (list $ $server.ports (dict "httpsOnly" true)))  }}
+{{- $ports := fromYaml (include "tonic.ports" (list $top $server.ports (dict "httpsOnly" true)))  }}
 {{- $annotations := dict }}
-{{- if ((.Values.tonicai).web_server).annotations }}
-{{- $annotations = .Values.tonicai.web_server.annotations }}
+{{- if (($top.Values.tonicai).web_server).annotations }}
+{{- $annotations = $top.Values.tonicai.web_server.annotations }}
 {{- else }}
 {{- $annotations = (dict
     "service.beta.kubernetes.io/aws-load-balancer-internal" "true"
@@ -12,16 +14,16 @@
     "service.beta.kubernetes.io/azure-load-balancer-internal" "true"
 )}}
 {{- end }}
-{{- $serviceType := include "tonic.web.serviceType" (list $) }}
+{{- $serviceType := include "tonic.web.serviceType" (list $top) }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "tonic.web.serviceName" (list $) }}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $top.Release.Namespace }}
   annotations:
-    {{- include "tonic.annotations" (list $ $annotations) | nindent 4 }}
+    {{- include "tonic.annotations" (list $top $annotations) | nindent 4 }}
   labels:
-    {{- include "tonic.allLabels" (list $ (dict "app" "tonic-web-server")) | nindent 4 }}
+    {{- include "tonic.allLabels" (list $top (dict "app" "tonic-web-server")) | nindent 4 }}
 spec:
   ports:
   {{- if not $ports.httpsOnly }}
@@ -35,3 +37,4 @@ spec:
   type: {{ $serviceType }}
   selector:
     app: tonic-web-server
+{{- end }}

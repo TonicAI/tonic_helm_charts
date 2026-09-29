@@ -1,27 +1,17 @@
-{{- if ((.Values.monitoring).podMonitors).create }}
-{{- $matchValues := (list
-  "structural-web-server"
-  "structural-notifications"
-  "structural-worker"
-  "structural-data-packer"
-)}}
-{{- range $matchValue := $matchValues }}
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  name: {{ $matchValue }}
-  namespace: {{ $.Release.Namespace }}
-  annotations:
-    {{- include "tonic.annotations" (list $) | nindent 4 }}
-  labels:
-    tonic.ai/metrics: {{ $matchValue }}
-spec:
-  podMetricsEndpoints:
-    - port: metrics
-      path: '/metrics'
-  selector:
-    matchLabels:
-      tonic.ai/metrics: {{ $matchValue }}
+{{- $top := $ }}
+{{- if $top.Values.monitoring.podMonitors.create }}
+{{- if (include "tonic.isWebServerEnabled" $top) }}
+{{ include "tonic.podMonitor" (list $top "structural-web-server") }}
+---
+{{- end }}
+{{- if (include "tonic.isNotificationsEnabled" $top) }}
+{{ include "tonic.podMonitor" (list $top "structural-notifications") }}
+---
+{{- end }}
+{{- if (include "tonic.isWorkerEnabled" $top) }}
+{{ include "tonic.podMonitor" (list $top "structural-worker") }}
+---
+{{ include "tonic.podMonitor" (list $top "structural-data-packer") }}
 ---
 {{- end }}
 {{- end }}

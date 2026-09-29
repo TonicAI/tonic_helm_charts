@@ -1,5 +1,8 @@
-{{- if (.Values.tonicai).use_ingress }}
-{{- $ingress := .Values.tonicai.ingress }}
+{{- $top := $ }}
+{{- if (include "tonic.isWebServerEnabled" $top) }}
+{{- $server := $top.Values.tonicai.web_server -}}
+{{- if ($top.Values.tonicai).use_ingress }}
+{{- $ingress := $top.Values.tonicai.ingress }}
 {{- $annotations := dict -}}
 {{- if $ingress.annotations }}
 {{- $annotations = $ingress.annotations -}}
@@ -23,11 +26,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: tonic-web-server-ingress
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $top.Release.Namespace }}
   annotations:
-    {{- include "tonic.annotations" (list $ $ingress.annotations) | nindent 4 }}
+    {{- include "tonic.annotations" (list $top $ingress.annotations) | nindent 4 }}
   labels:
-    {{- include "tonic.allLabels" (list $ $labels) | nindent 4 }}
+    {{- include "tonic.allLabels" (list $top $labels) | nindent 4 }}
 spec:
   {{- if $ingress.class }}
   ingressClassName: {{ $ingress.class }}
@@ -42,11 +45,12 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "tonic.web.serviceName" (list $) }}
+                name: {{ include "tonic.web.serviceName" (list $top) }}
                 port:
                   number: 443
       {{- if $ingress.host }}
       host: {{ $ingress.host }}
       {{- end }}
     {{- end }}
+{{- end }}
 {{- end }}
